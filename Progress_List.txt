@@ -1,0 +1,5 @@
+1:X: Set up project
+2:X: Set project up with Github
+3:X: Create folder structer in the project.
+4: : Start working on a start script that runs when the level is loaded. It loads the level and loads the variables.
+5: : Create the UI/hotbars/backgrounds.
