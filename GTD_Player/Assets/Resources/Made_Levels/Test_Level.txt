@@ -8,6 +8,8 @@ Lock Gem(Ruby,False,100
 Lock Gem(Topaz,False,140
 Lock Gem(Opal,False,180
 Tower(Ruby,1,1,1,5,10
+Tower(Ruby,1,1,1,5,10
+Tower(Ruby,1,1,1,5,10
 Tower(Ally_02,2,2,2,10,20
 Enemies(Enemy_01,1,10,1,1,10,5,1,20,None
 Enemies(Enemy_02,2,20,2,2,20,10,5,80,None
@@ -35,3 +37,5 @@ Field Object X/Y(s_9,7,2
 Field Object X/Y(d_10,7,3
 Field Object X/Y(d_11,8,3
 Field Object X/Y(Name_Path_Maker,9,3
+
+

@@ -44,7 +44,7 @@ public class Start_Player_Script : MonoBehaviour {
     void Load_Level_Save()
     {
         //load the test level. This will be changed when the game is final and we have multiple levels.
-        TextAsset Level = Resources.Load("Made_Levels\\Test_Level") as TextAsset;
+        TextAsset Level = Resources.Load("Made_Levels/Test_Level") as TextAsset;
         //Debug.Log(Level.text);
 
         //test

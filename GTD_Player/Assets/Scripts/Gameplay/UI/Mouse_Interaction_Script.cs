@@ -40,6 +40,37 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //scrolling only occurs in 2 spots. the map and the enemy list area.
         //transform.Translate(Vector3.up * Input.GetAxis("Mouse ScrollWheel"));
 
+        //setting the scroll for zoom and movement on menuss will need to add logic for mouse down with towers to return them to default spot or something.
+        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        {
+            Collider_Working_With = null;
+            Collider_Working_With = Find_Highest_Collider_At_Mouse(false);
+
+            if (Collider_Working_With.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+            {
+                float tsx = Collider_Working_With.gameObject.transform.parent.transform.localScale.x;
+                float tsy = Collider_Working_With.gameObject.transform.parent.transform.localScale.y;
+
+                //Debug.Log("cur x = " + tsx);
+                //Debug.Log("cur y = " + tsy);
+                //Debug.Log("Mouse_Scroll_Amount = " + Input.GetAxis("Mouse ScrollWheel"));
+
+                //zoom in 10%
+                float Temp_Zoom_Amount = .10f;
+                if (Input.GetAxis("Mouse ScrollWheel") < 0)
+                {
+                    Temp_Zoom_Amount *= -1;
+                }
+
+
+                Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
+                Collider_Working_With = null;
+
+            }
+
+
+        }
+
 
         //need to check if a drag has occured and if it has and the item is the map or a tower then stuff.
         //if not tower we just keep it going until mouse up and then double check to make sure we are still in the collider area.
@@ -148,7 +179,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
     void Mouse_Down_Fired()
     {
-        Debug.Log("Mouse_Down");
+        //Debug.Log("Mouse_Down");
 
         //clear things out.
         Collider_Working_With = null;
@@ -195,7 +226,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     void Mouse_Up_Fired()
     {
 
-        Debug.Log("Mouse_Up");
+        //Debug.Log("Mouse_Up");
 
         //need to tell if the item was being dragged or not.
         if (b_Is_Dragging)
