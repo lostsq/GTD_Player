@@ -13,10 +13,11 @@
         Name_Map_Parent = "Map_Parent",
         Name_Map_Start = "Start_Point",
         Name_Map_Temple = "Temple",
+        Name_Confirmation_Box = "Confirmation_Box",
 
         //PREFAB NAMES WITH FULL ADDRESSES
         //UI
-        Prefab_Hotbar_Box = "Prefabs/UI/HotBarBox_Empty",
+    Prefab_Hotbar_Box = "Prefabs/UI/HotBarBox_Empty",
         Prefab_Hotbar_Middle = "Prefabs/UI/HotBarMiddle",
         Prefab_I_Bot = "Prefabs/UI/Inventory_Boxes/I_Bottom",
         Prefab_I_Bot_Left = "Prefabs/UI/Inventory_Boxes/I_Bottom_Left",
@@ -28,7 +29,7 @@
         Prefab_I_Top_Left = "Prefabs/UI/Inventory_Boxes/I_Top_Left",
         Prefab_I_Top_Right = "Prefabs/UI/Inventory_Boxes/I_Top_Right",
         Prefab_Tower_Template = "Prefabs/Towers/Tower_Template",
-        
+
         //TOWERS
         Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
         //MAP ITEMS
@@ -37,7 +38,7 @@
         Prefab_MI_Spots_Temple = "Prefabs/Enviroment/Map_Spots/Temple",
         Prefab_MI_Path_Template = "Prefabs/Enviroment/Map_Spots/Map_Spot_Path",
         Prefab_MI_Map_Space = "Prefabs/Enviroment/Map_Spots/Map_Space",
-        
+
         //PATH SPRITES
         Sprite_Up_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/Up_Basic",
         Sprite_Down_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/Down_Basic",
@@ -47,24 +48,32 @@
         Sprite_Corner_TR_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/TR_Corner_Basic",
         Sprite_Corner_BL_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/BL_Corner_Basic",
         Sprite_Corner_BR_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/BR_Corner_Basic",
-    
+
+        //CONFIRMATION ACTIONS
+        Confirm_Tower_To_Field = "Tower_To_Field_From_Hotbar",
+        Confirm_Tower_To_Hotbar = "Tower_To_Hotbar_From_Field",
 
 
-        //TAG PARTS
-        Tag_Part_Drag = "Drag",
-        Tag_Part_Button = "Button",
+    //TAG PARTS
+    Tag_Part_Drag = "Drag",
+        Tag_Part_Button = "Btn",
 
     //TAGS
     //Buttons
+        Tag_Button_Inventory_UI = "Btn_Inventory",
+        Tag_Button_Create_UI = "Btn_Creator",
+        Tag_Button_Enemies_UI = "Btn_Enemies",
+        Tag_Button_Confirmation_Yes = "Btn_Confirm_Yes",
+        Tag_Button_Confirmation_No = "Btn_Confirm_No",
     //Non-Buttons
         Tag_Inventory_Bag = "Inventory_Bag",
         Tag_Hotbar_Spot = "Hotbar_Spot",
-        
+
         Tag_Empty_Map_Spot = "Empty_Map_Spot_Drag",
         Tag_Start_Spawn = "Start_Spawn_Map_Spot_Drag",
         Tag_Finish_Temple = "Finish_Temple_Map_Spot_Drag",
-        Tag_Tower = "Tower_Drag",
-        Tag_Tower_On_Map = "Tower_Drag_On_Map",
+        Tag_Tower = "Twr_Drag",
+        Tag_Tower_On_Map = "Twr_Drag_On_Map",
 
         Tag_Path_Maker_Field_Move = "Drag_Spot_Field";
 

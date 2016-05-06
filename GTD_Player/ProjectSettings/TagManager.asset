@@ -6,6 +6,17 @@ TagManager:
   tags:
   - Inventory_Bag
   - Empty_Map_Spot_Drag
+  - Btn_Inventory
+  - Btn_Enemies
+  - Btn_Creator
+  - Twr_Drag
+  - Hotbar_Spot
+  - Start_Spawn_Map_Spot_Drag
+  - Finish_Temple_Map_Spot_Drag
+  - Twr_Drag_On_Map
+  - Drag_Spot_Field
+  - Btn_Confirm_Yes
+  - Btn_Confirm_No
   layers:
   - Default
   - TransparentFX

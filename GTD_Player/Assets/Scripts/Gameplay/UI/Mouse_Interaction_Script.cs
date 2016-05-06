@@ -9,6 +9,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
     //This is if dragging is occuring.
     bool b_Is_Dragging = false;
+    //used to know if a menu is open.
+    GameObject Cur_Open_Menu = null;
     //This is the object that we are working with when dragging.
     Collider2D Collider_Working_With = null;
 
@@ -18,6 +20,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     Vector2 Pos_Object_Start;
     Vector2 Pos_Start;
     GameObject Old_Parent = null;
+    bool b_Moving_Tower_Field = false;
 
     //the on gui/mouse over bools.
     bool Running_GUI = false;
@@ -46,7 +49,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             Collider_Working_With = null;
             Collider_Working_With = Find_Highest_Collider_At_Mouse(false);
 
-            if (Collider_Working_With.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+            if (Collider_Working_With != null && Collider_Working_With.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
             {
                 float tsx = Collider_Working_With.gameObject.transform.parent.transform.localScale.x;
                 float tsy = Collider_Working_With.gameObject.transform.parent.transform.localScale.y;
@@ -158,6 +161,81 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             else
             {
 
+                Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                Vector2 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint);
+
+                Vector3 Update_Spot = curPosition - Pos_Start;
+                Update_Spot.Set(Update_Spot.x, Update_Spot.y, 0);
+
+                //check what is under it before we confirm placement.
+                Collider2D Under_This = Find_Highest_Collider_At_Mouse(false);
+                
+                //the sprite renderers.
+                SpriteRenderer Cur_SR = Collider_Working_With.gameObject.GetComponent<SpriteRenderer>();
+                SpriteRenderer Under_SR = null;
+                if (Under_This != null)
+                {
+                    Under_SR = Under_This.gameObject.GetComponent<SpriteRenderer>();
+                    //in the bag
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Inventory_Bag)
+                    {
+                        Pos_Start = curPosition;
+                        Collider_Working_With.gameObject.transform.position += Update_Spot;
+                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                        Collider_Working_With.gameObject.transform.localScale = new Vector3(1,1);
+                        //sprite render stuff.
+                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                    }
+
+                    //in the hotbox Need GHOST!
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
+                    {
+                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                        if (Old_Parent != null)
+                        {
+                            if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot))
+                            {
+
+                                b_Moving_Tower_Field = true;
+                            }
+                            else
+                            {
+                                b_Moving_Tower_Field = false;
+                            }
+                        }
+                        //nothing else in the hotbar.
+                        if (Under_This.gameObject.transform.childCount == 0)
+                        {
+                            Pos_Start = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                            Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
+                            //sprite render stuff.
+                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                        }
+                    }
+                    //in the map NEED GHOST!
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+                    {
+                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                        b_Moving_Tower_Field = true;
+                        //nothing else in the hotbar.
+                        if (Under_This.gameObject.transform.childCount == 0)
+                        {
+                            //used for test
+                            //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
+
+                            Pos_Start = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                            Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
+                            //sprite render stuff.
+                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                        }
+                    }
+
+                }
+                
             }
             
 
@@ -187,6 +265,13 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
         //we get the highest collider at the mouses location.
         Collider2D Highest_Collider = Find_Highest_Collider_At_Mouse(false);
+
+        //set the old parent here and reset it to null on mouse up/trigger.
+        if (Old_Parent == null)
+        {
+            Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
+        }
+        
 
         //Verify that there is a highest collider to work with.
         if (Highest_Collider != null)
@@ -231,7 +316,30 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //need to tell if the item was being dragged or not.
         if (b_Is_Dragging)
         {
-            
+            //Debug.Log("Drag Reached Mouse Up");
+            //the tower is being moved to a spot on the field.
+            if (b_Moving_Tower_Field)
+            {
+                
+
+                //Debug.Log("Moving Tower Reached Mouse Up");
+                //enable the confirmation
+                Main_Script.b_Confirmation_Open = true;
+                //get the from spot and the tower we are moving.
+                Main_Script.Confirmation_Objects = new GameObject[2]{Old_Parent, Collider_Working_With.gameObject};
+                //set the action for if it is good.
+                if (Collider_Working_With.transform.parent.gameObject.tag.Contains(Current_Strings.Tag_Hotbar_Spot))
+                {
+                    Main_Script.s_Confirmation_Action = Current_Strings.Confirm_Tower_To_Hotbar;
+                }
+                else
+                {
+                    Main_Script.s_Confirmation_Action = Current_Strings.Confirm_Tower_To_Field;
+                }
+
+                //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
+                GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
+            }
         }
         else
         {
@@ -243,8 +351,10 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //BUTTONS
                 if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Part_Button))
                 {
-
+                    //press the button that was clicked.
+                    Button_Clicked(Collider_Working_With);
                 }
+                
                 //TOWERS
             }
 
@@ -253,6 +363,11 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //Set Defaults
         b_Is_Dragging = false;
         Collider_Working_With = null;
+        b_Moving_Tower_Field = false;
+        if (!Main_Script.b_Confirmation_Open)
+        {
+            Old_Parent = null;
+        }
     }
 
     //This will find the highest layered (by sprite level) at the mouses location. It does not include what is being dragged.
@@ -310,6 +425,47 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
         //we return the highest
         return Highest_Collider;
+
+    }
+
+    //All button presses go through here and the proper action is taken either here or in the main script.
+    //only for the menu items, not clicking a single tower, but yes the up buttons for towers and such.
+    void Button_Clicked(Collider2D But_Col)
+    {
+        //used to easily close open menus without searching.
+        string Last_Menu_Tag_Open = "none";
+
+        //menu is open so we must now close. only for the large menus like invin, enemies, create
+        if (Cur_Open_Menu != null)
+        {
+            //move the open menu to the off screen.
+            Cur_Open_Menu.gameObject.transform.position = new Vector3(-500, -550);
+            Last_Menu_Tag_Open = Cur_Open_Menu.tag;
+            Cur_Open_Menu = null;
+        }
+
+        //invintory button click.
+        if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Inventory_UI))
+        {
+            if (GameObject.Find(Current_Strings.Name_Inventory_Parent).tag != Last_Menu_Tag_Open)
+            {
+                GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.position = new Vector3(0, 0);
+                Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Inventory_Parent);
+            }
+        }
+
+        //confirm yes
+        if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Confirmation_Yes))
+        {
+            Main_Script.b_Confirmation_True = true;
+            Main_Script.b_Confirmation_Open = false;
+        }
+        //confirm no
+        if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Confirmation_No))
+        {
+            Main_Script.b_Confirmation_True = false;
+            Main_Script.b_Confirmation_Open = false;
+        }
 
     }
 
