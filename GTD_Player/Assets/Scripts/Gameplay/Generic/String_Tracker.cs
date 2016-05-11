@@ -32,6 +32,14 @@
 
         //TOWERS
         Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
+
+        //ENEMIES
+        Prefab_Enemy_Location = "Prefabs/Enemies/",
+
+        //ATTACKS
+        Prefab_Attack_Tower_Location = "Prefabs/Attacks/Attack_Tower_",
+        Prefab_Attack_Enemy_Location = "Prefabs/Attacks/Attack_Enemy_",
+
         //MAP ITEMS
         Prefab_MI_Decorations_Location = "Prefabs/Enviroment/Decorations/",
         Prefab_MI_Spots_Start = "Prefabs/Enviroment/Map_Spots/Map_Spot_Start",
@@ -74,6 +82,8 @@
         Tag_Finish_Temple = "Finish_Temple_Map_Spot_Drag",
         Tag_Tower = "Twr_Drag",
         Tag_Tower_On_Map = "Twr_Drag_On_Map",
+
+        Tag_Enemy = "Enemy",
 
         Tag_Path_Maker_Field_Move = "Drag_Spot_Field";
 

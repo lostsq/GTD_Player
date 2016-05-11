@@ -59,14 +59,19 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //Debug.Log("Mouse_Scroll_Amount = " + Input.GetAxis("Mouse ScrollWheel"));
 
                 //zoom in 10%
-                float Temp_Zoom_Amount = .10f;
-                if (Input.GetAxis("Mouse ScrollWheel") < 0)
+                //float Temp_Zoom_Amount = .10f;
+                if (Input.GetAxis("Mouse ScrollWheel") > 0)
                 {
-                    Temp_Zoom_Amount *= -1;
+                    //Temp_Zoom_Amount *= -1;
+                    Main_Script.f_Zoom_Level /= .9f;
+                }
+                else
+                {
+                    Main_Script.f_Zoom_Level *= .9f;
                 }
 
-
-                Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
+                Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
+                //Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
                 Collider_Working_With = null;
 
             }
@@ -184,7 +189,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                         Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
                         Collider_Working_With.gameObject.transform.localScale = new Vector3(1,1);
                         //sprite render stuff.
-                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                     }
 
                     //in the hotbox Need GHOST!
@@ -211,10 +216,10 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                             Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
                             Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
                             //sprite render stuff.
-                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                         }
                     }
-                    //in the map NEED GHOST!
+                    //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
                     if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
                     {
                         //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
@@ -230,7 +235,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                             Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
                             Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
                             //sprite render stuff.
-                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 1;
+                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                         }
                     }
 
@@ -267,7 +272,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         Collider2D Highest_Collider = Find_Highest_Collider_At_Mouse(false);
 
         //set the old parent here and reset it to null on mouse up/trigger.
-        if (Old_Parent == null)
+        if (Old_Parent == null && Highest_Collider != null)
         {
             Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
         }

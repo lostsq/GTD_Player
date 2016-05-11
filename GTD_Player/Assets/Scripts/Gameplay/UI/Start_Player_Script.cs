@@ -158,8 +158,18 @@ public class Start_Player_Script : MonoBehaviour {
                     string Arg10 = Level_Items[i].Split('(')[1].Split(',')[9];
 
                     //create the enemy and add it to the main scripts list.
-                    Enemy New_Enemy = new Enemy(Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10);
-                    Main_Script.Enemy_List.Add(New_Enemy);
+                    GameObject New_Temp = new GameObject();
+                    //New_Temp.transform.position = new Vector3(-500, -500);
+                    //New_Temp.AddComponent<Enemy>();
+
+                    //Enemy New_Enemy = New_Temp.GetComponent<Enemy>();
+                    Enemy New_Enemy = new Enemy();
+                    //set up the new enemy as a spawner.
+                    New_Enemy.Set_Enemy(Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10,true);
+
+                    //might need to create the item so it's not null and have it off screen.
+                    New_Enemy.i_Location_In_Spawn_Array = Main_Script.Enemy_Spawns.Count;
+                    Main_Script.Enemy_Spawns.Add(New_Enemy);
                 }
             }
         }
@@ -194,6 +204,7 @@ public class Start_Player_Script : MonoBehaviour {
                         else if (Arg1.Contains("Start_Point"))
                         {
                             New_Item = Instantiate(Resources.Load(Current_Strings.Prefab_MI_Spots_Start)) as GameObject;
+                            New_Item.name = Current_Strings.Name_Map_Start;
                             New_Item.AddComponent<Map_Start>();
                             New_Item.GetComponent<Map_Start>().Map_Start_Setup(Current_Strings.Name_Map_Start, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;
@@ -201,6 +212,7 @@ public class Start_Player_Script : MonoBehaviour {
                         else if (Arg1.Contains("Name_Path_Maker"))
                         {
                             New_Item = Instantiate(Resources.Load(Current_Strings.Prefab_MI_Spots_Temple)) as GameObject;
+                            New_Item.name = Current_Strings.Name_Map_Temple;
                             New_Item.AddComponent<Map_Temple>();
                             New_Item.GetComponent<Map_Temple>().Map_Temple_Setup(Current_Strings.Name_Map_Temple, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;

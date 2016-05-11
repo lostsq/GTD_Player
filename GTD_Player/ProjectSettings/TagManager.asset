@@ -17,6 +17,7 @@ TagManager:
   - Drag_Spot_Field
   - Btn_Confirm_Yes
   - Btn_Confirm_No
+  - Enemy
   layers:
   - Default
   - TransparentFX

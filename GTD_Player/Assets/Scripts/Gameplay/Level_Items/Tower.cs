@@ -9,7 +9,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 {
     public class Tower : MonoBehaviour
     {
-        bool b_On_Field = false;
+        public bool b_On_Field = false;
         bool b_Fused = false;
         public string s_Name = "Null";
         int i_Level = 0;
@@ -24,8 +24,15 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int[] i_Speed_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Speed_Amount = 1;
 
+
+        float f_Timer = 0;
+
         //This is the tower.
         public GameObject This_Tower;
+        //this is it's target
+        GameObject The_Target = null;
+
+        public string s_Attack_Prefab;
 
         //The string tracker.
         String_Tracker Current_Strings = new String_Tracker();
@@ -112,7 +119,64 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Update is called once per frame
         void Update()
         {
+            if (b_On_Field)
+            {
+                f_Timer += Time.deltaTime;
 
+
+                //check the timer for cooldown on attacks.
+                if (f_Timer > 3)
+                {
+                    //need to find the closest target in range.
+                    RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
+                    
+                    foreach (RaycastHit2D hit2 in Hits)
+                    {
+                        //Debug.Log(" obj " + hit2.collider.gameObject.name);
+
+                        if (hit2.collider.gameObject.tag == Current_Strings.Tag_Enemy)
+                        {
+                            //check if it's the closest one.
+                            if (The_Target != null)
+                            {
+                                //finds the closest one. Will add in more for lowest hp and such.
+                                if (Vector2.Distance(The_Target.transform.position,transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                                {
+                                    The_Target = hit2.collider.gameObject;
+                                }
+                            }
+                            else
+                            {
+                                The_Target = hit2.collider.gameObject;
+                            }
+                        }
+                        //transform.gameObject.SendMessage("GotHit", damage);
+                    }
+
+                    //target found that we are going to attack.
+                    if (The_Target != null)
+                    {
+                        f_Timer = 0;
+                        //then we need to attack and perform attack animation.
+
+                        //we will spawn out a attack and assign out the variable on it.
+                        GameObject New_Attack = Instantiate(Resources.Load(s_Attack_Prefab)) as GameObject;
+                        Vector3 Cur_Scale = New_Attack.transform.localScale;
+                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_From_Tower(The_Target);
+                        //the location/spawn of the attack is the parent since the object can move.
+                        New_Attack.transform.position = transform.parent.position;
+                        New_Attack.transform.parent = transform.parent;
+                        New_Attack.transform.localScale = Cur_Scale;
+                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                    }
+                    
+                    
+
+                    
+
+                }
+
+            }
         }
 
     }

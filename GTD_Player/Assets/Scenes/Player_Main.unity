@@ -374,6 +374,13 @@ MonoBehaviour:
   i_Max_HP: 0
   i_HP: 0
   i_Invintory_Space_Amount: 0
+  f_Zoom_Level: 1
+  b_Confirmation_Open: 0
+  b_Confirmation_True: 1
+  Confirmation_Objects: []
+  s_Confirmation_Action: none
+  Enemy_Spawns: []
+  Enemies_On_Field: []
   Tower_List: []
   Path_List: []
 --- !u!1 &1519815285
