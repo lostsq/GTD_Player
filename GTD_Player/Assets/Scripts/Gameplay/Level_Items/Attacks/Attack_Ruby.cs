@@ -2,11 +2,11 @@
 using System.Collections;
 using Assets.Scripts.Gameplay.Level_Items.Attacks;
 
-public class Attack_Tower_Ruby : Attack_Base {
+public class Attack_Ruby : Attack_Base {
+
 
 	// Use this for initialization
 	void Start () {
-        Setup_Base_Start();
         //RUBY SETUP
         Ruby_Setup();
     }
@@ -26,13 +26,25 @@ public class Attack_Tower_Ruby : Attack_Base {
     //Used to set up the desired effects for this attack/gem.
     void Ruby_Setup()
     {
+        //is enemy
+        if (b_Is_Enemy_Attack)
+        {
 
+        }
+        //is tower
+        else
+        {
+
+        }
     }
 
     void Ruby_Attack()
     {
-        //for now we'll have it deal 1000 damage to it's target.. basically 1 hit kill.
-        Target.GetComponent<Assets.Scripts.Gameplay.Level_Items.Enemy>().Deal_Damage(1000);
+        //will need to make sure the target is not null, might do that inside the base.
+
+
+        //we deal the damage.
+        Deal_Damage(Target);
         //destory the attack at the end.
         Destory_Attack();
     }

@@ -32,7 +32,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         //this is it's target
         GameObject The_Target = null;
 
-        public string s_Attack_Prefab;
+        public string s_Bullet_Prefab;
 
         //The string tracker.
         String_Tracker Current_Strings = new String_Tracker();
@@ -111,9 +111,12 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Use this for initialization
         void Start()
         {
-            Debug.Log("Working");
+            //Debug.Log("Working");
             //get the main script to connect to it/start calls in it when we are finished setting things up.
             //Main_Script = 
+
+            //this works for transparancy.
+            //this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
         }
 
         // Update is called once per frame
@@ -125,7 +128,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
 
                 //check the timer for cooldown on attacks.
-                if (f_Timer > 3)
+                if (f_Timer > .2f)
                 {
                     //need to find the closest target in range.
                     RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
@@ -160,9 +163,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
                         //then we need to attack and perform attack animation.
 
                         //we will spawn out a attack and assign out the variable on it.
-                        GameObject New_Attack = Instantiate(Resources.Load(s_Attack_Prefab)) as GameObject;
+                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
                         Vector3 Cur_Scale = New_Attack.transform.localScale;
-                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_From_Tower(The_Target);
+                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
                         //the location/spawn of the attack is the parent since the object can move.
                         New_Attack.transform.position = transform.parent.position;
                         New_Attack.transform.parent = transform.parent;

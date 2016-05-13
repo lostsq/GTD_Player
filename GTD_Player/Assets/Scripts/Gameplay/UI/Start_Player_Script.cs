@@ -158,7 +158,7 @@ public class Start_Player_Script : MonoBehaviour {
                     string Arg10 = Level_Items[i].Split('(')[1].Split(',')[9];
 
                     //create the enemy and add it to the main scripts list.
-                    GameObject New_Temp = new GameObject();
+                    //GameObject New_Temp = new GameObject();
                     //New_Temp.transform.position = new Vector3(-500, -500);
                     //New_Temp.AddComponent<Enemy>();
 
@@ -166,6 +166,10 @@ public class Start_Player_Script : MonoBehaviour {
                     Enemy New_Enemy = new Enemy();
                     //set up the new enemy as a spawner.
                     New_Enemy.Set_Enemy(Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10,true);
+
+                    //set up the bullet prefab location.
+                    New_Enemy.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + Arg1;
+                    //Debug.Log(New_Enemy.s_Bullet_Prefab);
 
                     //might need to create the item so it's not null and have it off screen.
                     New_Enemy.i_Location_In_Spawn_Array = Main_Script.Enemy_Spawns.Count;
@@ -213,6 +217,7 @@ public class Start_Player_Script : MonoBehaviour {
                         {
                             New_Item = Instantiate(Resources.Load(Current_Strings.Prefab_MI_Spots_Temple)) as GameObject;
                             New_Item.name = Current_Strings.Name_Map_Temple;
+                            New_Item.tag = Current_Strings.Tag_Finish_Temple;
                             New_Item.AddComponent<Map_Temple>();
                             New_Item.GetComponent<Map_Temple>().Map_Temple_Setup(Current_Strings.Name_Map_Temple, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;

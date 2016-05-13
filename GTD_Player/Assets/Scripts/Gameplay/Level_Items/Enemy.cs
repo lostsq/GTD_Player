@@ -39,6 +39,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_In_Progress = false;
         public int i_Location_In_Spawn_Array;
         public Enemy Parent_Spawner;
+
+        //bullet prefab.
+        public string s_Bullet_Prefab;
             
 
 
@@ -85,6 +88,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     go_New_Enemy.AddComponent<Enemy>();
                     Enemy New_Enemy = go_New_Enemy.GetComponent<Enemy>();
                     New_Enemy.Set_Enemy(s_Name, i_Wave_Number, i_HP, i_Speed, i_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
+                    New_Enemy.s_Bullet_Prefab = s_Bullet_Prefab;
                     New_Enemy.Parent_Spawner = this;//.gameObject.GetComponent<Enemy>();
 
                     GameObject Start = GameObject.Find(Current_Strings.Name_Map_Start);
@@ -132,12 +136,25 @@ namespace Assets.Scripts.Gameplay.Level_Items
             //Debug.Log(f_Spawn_Timer);
             f_Spawn_Timer += Time.deltaTime;
 
+            //make sure it's not a spawner.
             if (!b_Spawn_Tracker)
             {
+                GameObject The_Target = Check_For_Target_In_Range();
                 //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
-                if (Check_For_Target_In_Range())
+                if (The_Target != null)
                 {
-                    //found a target so we attack it.
+                    f_Spawn_Timer = 0;
+                    //then we need to attack and perform attack animation.
+
+                    //we will spawn out a attack and assign out the variable on it.
+                    GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                    Vector3 Cur_Scale = New_Attack.transform.localScale;
+                    New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
+                    //the location/spawn of the attack is the parent since the object can move.
+                    New_Attack.transform.position = transform.position;
+                    New_Attack.transform.parent = transform;
+                    New_Attack.transform.localScale = Cur_Scale;
+                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
                 }
                 else
                 {
@@ -147,13 +164,40 @@ namespace Assets.Scripts.Gameplay.Level_Items
         }
 
 
-        bool Check_For_Target_In_Range()
+    GameObject Check_For_Target_In_Range()
+    {
+        GameObject This_Target = null;
+        if (f_Spawn_Timer > .2f)
         {
-            bool Target_Found = false;
+            //need to find the closest target in range.
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
 
+            foreach (RaycastHit2D hit2 in Hits)
+            {
+                //Debug.Log(" obj " + hit2.collider.gameObject.name);
 
-            return Target_Found;
+                if (hit2.collider.gameObject.tag == Current_Strings.Tag_Finish_Temple)
+                {
+                    //check if it's the closest one.
+                    if (This_Target != null)
+                    {
+                        //finds the closest one. Will add in more for lowest hp and such.
+                        if (Vector2.Distance(This_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                        {
+                                This_Target = hit2.collider.gameObject;
+                        }
+                    }
+                    else
+                    {
+                            This_Target = hit2.collider.gameObject;
+                    }
+                }
+                //transform.gameObject.SendMessage("GotHit", damage);
+            }
         }
+
+        return This_Target;
+    }
 
         void Move_Enemy()
         {

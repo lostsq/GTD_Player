@@ -37,9 +37,8 @@
         Prefab_Enemy_Location = "Prefabs/Enemies/",
 
         //ATTACKS
-        Prefab_Attack_Tower_Location = "Prefabs/Attacks/Attack_Tower_",
-        Prefab_Attack_Enemy_Location = "Prefabs/Attacks/Attack_Enemy_",
-
+        Prefab_Attacks_Location = "Prefabs/Attacks/Attack_",
+        
         //MAP ITEMS
         Prefab_MI_Decorations_Location = "Prefabs/Enviroment/Decorations/",
         Prefab_MI_Spots_Start = "Prefabs/Enviroment/Map_Spots/Map_Spot_Start",

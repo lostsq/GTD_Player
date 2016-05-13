@@ -90,7 +90,7 @@ public class Player_Main_Script : MonoBehaviour {
                 New_Tower.s_Name = Locked_Gems.Locked_Gem_List[i].Name;
 
                 //set up the bullet/attack prefab here.
-                New_Tower.s_Attack_Prefab = Current_Strings.Prefab_Attack_Tower_Location + New_Tower.s_Name;
+                New_Tower.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + New_Tower.s_Name;
 
                 New_Tower.i_Exp_Level = Locked_Gems.Locked_Gem_List[i].i_Exp_Level;
                 New_Tower.i_Power_Levels = Locked_Gems.Locked_Gem_List[i].i_Power_Levels;
