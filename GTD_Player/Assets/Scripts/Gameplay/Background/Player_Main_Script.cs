@@ -99,6 +99,7 @@ public class Player_Main_Script : MonoBehaviour {
                 New_Tower.i_Speed_Amount = Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
                 New_Tower.i_Speed_Levels = Locked_Gems.Locked_Gem_List[i].i_Speed_Levels;
                 New_Tower.i_Speed_Amount = Locked_Gems.Locked_Gem_List[i].i_Speed_Amount;
+                New_Tower.f_Scale_Amount = Locked_Gems.Locked_Gem_List[i].f_Scale_Amount;
             }
         }
         //return the new tower that is created. we don't add since can be created during load or later when buying.
@@ -188,16 +189,40 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 //need to enable tower and move the main item.
                 Confirmation_Objects[1].GetComponent<Tower>().b_On_Field = true;
+                //set timer back to 0.
+                Confirmation_Objects[1].GetComponent<Tower>().f_Timer = 0;
+                //set target to null
+                Confirmation_Objects[1].GetComponent<Tower>().The_Target = null;
+                //set up the tag.
+                Confirmation_Objects[1].tag = Current_Strings.Tag_Tower_On_Map;
+                
+
+                //Ghost and object
+                Confirmation_Objects[1].transform.position = Confirmation_Objects[2].transform.position;
+                Confirmation_Objects[1].transform.parent = Confirmation_Objects[2].transform;
+                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[2].transform.localScale;
+                Confirmation_Objects[1].GetComponent<Animator>().SetBool("Attacking", false);
+
+                Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[2].transform.position;
+                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+
+                //sprite render stuff.
+                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //set the color to invis for the ghost..
+                Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                //Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder
+
             }
             //return the tower to the former location.
             else
             {
-                //the old parent, and the current item/ghost
-                Confirmation_Objects[1].transform.position = Confirmation_Objects[0].transform.position;
-                Confirmation_Objects[1].transform.parent = Confirmation_Objects[0].transform;
-                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[0].transform.localScale;
+                //ONLY THE GHOST.
+                Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[1].transform.position;
+                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
                 //sprite render stuff.
-                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //set the color to invis for the ghost..
+                Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
             }
         }
 
@@ -208,16 +233,33 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 //need to disable tower
                 Confirmation_Objects[1].GetComponent<Tower>().b_On_Field = false;
+                //set up the tag.
+                Confirmation_Objects[1].tag = Current_Strings.Tag_Tower;
+
+                //Ghost and object
+                Confirmation_Objects[1].transform.position = Confirmation_Objects[2].transform.position;
+                Confirmation_Objects[1].transform.parent = Confirmation_Objects[2].transform;
+                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[2].transform.localScale;
+                Confirmation_Objects[1].GetComponent<Animator>().SetBool("Attacking", false);
+
+                Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[2].transform.position;
+                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+
+                //sprite render stuff.
+                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //set the color to invis for the ghost..
+                Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
             }
-            //return the tower to the former location.
+            //return the ghost to the correct location.
             else
             {
-                //the old parent, and the current item/ghost
-                Confirmation_Objects[1].transform.position = Confirmation_Objects[0].transform.position;
-                Confirmation_Objects[1].transform.parent = Confirmation_Objects[0].transform;
-                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[0].transform.localScale;
+                //ONLY THE GHOST.
+                Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[1].transform.position;
+                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
                 //sprite render stuff.
-                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //set the color to invis for the ghost..
+                Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
             }
         }
 

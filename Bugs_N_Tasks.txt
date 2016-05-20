@@ -1,0 +1,34 @@
+
+
+Bugs:
+*Moving ghost to same spot not handeled well
+*Zooming in/out and then have ghost, doesn't scale correctly.
+*Zooming in/out causes bullets to move to the spot on field and not the correct scaled spot.
+*Can move gems slightly out of invintory box depending on where they are grabbed.
+*Gems don't stack in the invintory box/bag. Want them to stack slightly and newest one is always on top.
+
+
+
+
+Tasks:
+*Have confirmation message with text
+*Have confirm box above/below the spot, maybe center camera.
+*Get the Pause while confirm and menus are up going
+*Make enemies not all stack in the exact spot when they are attacking, have them spread out slightly
+*Get scale implemented for gem size
+*Get Bullet animation and sprite working
+*Get background for invintory
+*Get background for map/playing field placed down
+*Get Enemies side bar
+*Get Fuse menu
+*Get Purchase Menu
+*Make ending scene or something after temple dies
+*Get hp of temple and enemies displayed as a bar above/below them
+*Get hover over for gems and display stats
+*Need safegaurds for if the level doesn't load correct, maybe a master reset item.
+*Get the upgrade/levels working for gems
+*Get text on the UI placed down along with temple hp, energy and such at top
+
+
+
+

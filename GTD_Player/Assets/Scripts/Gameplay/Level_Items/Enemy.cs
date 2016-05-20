@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 
 namespace Assets.Scripts.Gameplay.Level_Items
 {
@@ -27,10 +27,16 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int i_Reward_Wave;
         public string s_Mod;
 
+        public float f_Scale_Amount = 1;
+
+
+        //the target it's targeting.
+        GameObject The_Target;
+
         //used for moving
         public GameObject Next_Spot;
         int i_Moving_Towards_Path_Number = 0;
-        
+
 
         //used for keeping track of waves.
         public bool b_Spawn_Tracker = true;
@@ -42,7 +48,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         //bullet prefab.
         public string s_Bullet_Prefab;
-            
+
 
 
         //Create the enemy with all the stats needed to get it going.
@@ -127,7 +133,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
         void Start()
         {
             //Debug.Log("Working");
-            
+            //set moving to start by default.
+            GetComponent<Animator>().SetBool("Moving", true);
         }
 
         // Update is called once per frame
@@ -139,65 +146,137 @@ namespace Assets.Scripts.Gameplay.Level_Items
             //make sure it's not a spawner.
             if (!b_Spawn_Tracker)
             {
-                GameObject The_Target = Check_For_Target_In_Range();
-                //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
-                if (The_Target != null)
+                //is attacking
+                if (GetComponent<Animator>().GetBool("Attacking"))
                 {
-                    f_Spawn_Timer = 0;
-                    //then we need to attack and perform attack animation.
-
-                    //we will spawn out a attack and assign out the variable on it.
-                    GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                    Vector3 Cur_Scale = New_Attack.transform.localScale;
-                    New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
-                    //the location/spawn of the attack is the parent since the object can move.
-                    New_Attack.transform.position = transform.position;
-                    New_Attack.transform.parent = transform;
-                    New_Attack.transform.localScale = Cur_Scale;
-                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
-                }
-                else
-                {
-                    Move_Enemy();
-                }
-            }
-        }
-
-
-    GameObject Check_For_Target_In_Range()
-    {
-        GameObject This_Target = null;
-        if (f_Spawn_Timer > .2f)
-        {
-            //need to find the closest target in range.
-            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
-
-            foreach (RaycastHit2D hit2 in Hits)
-            {
-                //Debug.Log(" obj " + hit2.collider.gameObject.name);
-
-                if (hit2.collider.gameObject.tag == Current_Strings.Tag_Finish_Temple)
-                {
-                    //check if it's the closest one.
-                    if (This_Target != null)
+                    //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
+                    if (The_Target != null)
                     {
-                        //finds the closest one. Will add in more for lowest hp and such.
-                        if (Vector2.Distance(This_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                        GetComponent<Animator>().SetBool("Moving", false);
+                        GetComponent<Animator>().SetBool("Attacking", true);
+
+                        if (Still_In_Range())
                         {
-                                This_Target = hit2.collider.gameObject;
+                            if (AnimatorIsPlaying(s_Name + "_Attack"))
+                            {
+                                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                {
+                                    
+                                        GetComponent<Animator>().SetBool("Moving", true);
+                                        GetComponent<Animator>().SetBool("Attacking", false);
+
+
+                                        f_Spawn_Timer = 0;
+                                        //then we need to attack and perform attack animation.
+
+                                        //we will spawn out a attack and assign out the variable on it.
+                                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                        Vector3 Cur_Scale = New_Attack.transform.localScale;
+                                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
+                                        //the location/spawn of the attack is the parent since the object can move.
+                                        New_Attack.transform.position = transform.position;
+                                        New_Attack.transform.parent = transform;
+                                        New_Attack.transform.localScale = Cur_Scale;
+                                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+
+
+                                        The_Target = null;
+                                    }
+                                }
+                            
+                        }
+                        else
+                        {
+                            GetComponent<Animator>().SetBool("Moving", true);
+                            GetComponent<Animator>().SetBool("Attacking", false);
+                           //Move_Enemy();
                         }
                     }
                     else
                     {
-                            This_Target = hit2.collider.gameObject;
+                        GetComponent<Animator>().SetBool("Moving", true);
+                        GetComponent<Animator>().SetBool("Attacking", false);
+                        //Move_Enemy();
                     }
                 }
-                //transform.gameObject.SendMessage("GotHit", damage);
+                else
+                {
+                    //if the target is null we check for one.
+                    if (The_Target == null)
+                    {
+                        The_Target = Check_For_Target_In_Range();
+                    }
+
+                    if (The_Target != null && Still_In_Range())
+                    {
+                        //the attack timer/speed of attack.
+                        if (f_Spawn_Timer > 1f)
+                        {
+                            GetComponent<Animator>().SetBool("Moving", false);
+                            GetComponent<Animator>().SetBool("Attacking", true);
+                        }
+                        //set it to a idle state since it's waiting to attack.
+                        else
+                        {
+                            GetComponent<Animator>().SetBool("Moving", false);
+                            GetComponent<Animator>().SetBool("Attacking", false);
+                        }
+                    }
+                    //either not in range or no target was found so we move.
+                    else
+                    {
+                        The_Target = null;
+                        GetComponent<Animator>().SetBool("Moving", true);
+                        GetComponent<Animator>().SetBool("Attacking", false);
+                        Move_Enemy();
+                    }
+                }
             }
         }
 
-        return This_Target;
-    }
+
+        GameObject Check_For_Target_In_Range()
+        {
+            GameObject This_Target = null;
+            
+                //need to find the closest target in range.
+                RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
+
+                foreach (RaycastHit2D hit2 in Hits)
+                {
+                    //Debug.Log(" obj " + hit2.collider.gameObject.name);
+
+                    if (hit2.collider.gameObject.tag == Current_Strings.Tag_Finish_Temple)
+                    {
+                        //check if it's the closest one.
+                        if (This_Target != null)
+                        {
+                            //finds the closest one. Will add in more for lowest hp and such.
+                            if (Vector2.Distance(This_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                            {
+                                This_Target = hit2.collider.gameObject;
+                            }
+                        }
+                        else
+                        {
+                            This_Target = hit2.collider.gameObject;
+                        }
+                    }
+                    //transform.gameObject.SendMessage("GotHit", damage);
+                }
+            
+
+            return This_Target;
+        }
+
+        bool Still_In_Range()
+        {
+            bool b_Results = true;
+
+
+
+            return b_Results;
+        }
 
         void Move_Enemy()
         {
@@ -210,15 +289,15 @@ namespace Assets.Scripts.Gameplay.Level_Items
             float t_distance = Vector2.Distance(transform.position, Next_Spot.transform.position);
 
             //the final spot has been reached so we set the temple as the last spot.
-            if (Main_Script.Path_List.Count == i_Moving_Towards_Path_Number+1)
+            if (Main_Script.Path_List.Count == i_Moving_Towards_Path_Number + 1)
             {
                 Next_Spot = GameObject.Find(Current_Strings.Name_Map_Temple);
             }
-            
+
             //check distance to make sure it's close before going to next spot.
             if (t_distance < (.01 * Main_Script.f_Zoom_Level))
             {
-                
+
                 for (int i = 0; i < Main_Script.Path_List.Count; i++)
                 {
                     if (Main_Script.Path_List[i].Path_Number == i_Moving_Towards_Path_Number + 1)
@@ -251,5 +330,11 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 Destroy(this.gameObject);
             }
         }
+
+        bool AnimatorIsPlaying(string stateName)
+        {
+            return GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        }
+
     }
 }

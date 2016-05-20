@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
+//using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Gameplay.Generic
@@ -36,6 +36,10 @@ namespace Assets.Scripts.Gameplay.Generic
         public int i_Range_Amount = 1;
         public int[] i_Speed_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Speed_Amount = 1;
+
+        //this is the scale of the tower, .4 for 1gem, .6 for 2gem, .8 for 3gem, 1 for 4gem.
+        public float f_Scale_Amount = 1;
+
         public string s_Prefab_Location;
     }
 
@@ -47,6 +51,7 @@ namespace Assets.Scripts.Gameplay.Generic
         {
             Name = "Ruby";
             Cost = 50;
+            f_Scale_Amount = .4f;
             s_Prefab_Location = Current_Strings.Prefab_Tower_Ruby;
             //sp_Tower_Sprite = UnityEngine.Object.Instantiate(Resources.Load(Current_Strings.Texture_Tower_Ruby)) as Sprite;
         }

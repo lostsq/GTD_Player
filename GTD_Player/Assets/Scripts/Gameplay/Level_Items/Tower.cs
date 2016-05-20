@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 
 namespace Assets.Scripts.Gameplay.Level_Items
 {
@@ -25,12 +25,15 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int i_Speed_Amount = 1;
 
 
-        float f_Timer = 0;
+        public float f_Scale_Amount = 1;
+
+
+        public float f_Timer = 0;
 
         //This is the tower.
         public GameObject This_Tower;
         //this is it's target
-        GameObject The_Target = null;
+        public GameObject The_Target = null;
 
         public string s_Bullet_Prefab;
 
@@ -108,6 +111,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         }
 
 
+
         // Use this for initialization
         void Start()
         {
@@ -116,12 +120,49 @@ namespace Assets.Scripts.Gameplay.Level_Items
             //Main_Script = 
 
             //this works for transparancy.
+            //we get the child/ghost and make it transparent.
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+            }
+           
             //this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
         }
 
         // Update is called once per frame
         void Update()
         {
+            /*
+            bool down = Input.GetKeyDown(KeyCode.Space);
+            bool held = Input.GetKey(KeyCode.Space);
+            bool up = Input.GetKeyUp(KeyCode.Space);
+
+            if (down)
+            {
+               
+                //GetComponent<Animator>().SetBool("Attacking", true);
+                
+            }
+            else if (held)
+            {
+                //graphic.texture = heldgfx;
+            }
+            else if (up)
+            {
+                GetComponent<Animator>().SetBool("Attacking", true);
+            }
+
+            if (AnimatorIsPlaying(s_Name + "_Attack"))
+            {
+                //if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length < GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime)
+                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                {
+                    //GetComponent<Animator>().SetBool("Attacking", false);
+                   // Debug.Log("End");
+                }
+            }
+            */
+
             if (b_On_Field)
             {
                 f_Timer += Time.deltaTime;
@@ -159,19 +200,34 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     //target found that we are going to attack.
                     if (The_Target != null)
                     {
-                        f_Timer = 0;
-                        //then we need to attack and perform attack animation.
+                        //set attacking to true.
+                        GetComponent<Animator>().SetBool("Attacking", true);
 
-                        //we will spawn out a attack and assign out the variable on it.
-                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                        Vector3 Cur_Scale = New_Attack.transform.localScale;
-                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
-                        //the location/spawn of the attack is the parent since the object can move.
-                        New_Attack.transform.position = transform.parent.position;
-                        New_Attack.transform.parent = transform.parent;
-                        New_Attack.transform.localScale = Cur_Scale;
-                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                        //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length + "T1");
+                        //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime + "T2");
+
+                        if (AnimatorIsPlaying(s_Name + "_Attack"))
+                        {
+                            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                            {
+                                //the the attack to false and timer to 0 to reset.
+                                GetComponent<Animator>().SetBool("Attacking", false);
+                                f_Timer = 0;
+                                
+                                //we will spawn out a attack and assign out the variable on it.
+                                GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                Vector3 Cur_Scale = New_Attack.transform.localScale;
+                                New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
+                                //the location/spawn of the attack is the parent since the object can move.
+                                New_Attack.transform.position = transform.parent.position;
+                                New_Attack.transform.parent = transform.parent;
+                                New_Attack.transform.localScale = Cur_Scale;
+                                New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                            }
+                        }
+
                     }
+                    
                     
                     
 
@@ -180,6 +236,11 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 }
 
             }
+        }
+
+        bool AnimatorIsPlaying(string stateName)
+        {
+            return GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(stateName);
         }
 
     }

@@ -9,10 +9,12 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
     //This is if dragging is occuring.
     bool b_Is_Dragging = false;
-    //used to know if a menu is open.
+    //used to know if a menu is open. if there is then the tower drag is changed.
     GameObject Cur_Open_Menu = null;
     //This is the object that we are working with when dragging.
     Collider2D Collider_Working_With = null;
+    //what it currently is over.
+    Collider2D Under_This = null;
 
 
     //used for dragging
@@ -44,8 +46,10 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //transform.Translate(Vector3.up * Input.GetAxis("Mouse ScrollWheel"));
 
         //setting the scroll for zoom and movement on menuss will need to add logic for mouse down with towers to return them to default spot or something.
-        if (Input.GetAxis("Mouse ScrollWheel") != 0)
+        if (Input.GetAxis("Mouse ScrollWheel") != 0 && Collider_Working_With == null)
         {
+            
+
             Collider_Working_With = null;
             Collider_Working_With = Find_Highest_Collider_At_Mouse(false);
 
@@ -72,11 +76,11 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
                 Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
                 //Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
-                Collider_Working_With = null;
+                
 
             }
 
-
+            Collider_Working_With = null;
         }
 
 
@@ -111,15 +115,17 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         }
 
         //Check and see if the left mouse click has been pressed down.
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
+            Debug.Log("Mouse Down");
             //Call the mouse down fired event.
             Mouse_Down_Fired();
         }
 
         //Check and see if the left mouse click as been released.
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
+            Debug.Log("Mouse Up");
             Mouse_Up_Fired();
         }
 
@@ -156,16 +162,106 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //check if tower or the map we are working with.
         if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower))
         {
-            //while moving a tower off of the field the orginal need to be kept in place while a ghost/phantom version is shown being moved around.
-            //THis is because we want to allow the tower to continue attacking while in the user is deciding where to move.
-            if ((Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_On_Map)))
+            //check if a menu is open/blocking screen like invintory and such.
+            if (Cur_Open_Menu == null)
             {
+                //ghost dragging.
+                Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                Vector2 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint);
 
+                Vector3 Update_Spot = curPosition - Pos_Start;
+                Update_Spot.Set(Update_Spot.x, Update_Spot.y, 0);
+
+                //check what is under it before we confirm placement.
+                Under_This = Find_Highest_Collider_At_Mouse(true);
+
+                //the sprite renderers.
+                SpriteRenderer Cur_SR = Collider_Working_With.gameObject.GetComponent<SpriteRenderer>();
+                SpriteRenderer Under_SR = null;
+                if (Under_This != null)
+                {
+                    Under_SR = Under_This.gameObject.GetComponent<SpriteRenderer>();
+                    
+                    
+                    //in the hotbox Need GHOST!
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
+                    {
+                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                        if (Old_Parent != null)
+                        {
+                            if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot))
+                            {
+                                b_Moving_Tower_Field = true;
+                            }
+                            else
+                            {
+                                b_Moving_Tower_Field = false;
+                            }
+                        }
+                        //nothing else in the hotbar.
+                        if (Under_This.gameObject.transform.childCount == 0)
+                        {
+                            //need to determain if it's moving around hotbar or going from map to hotbar.
+                            if (b_Moving_Tower_Field)
+                            {
+                                Pos_Start = Under_This.gameObject.transform.position;
+                                Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
+                                //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
+
+                                //not setting the parent yet.
+                                //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+
+
+                                Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.localScale;
+                                //sprite render stuff.
+                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
+                                //set ghost transparenty.
+                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
+                            }
+                            else
+                            {
+                                Pos_Start = Under_This.gameObject.transform.position;
+
+                                Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                                Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                                Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
+                                
+                                //sprite render stuff.
+                                Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+                                //set ghost transparenty.
+                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                            }
+                        }
+                    }
+                    //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+                    {
+                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                        b_Moving_Tower_Field = true;
+                        //nothing else in the hotbar.
+                        if (Under_This.gameObject.transform.childCount == 0)
+                        {
+                            //used for test
+                            //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
+
+                            Pos_Start = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
+                            //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                            Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
+                            //sprite render stuff.
+                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
+                            //Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+
+                            //set ghost transparenty.
+                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
+                        }
+                    }
+
+                }
             }
-            //not on map so we can move freely.
+            //non-ghost dragging.
             else
             {
-
                 Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
                 Vector2 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint);
 
@@ -282,34 +378,9 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         if (Highest_Collider != null)
         {
             //we now wait for a mouse up to perform actions or a drag so we have our object we are interacting with.
-
             //get the vector 3 of the spot the mouse is at in the world.
             Pos_Start = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             Collider_Working_With = Highest_Collider;
-
-
-
-            /*
-
-            //now with this collider we just need to determain if it's a button,object,ect.
-            //we will check to see what information the tag contains.
-            string s_Tag = Highest_Collider.gameObject.tag;
-
-            //Now we check if the tag contains what information.
-            if (s_Tag.Contains(G_Tags.Tag_Button))
-            {
-                //is a menu type object so we will pass it to the menu click.
-                Button_Handler.Button_Called(Highest_Collider);
-            }
-
-            if (s_Tag.Contains(G_Tags.Tag_Drag))
-            {
-                //is a menu type object so we will pass it to the menu click.
-                Dragable_Object(Highest_Collider);
-            }
-
-            */
-
         }
     }
 
@@ -331,9 +402,11 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //enable the confirmation
                 Main_Script.b_Confirmation_Open = true;
                 //get the from spot and the tower we are moving.
-                Main_Script.Confirmation_Objects = new GameObject[2]{Old_Parent, Collider_Working_With.gameObject};
+                Main_Script.Confirmation_Objects = new GameObject[3]{Old_Parent, Collider_Working_With.gameObject, Under_This.gameObject};
+               
+                
                 //set the action for if it is good.
-                if (Collider_Working_With.transform.parent.gameObject.tag.Contains(Current_Strings.Tag_Hotbar_Spot))
+                if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot) && Under_This.gameObject.tag.Contains(Current_Strings.Tag_Hotbar_Spot))
                 {
                     Main_Script.s_Confirmation_Action = Current_Strings.Confirm_Tower_To_Hotbar;
                 }
@@ -348,19 +421,22 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         }
         else
         {
-            //since not dragging we will check if the click is still on top of the item they are clicking.
-            if (Collider_Working_With == Find_Highest_Collider_At_Mouse(true))
+            if (Collider_Working_With != null)
             {
-                //now we perform each clicks items be them a tower click, button click, ect.
-
-                //BUTTONS
-                if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Part_Button))
+                //since not dragging we will check if the click is still on top of the item they are clicking.
+                if (Collider_Working_With == Find_Highest_Collider_At_Mouse(true))
                 {
-                    //press the button that was clicked.
-                    Button_Clicked(Collider_Working_With);
+                    //now we perform each clicks items be them a tower click, button click, ect.
+
+                    //BUTTONS
+                    if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Part_Button))
+                    {
+                        //press the button that was clicked.
+                        Button_Clicked(Collider_Working_With);
+                    }
+
+                    //TOWERS
                 }
-                
-                //TOWERS
             }
 
         }
@@ -368,6 +444,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //Set Defaults
         b_Is_Dragging = false;
         Collider_Working_With = null;
+        Under_This = null;
         b_Moving_Tower_Field = false;
         if (!Main_Script.b_Confirmation_Open)
         {

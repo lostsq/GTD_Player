@@ -41,12 +41,17 @@ public class Attack_Ruby : Attack_Base {
     void Ruby_Attack()
     {
         //will need to make sure the target is not null, might do that inside the base.
-
-
-        //we deal the damage.
-        Deal_Damage(Target);
-        //destory the attack at the end.
-        Destory_Attack();
+        if (Target == null)
+        {
+            Destory_Attack();
+        }
+        else
+        { 
+            //we deal the damage.
+            Deal_Damage(Target);
+            //destory the attack at the end.
+            Destory_Attack();
+        }
     }
 
    
