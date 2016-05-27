@@ -13,6 +13,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     GameObject Cur_Open_Menu = null;
     //This is the object that we are working with when dragging.
     Collider2D Collider_Working_With = null;
+    Vector2 Scale_Working_With_Collider = new Vector2(1, 1);
     //what it currently is over.
     Collider2D Under_This = null;
 
@@ -181,82 +182,106 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 if (Under_This != null)
                 {
                     Under_SR = Under_This.gameObject.GetComponent<SpriteRenderer>();
-                    
-                    
-                    //in the hotbox Need GHOST!
-                    if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
+
+                    //check if the item under it is the last spot it was in.
+                    if (Under_This.gameObject == Collider_Working_With.gameObject)
                     {
-                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
-                        if (Old_Parent != null)
+                        //set ghost transparenty.
+                        Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                        b_Moving_Tower_Field = false;
+                    }
+                    else
+                    {
+                        //in the hotbox Need GHOST!
+                        if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
                         {
-                            if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot))
+                            //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                            if (Old_Parent != null)
                             {
-                                b_Moving_Tower_Field = true;
+                                if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot))
+                                {
+                                    b_Moving_Tower_Field = true;
+                                }
+                                else
+                                {
+                                    b_Moving_Tower_Field = false;
+                                }
                             }
-                            else
+                            //nothing else in the hotbar.
+                            if (Under_This.gameObject.transform.childCount == 0)
                             {
-                                b_Moving_Tower_Field = false;
+                                //need to determain if it's moving around hotbar or going from map to hotbar.
+                                if (b_Moving_Tower_Field)
+                                {
+                                    Pos_Start = Under_This.gameObject.transform.position;
+                                    Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
+                                    //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
+
+                                    //not setting the parent yet.
+                                    //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+
+                                    //going from field to hotbar. need to adjust the scale.
+                                    //ghosts scale is 1 and it just follows what it's parent is.. so we need to calculate what it should be.
+                                    //take the map spot parent (eg .8), the scale (.5) and make it into 1.2 so the new scale should be .6 for the ghost..
+                                    //but since the ghost is 1 it needs to be changed.
+                                    //Debug.Log(Collider_Working_With.transform.parent.parent.localScale.x);
+
+                                    //set the ghost's scale by taking what's under it's local scall and parent's local scale and timesing them together.
+                                    float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x / Collider_Working_With.transform.parent.parent.localScale.x;
+                                    Collider_Working_With.gameObject.transform.GetChild(0).transform.localScale = new Vector2(t_scale, t_scale);
+
+                                    //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.localScale;
+                                    //sprite render stuff.
+                                    Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
+                                    //set ghost transparenty.
+                                    Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
+                                }
+                                else
+                                {
+                                    Pos_Start = Under_This.gameObject.transform.position;
+
+                                    Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                                    Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                                    Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
+
+                                    
+                                    //sprite render stuff.
+                                    Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+                                    //set ghost transparenty.
+                                    Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                                }
                             }
                         }
-                        //nothing else in the hotbar.
-                        if (Under_This.gameObject.transform.childCount == 0)
+                        //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
+                        if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
                         {
-                            //need to determain if it's moving around hotbar or going from map to hotbar.
-                            if (b_Moving_Tower_Field)
+                            //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
+                            b_Moving_Tower_Field = true;
+                            //nothing else in the hotbar.
+                            if (Under_This.gameObject.transform.childCount == 0)
                             {
+                                //used for test
+                                //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
+
                                 Pos_Start = Under_This.gameObject.transform.position;
                                 Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
-                                //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
-
-                                //not setting the parent yet.
                                 //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
 
+                                //set the ghost's scale by taking what's under it's local scall and parent's local scale and timesing them together.
+                                //float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x;// * Collider_Working_With.gameObject.transform.localScale.x;
+                                float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x / Collider_Working_With.transform.parent.parent.localScale.x;
 
-                                Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.localScale;
+                                Collider_Working_With.gameObject.transform.GetChild(0).transform.localScale = new Vector2(t_scale, t_scale);
+
                                 //sprite render stuff.
                                 Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
+                                //Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+
                                 //set ghost transparenty.
                                 Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
                             }
-                            else
-                            {
-                                Pos_Start = Under_This.gameObject.transform.position;
-
-                                Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
-                                Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                                Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
-                                
-                                //sprite render stuff.
-                                Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
-                                //set ghost transparenty.
-                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
-                            }
                         }
                     }
-                    //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
-                    if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
-                    {
-                        //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
-                        b_Moving_Tower_Field = true;
-                        //nothing else in the hotbar.
-                        if (Under_This.gameObject.transform.childCount == 0)
-                        {
-                            //used for test
-                            //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
-
-                            Pos_Start = Under_This.gameObject.transform.position;
-                            Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
-                            //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                            Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
-                            //sprite render stuff.
-                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
-                            //Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
-
-                            //set ghost transparenty.
-                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
-                        }
-                    }
-
                 }
             }
             //non-ghost dragging.
@@ -282,8 +307,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                     {
                         Pos_Start = curPosition;
                         Collider_Working_With.gameObject.transform.position += Update_Spot;
-                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                        Collider_Working_With.gameObject.transform.localScale = new Vector3(1,1);
+                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform.parent;
+                        Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
                         //sprite render stuff.
                         Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                     }
@@ -310,7 +335,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                             Pos_Start = Under_This.gameObject.transform.position;
                             Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
                             Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                            Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
+                            Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
                             //sprite render stuff.
                             Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                         }
@@ -329,7 +354,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                             Pos_Start = Under_This.gameObject.transform.position;
                             Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
                             Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                            Collider_Working_With.gameObject.transform.localScale = Under_This.gameObject.transform.localScale;
+                            Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
                             //sprite render stuff.
                             Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                         }
@@ -381,6 +406,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             //get the vector 3 of the spot the mouse is at in the world.
             Pos_Start = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
             Collider_Working_With = Highest_Collider;
+            Scale_Working_With_Collider = Highest_Collider.transform.localScale;
         }
     }
 

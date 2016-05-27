@@ -96,10 +96,12 @@ public class Player_Main_Script : MonoBehaviour {
                 New_Tower.i_Power_Levels = Locked_Gems.Locked_Gem_List[i].i_Power_Levels;
                 New_Tower.i_Power_Amount = Locked_Gems.Locked_Gem_List[i].i_Power_Amount;
                 New_Tower.i_Range_Levels = Locked_Gems.Locked_Gem_List[i].i_Range_Levels;
-                New_Tower.i_Speed_Amount = Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
+                New_Tower.i_Range_Amount = Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
                 New_Tower.i_Speed_Levels = Locked_Gems.Locked_Gem_List[i].i_Speed_Levels;
                 New_Tower.i_Speed_Amount = Locked_Gems.Locked_Gem_List[i].i_Speed_Amount;
                 New_Tower.f_Scale_Amount = Locked_Gems.Locked_Gem_List[i].f_Scale_Amount;
+
+                //go_New_Tower.transform.localScale = new Vector2(New_Tower.f_Scale_Amount, New_Tower.f_Scale_Amount);
             }
         }
         //return the new tower that is created. we don't add since can be created during load or later when buying.
@@ -200,11 +202,11 @@ public class Player_Main_Script : MonoBehaviour {
                 //Ghost and object
                 Confirmation_Objects[1].transform.position = Confirmation_Objects[2].transform.position;
                 Confirmation_Objects[1].transform.parent = Confirmation_Objects[2].transform;
-                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[2].transform.localScale;
+                Confirmation_Objects[1].transform.localScale = new Vector2(Confirmation_Objects[1].GetComponent<Tower>().f_Scale_Amount, Confirmation_Objects[1].GetComponent<Tower>().f_Scale_Amount);
                 Confirmation_Objects[1].GetComponent<Animator>().SetBool("Attacking", false);
 
                 Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[2].transform.position;
-                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+                //Confirmation_Objects[1].transform.GetChild(0).parent = Confirmation_Objects[1].transform;
 
                 //sprite render stuff.
                 Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 2;
@@ -218,7 +220,7 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 //ONLY THE GHOST.
                 Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[1].transform.position;
-                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+                //Confirmation_Objects[1].transform.GetChild(0).parent = Confirmation_Objects[1].transform;
                 //sprite render stuff.
                 //Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
                 //set the color to invis for the ghost..
@@ -239,11 +241,11 @@ public class Player_Main_Script : MonoBehaviour {
                 //Ghost and object
                 Confirmation_Objects[1].transform.position = Confirmation_Objects[2].transform.position;
                 Confirmation_Objects[1].transform.parent = Confirmation_Objects[2].transform;
-                Confirmation_Objects[1].transform.localScale = Confirmation_Objects[2].transform.localScale;
+                Confirmation_Objects[1].transform.localScale = new Vector2(Confirmation_Objects[1].GetComponent<Tower>().f_Scale_Amount, Confirmation_Objects[1].GetComponent<Tower>().f_Scale_Amount);
                 Confirmation_Objects[1].GetComponent<Animator>().SetBool("Attacking", false);
 
                 Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[2].transform.position;
-                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+                //Confirmation_Objects[1].transform.GetChild(0).parent = Confirmation_Objects[1].transform;
 
                 //sprite render stuff.
                 Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 2;
@@ -255,7 +257,7 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 //ONLY THE GHOST.
                 Confirmation_Objects[1].transform.GetChild(0).position = Confirmation_Objects[1].transform.position;
-                Confirmation_Objects[1].transform.GetChild(0).localScale = Confirmation_Objects[1].transform.localScale;
+                //Confirmation_Objects[1].transform.GetChild(0).parent = Confirmation_Objects[1].transform;
                 //sprite render stuff.
                 //Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[0].GetComponent<SpriteRenderer>().sortingOrder + 2;
                 //set the color to invis for the ghost..

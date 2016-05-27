@@ -24,7 +24,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int[] i_Speed_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Speed_Amount = 1;
 
-
+        //this is the size of the gem.
         public float f_Scale_Amount = 1;
 
 
@@ -39,6 +39,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         //The string tracker.
         String_Tracker Current_Strings = new String_Tracker();
+        Player_Main_Script Main_Script;
 
         /*
         //we create the tower and return that tower that is created.
@@ -99,11 +100,13 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 transform.position = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.GetChild(Current).transform.position;//new Vector2(0,0);
             }
 
-            //set the scale. we use the first child since any child will have the same scale.
-            transform.localScale = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.GetChild(0).transform.localScale;
+            //set the scale.
+            transform.localScale = new Vector2(f_Scale_Amount, f_Scale_Amount);
 
             //set the parent of the tower.
             transform.parent = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform;
+
+            
 
 
             //set the layering to be + 1 of the field.
@@ -117,7 +120,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         {
             //Debug.Log("Working");
             //get the main script to connect to it/start calls in it when we are finished setting things up.
-            //Main_Script = 
+            Main_Script = GameObject.Find(Current_Strings.Name_Main_Script_Holder).GetComponent<Player_Main_Script>();
 
             //this works for transparancy.
             //we get the child/ghost and make it transparent.
@@ -172,8 +175,11 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 if (f_Timer > .2f)
                 {
                     //need to find the closest target in range.
-                    RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
-                    
+                    RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
+                    //Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), 0), Color.red);
+
+                    //RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4, new Vector3(0, 0, 0));
+
                     foreach (RaycastHit2D hit2 in Hits)
                     {
                         //Debug.Log(" obj " + hit2.collider.gameObject.name);

@@ -15,6 +15,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         float f_Spawn_Timer = 0;
         int i_Spawn_Inbetween = 1;
 
+        //this is to make them not stack and give a little randomness.
+        float f_Random_x;
+        float f_Random_y;
+
         //variables
         public string s_Name;
         public int i_Wave_Number;
@@ -27,6 +31,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int i_Reward_Wave;
         public string s_Mod;
 
+        public int i_Range;
+
+        //this is the size of the gem.
         public float f_Scale_Amount = 1;
 
 
@@ -54,6 +61,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         //Create the enemy with all the stats needed to get it going.
         public void Set_Enemy(string p_Name, int p_Wave_Number, int p_HP, int p_Speed, int p_Power, int p_Amount, int p_Start_After, int p_Reward_Single, int p_Reward_Wave, string p_Mod, bool b_Is_Spawner)
         {
+            //get the main script to connect to it/start calls in it when we are finished setting things up.
+            Main_Script = GameObject.Find(Current_Strings.Name_Main_Script_Holder).GetComponent<Player_Main_Script>();
+
             s_Name = p_Name;
             i_Wave_Number = p_Wave_Number;
             i_HP = p_HP;
@@ -65,13 +75,23 @@ namespace Assets.Scripts.Gameplay.Level_Items
             i_Reward_Wave = p_Reward_Wave;
             s_Mod = p_Mod;
 
+            //set the scale by comparing against the locked gems. if it's not in there we set/keep at one.
+            for (int i = 0; i < Main_Script.Locked_Gems.Locked_Gem_List.Count; i++)
+            {
+                //all locked gems can also be enemies so we use that list to also check for scales/sizes.
+                if (Main_Script.Locked_Gems.Locked_Gem_List[i].Name == s_Name)
+                {
+                    f_Scale_Amount = Main_Script.Locked_Gems.Locked_Gem_List[i].f_Scale_Amount;
+                    i_Range = Main_Script.Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
+                }
+            }
+
             if (!b_Is_Spawner)
             {
                 b_Spawn_Tracker = false;
             }
 
-            //get the main script to connect to it/start calls in it when we are finished setting things up.
-            Main_Script = GameObject.Find(Current_Strings.Name_Main_Script_Holder).GetComponent<Player_Main_Script>();
+            
 
         }
 
@@ -97,15 +117,20 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     New_Enemy.s_Bullet_Prefab = s_Bullet_Prefab;
                     New_Enemy.Parent_Spawner = this;//.gameObject.GetComponent<Enemy>();
 
+                    
+
+                    New_Enemy.f_Random_x = UnityEngine.Random.Range(-.5f, .5f);
+                    New_Enemy.f_Random_y = UnityEngine.Random.Range(-.5f, .5f);
+
                     GameObject Start = GameObject.Find(Current_Strings.Name_Map_Start);
 
-                    Vector3 Cur_Scal = go_New_Enemy.transform.localScale;
+                    
 
                     //Set the enemy at the start.
                     go_New_Enemy.transform.position = Start.transform.position;
                     go_New_Enemy.transform.parent = Start.transform;
                     //scale must be set under parent or else it doesn't work right. above and if you scroll in/out it messes it up and set it to 0.
-                    go_New_Enemy.transform.localScale = Cur_Scal;// Start.transform.localScale;
+                    go_New_Enemy.transform.localScale = new Vector2(f_Scale_Amount,f_Scale_Amount);// Start.transform.localScale;
 
                     //set the next spot to be the first spot they move towards.
                     for (int i = 0; i < Main_Script.Path_List.Count; i++)
@@ -161,35 +186,36 @@ namespace Assets.Scripts.Gameplay.Level_Items
                             {
                                 if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
                                 {
-                                    
-                                        GetComponent<Animator>().SetBool("Moving", true);
-                                        GetComponent<Animator>().SetBool("Attacking", false);
+
+                                    GetComponent<Animator>().SetBool("Moving", true);
+                                    GetComponent<Animator>().SetBool("Attacking", false);
 
 
-                                        f_Spawn_Timer = 0;
-                                        //then we need to attack and perform attack animation.
+                                    f_Spawn_Timer = 0;
+                                    //then we need to attack and perform attack animation.
 
-                                        //we will spawn out a attack and assign out the variable on it.
-                                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                                        Vector3 Cur_Scale = New_Attack.transform.localScale;
-                                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
-                                        //the location/spawn of the attack is the parent since the object can move.
-                                        New_Attack.transform.position = transform.position;
-                                        New_Attack.transform.parent = transform;
-                                        New_Attack.transform.localScale = Cur_Scale;
-                                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                    //we will spawn out a attack and assign out the variable on it.
+                                    GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                    Vector3 Cur_Scale = New_Attack.transform.localScale;
+                                    New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
+                                    New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
+                                    //the location/spawn of the attack is the parent since the object can move.
+                                    New_Attack.transform.position = transform.position;
+                                    New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
+                                    New_Attack.transform.localScale = Cur_Scale;
+                                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
 
-                                        The_Target = null;
-                                    }
+                                    The_Target = null;
                                 }
-                            
+                            }
+
                         }
                         else
                         {
                             GetComponent<Animator>().SetBool("Moving", true);
                             GetComponent<Animator>().SetBool("Attacking", false);
-                           //Move_Enemy();
+                            //Move_Enemy();
                         }
                     }
                     else
@@ -238,9 +264,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         GameObject Check_For_Target_In_Range()
         {
             GameObject This_Target = null;
-            
-                //need to find the closest target in range.
-                RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4f, new Vector3(0, 0, 0));
+
+            //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x + (f_Random_x * f_Scale_Amount)) , new Vector3(0, 0, 0));
 
                 foreach (RaycastHit2D hit2 in Hits)
                 {
@@ -271,22 +297,35 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         bool Still_In_Range()
         {
-            bool b_Results = true;
+            bool b_Results = false;
 
+            //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
 
+            foreach (RaycastHit2D hit2 in Hits)
+            {
+
+                if (hit2.collider == The_Target.GetComponent<Collider2D>())
+                {
+                    b_Results = true;
+                }
+
+            }
 
             return b_Results;
         }
 
         void Move_Enemy()
         {
+            //this is where we are trying to go. adding in the random amount to decrease stacking.
+            Vector2 Move_Here = new Vector2(Next_Spot.transform.position.x + (f_Random_x * f_Scale_Amount), Next_Spot.transform.position.y + (f_Random_y * f_Scale_Amount));
+
             // Next_Spot
-            transform.position = Vector2.MoveTowards(transform.position, Next_Spot.transform.position, ((i_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
+            transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((i_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
             //check and see if it is at it's next spot, and if so we set up the next spot at the parent and the next next spot.
 
             //need to have it close but not exact cause times it won't fall right on it.
-
-            float t_distance = Vector2.Distance(transform.position, Next_Spot.transform.position);
+            float t_distance = Vector2.Distance(transform.position, Move_Here);
 
             //the final spot has been reached so we set the temple as the last spot.
             if (Main_Script.Path_List.Count == i_Moving_Towards_Path_Number + 1)
@@ -311,7 +350,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         }
 
         //Is called when this enemy is taken damage.
-        public void Deal_Damage(int i_Damage_Taken)
+        public void Take_Damage(int i_Damage_Taken)
         {
             i_HP -= i_Damage_Taken;
             if (i_HP <= 0)

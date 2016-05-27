@@ -53,6 +53,7 @@ namespace Assets.Scripts.Gameplay.Generic
             Cost = 50;
             f_Scale_Amount = .4f;
             s_Prefab_Location = Current_Strings.Prefab_Tower_Ruby;
+            i_Range_Amount = 4;
             //sp_Tower_Sprite = UnityEngine.Object.Instantiate(Resources.Load(Current_Strings.Texture_Tower_Ruby)) as Sprite;
         }
     }
