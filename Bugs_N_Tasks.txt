@@ -10,9 +10,6 @@ Bugs:
 *Can move gems slightly out of invintory box depending on where they are grabbed.
 *Gems don't stack in the invintory box/bag. Want them to stack slightly and newest one is always on top.
 
-
-http://imgur.com/gallery/ONKdhW4 
-
 Tasks:
 (Done)*Get scale implemented for gem size for towers
 (Done)*Give enemy gems a random number for extra range and y and x for moving so they don't stack.

@@ -49,6 +49,7 @@
      <Compile Include="Assets\Scripts\Gameplay\Background\Player_Main_Script.cs" />
      <Compile Include="Assets\Scripts\Gameplay\Generic\Locked_Gems.cs" />
      <Compile Include="Assets\Scripts\Gameplay\Generic\String_Tracker.cs" />
+     <Compile Include="Assets\Scripts\Gameplay\Generic\Text_Order.cs" />
      <Compile Include="Assets\Scripts\Gameplay\Level_Items\Attacks\Attack_Base.cs" />
      <Compile Include="Assets\Scripts\Gameplay\Level_Items\Attacks\Attack_Ruby.cs" />
      <Compile Include="Assets\Scripts\Gameplay\Level_Items\Enemy.cs" />
