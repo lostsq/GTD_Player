@@ -14,6 +14,8 @@ Tasks:
 (Done)*Get scale implemented for gem size for towers
 (Done)*Give enemy gems a random number for extra range and y and x for moving so they don't stack.
 (Done)*Get scale implemented for gem size for enemies
+(Started)*Get hover over for gems and display stats
+*Give exp to towers, going to be shared exp so more towers = less exp for each tower and such.
 *Have confirmation message with text
 *Have confirm box above/below the spot, maybe center camera.
 *Get the Pause while confirm and menus are up going
@@ -27,7 +29,6 @@ Tasks:
 *Get Purchase Menu
 *Make ending scene or something after temple dies
 *Get hp of temple and enemies displayed as a bar above/below them
-*Get hover over for gems and display stats
 *Need safegaurds for if the level doesn't load correct, maybe a master reset item.
 *Get the upgrade/levels working for gems
 *Get text on the UI placed down along with temple hp, energy and such at top

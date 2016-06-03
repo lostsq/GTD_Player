@@ -17,6 +17,9 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     //what it currently is over.
     Collider2D Under_This = null;
 
+    //are we just hovering?
+    bool Hovering = true;
+
 
     //used for dragging
     Vector2 V_Offset;
@@ -36,6 +39,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        Hovering = true;
 
         //Process
         //Use clicks, we check if they are over something that is dragable.
@@ -91,6 +95,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //Check if Collider_Working_With is not null.
         if (Collider_Working_With != null && !b_Is_Dragging)
         {
+            Hovering = false;
             //Debug.Log(Collider_Working_With.gameObject.tag);
             //check if it's a tower or map spot.
             if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Part_Drag))
@@ -105,6 +110,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //First we check to see if the mouse is being dragged.
         if (b_Is_Dragging)
         {
+            Hovering = false;
+
             Running_GUI = false;
             //the dragging event is fired.
             Mouse_Dragging_Fired();
@@ -118,6 +125,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //Check and see if the left mouse click has been pressed down.
         if (Input.GetMouseButtonDown(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
+            Hovering = false;
+
             Debug.Log("Mouse Down");
             //Call the mouse down fired event.
             Mouse_Down_Fired();
@@ -126,8 +135,24 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //Check and see if the left mouse click as been released.
         if (Input.GetMouseButtonUp(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
+            Hovering = false;
+
             Debug.Log("Mouse Up");
             Mouse_Up_Fired();
+        }
+
+
+        //this is for hovering over a tower or enemy.
+        //first we need to check if the collider is null, if it is then we can hover.
+        if (Hovering == true)
+        {
+            //scan for a collider and if it's a tower we enable to hover/stats.
+            Main_Script.Hover_Collider = Find_Highest_Collider_At_Mouse(false);
+        }
+        else
+        {
+            //set the collider to null so it doesn't show up.
+            Main_Script.Hover_Collider = null;
         }
 
 

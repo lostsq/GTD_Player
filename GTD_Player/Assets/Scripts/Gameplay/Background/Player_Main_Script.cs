@@ -41,6 +41,9 @@ public class Player_Main_Script : MonoBehaviour {
     public GameObject[,] Map_Spaces;
     public List<Map_Path> Path_List = new List<Map_Path>();
 
+    //the hover collider
+    public Collider2D Hover_Collider = null;
+
 
     // Use this for initialization
     void Start () {
@@ -69,7 +72,113 @@ public class Player_Main_Script : MonoBehaviour {
             Update_Spawn();
         }
 
+
+        //for the hover action.
+        if (Hover_Collider != null)
+        {
+            //we perform hover check.
+            Hover_Box();
+        }
+        else
+        {
+            //we reset the hoverbox to it's default spot.
+            GameObject.Find(Current_Strings.Name_Hover_Click_Text).transform.position = new Vector3(500, 500);
+        }
+
 	}
+
+
+
+
+    //This is fired when we can hover a box over a gameobject. the object is passed.
+    void Hover_Box()
+    {
+        if (Hover_Collider != null)
+        {
+            GameObject Hover_This = Hover_Collider.gameObject;
+            GameObject Hover_Box = GameObject.Find(Current_Strings.Name_Hover_Click_Box);
+
+            //first we determin if it's a tower or a enemy.
+            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower))
+            {
+                //setup steps.
+                //Set the text
+                //Remove text from parent
+                //reset text 2d collider
+                //take (text.col.x * text.scale.x)/ hoverbox.scale.x and make the hoverbox.scale.x that value plus some padding.
+                //apply the text as a child again.
+
+
+                //set the text
+                string Text_To_Place = "";
+                Text_To_Place += "(L"+Hover_This.GetComponent<Tower>().i_Level+ ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
+                Text_To_Place += "Speed: " + Hover_This.GetComponent<Tower>().i_Speed_Amount + "\n";
+                Text_To_Place += "Power: " + Hover_This.GetComponent<Tower>().i_Power_Amount + "\n";
+                Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().i_Range_Amount + "\n";
+                Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
+                Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
+
+                Hover_Box.transform.GetChild(0).GetComponent<TextMesh>().text = Text_To_Place;
+
+                Destroy(Hover_Box.transform.GetChild(0).GetComponent<BoxCollider2D>());
+                Hover_Box.transform.GetChild(0).gameObject.AddComponent<BoxCollider2D>();
+                Hover_Box.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+
+
+
+                //set the scale based on the size of the text in the box.
+                float Temp_SizeHx = Hover_Box.transform.GetChild(0).GetComponent<BoxCollider2D>().size.x * Hover_Box.transform.GetChild(0).localScale.x;
+                //Hover_This.GetComponent<BoxCollider2D>().size = Temp_SizeHx;
+
+                //now need to find if there is more space to the left or right the unit for placing the hover box.
+                Vector2 Box_Placement = Hover_This.transform.position;
+
+                Vector2 GOpix = Camera.main.WorldToScreenPoint(Hover_This.transform.position);
+
+                float Bx1 = (Hover_This.GetComponent<BoxCollider2D>().size.x / 2) * Hover_This.transform.localScale.x;
+                float Bx2 = (Hover_Box.GetComponent<BoxCollider2D>().size.x / 2) * Hover_Box.transform.localScale.x;
+
+                float By1 = (Hover_This.GetComponent<BoxCollider2D>().size.y / 2) * Hover_This.transform.localScale.y;
+                float By2 = (Hover_Box.GetComponent<BoxCollider2D>().size.y / 2) * Hover_Box.transform.localScale.y;
+
+
+                //x is bigger than half the screen we place it on the right.
+                if (GOpix.x < ((float)Screen.width /2))
+                {
+                    Box_Placement.x += Bx1 + Bx2;
+                }
+                //else it goes on the left side.
+                else
+                {
+                    Box_Placement.x -= (Bx1 + Bx2);
+                }
+
+                //set up the y spot.
+                
+                if (GOpix.y < ((float)Screen.height / 2))
+                {
+                    Box_Placement.y += By1 + By2;
+                }
+                //else it goes on the left side.
+                else
+                {
+                    Box_Placement.y -= (By1 + By2);
+                }
+
+                Hover_Box.transform.position = Box_Placement;
+            }
+            else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
+            {
+
+            }
+            else
+            {
+                //nothing happens since it's not a tower or enemy.
+                //we reset the hoverbox to it's default spot.
+                GameObject.Find(Current_Strings.Name_Hover_Click_Text).transform.position = new Vector3(500, 500);
+            }
+        }
+    }
 
 
     //we create the tower and return that tower that is created.

@@ -12,10 +12,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_On_Field = false;
         bool b_Fused = false;
         public string s_Name = "Null";
-        int i_Level = 0;
-        int i_Spending_Points = 0;
+        public int i_Level = 0;
+        public int i_Spending_Points = 0;
         public int i_exp = 0;
-        public int[] i_Exp_Level = new int[] {10,100,100,100,100,100,100,100,10,10 };
+        public int[] i_Exp_Level = new int[] {10,100,100,100,100,100,100,100,10,10,0 };
         //10 levels is MAX unless it's set manually.
         public int[] i_Power_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Power_Amount = 1;

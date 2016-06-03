@@ -14,6 +14,8 @@
         Name_Map_Start = "Start_Point",
         Name_Map_Temple = "Temple",
         Name_Confirmation_Box = "Confirmation_Box",
+        Name_Hover_Click_Box = "Hover_Click_Box",
+        Name_Hover_Click_Text = "Hover_Click_Text",
 
         //PREFAB NAMES WITH FULL ADDRESSES
         //UI
