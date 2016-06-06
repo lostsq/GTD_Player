@@ -126,9 +126,6 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         if (Input.GetMouseButtonDown(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
             Hovering = false;
-
-            Debug.Log("Mouse Down");
-            //Call the mouse down fired event.
             Mouse_Down_Fired();
         }
 
@@ -136,8 +133,6 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         if (Input.GetMouseButtonUp(0) && Input.GetAxis("Mouse ScrollWheel") == 0)
         {
             Hovering = false;
-
-            Debug.Log("Mouse Up");
             Mouse_Up_Fired();
         }
 

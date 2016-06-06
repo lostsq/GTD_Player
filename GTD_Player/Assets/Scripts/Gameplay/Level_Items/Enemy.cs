@@ -33,6 +33,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         public int i_Range;
 
+
+        public int i_Max_HP;
+
         //this is the size of the gem.
         public float f_Scale_Amount = 1;
 
@@ -67,6 +70,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             s_Name = p_Name;
             i_Wave_Number = p_Wave_Number;
             i_HP = p_HP;
+            i_Max_HP = p_HP;
             i_Speed = p_Speed;
             i_Power = p_Power;
             i_Amount = p_Amount;
@@ -366,6 +370,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
                 //give the reward and destory this object.
                 Main_Script.i_Energy += i_Reward_Single;
+
+                //for now exp is 10% fo what the energy is.
+                Main_Script.f_Exp_Gathered += 3;//i_Reward_Single*.1f;
+
                 Destroy(this.gameObject);
             }
         }

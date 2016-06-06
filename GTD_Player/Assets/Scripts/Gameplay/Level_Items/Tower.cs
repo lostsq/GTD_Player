@@ -13,6 +13,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         bool b_Fused = false;
         public string s_Name = "Null";
         public int i_Level = 0;
+        public int i_Max_Level = 10;
         public int i_Spending_Points = 0;
         public int i_exp = 0;
         public int[] i_Exp_Level = new int[] {10,100,100,100,100,100,100,100,10,10,0 };
@@ -113,7 +114,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
             GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder + 1;
         }
 
+        public void Level_Up()
+        {
 
+        }
 
         // Use this for initialization
         void Start()
