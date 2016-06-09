@@ -28,6 +28,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     GameObject Old_Parent = null;
     bool b_Moving_Tower_Field = false;
 
+    bool b_Purchasing_Tower = false;
+
     //the on gui/mouse over bools.
     bool Running_GUI = false;
 
@@ -40,6 +42,12 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 	void Update () {
 
         Hovering = true;
+        
+        //tower/stats is open no need to check for hover.
+        if (Main_Script.b_Tower_Open)
+        {
+            Hovering = false;
+        }
 
         //Process
         //Use clicks, we check if they are over something that is dragable.
@@ -50,43 +58,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //scrolling only occurs in 2 spots. the map and the enemy list area.
         //transform.Translate(Vector3.up * Input.GetAxis("Mouse ScrollWheel"));
 
-        //setting the scroll for zoom and movement on menuss will need to add logic for mouse down with towers to return them to default spot or something.
-        if (Input.GetAxis("Mouse ScrollWheel") != 0 && Collider_Working_With == null)
-        {
-            
-
-            Collider_Working_With = null;
-            Collider_Working_With = Find_Highest_Collider_At_Mouse(false);
-
-            if (Collider_Working_With != null && Collider_Working_With.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
-            {
-                float tsx = Collider_Working_With.gameObject.transform.parent.transform.localScale.x;
-                float tsy = Collider_Working_With.gameObject.transform.parent.transform.localScale.y;
-
-                //Debug.Log("cur x = " + tsx);
-                //Debug.Log("cur y = " + tsy);
-                //Debug.Log("Mouse_Scroll_Amount = " + Input.GetAxis("Mouse ScrollWheel"));
-
-                //zoom in 10%
-                //float Temp_Zoom_Amount = .10f;
-                if (Input.GetAxis("Mouse ScrollWheel") > 0)
-                {
-                    //Temp_Zoom_Amount *= -1;
-                    Main_Script.f_Zoom_Level /= .9f;
-                }
-                else
-                {
-                    Main_Script.f_Zoom_Level *= .9f;
-                }
-
-                Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
-                //Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
-                
-
-            }
-
-            Collider_Working_With = null;
-        }
+        //perform a scroll check.
+        Scroll_Check();
 
 
         //need to check if a drag has occured and if it has and the item is the map or a tower then stuff.
@@ -153,6 +126,54 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
     }
 
+
+    void Scroll_Check()
+    {
+        //setting the scroll for zoom and movement on menuss will need to add logic for mouse down with towers to return them to default spot or something.
+        if (Input.GetAxis("Mouse ScrollWheel") != 0 && Collider_Working_With == null)
+        {
+            Collider_Working_With = null;
+            Collider_Working_With = Find_Highest_Collider_At_Mouse(false);
+
+            if (Collider_Working_With != null)
+            {
+                string C_Tag = Collider_Working_With.gameObject.tag;
+                //scroll on map.
+                if (C_Tag == Current_Strings.Tag_Empty_Map_Spot)
+                {
+                    float tsx = Collider_Working_With.gameObject.transform.parent.transform.localScale.x;
+                    float tsy = Collider_Working_With.gameObject.transform.parent.transform.localScale.y;
+
+                    //zoom in 10%
+                    //float Temp_Zoom_Amount = .10f;
+                    if (Input.GetAxis("Mouse ScrollWheel") > 0)
+                    {
+                        //Temp_Zoom_Amount *= -1;
+                        Main_Script.f_Zoom_Level /= .9f;
+                    }
+                    else
+                    {
+                        Main_Script.f_Zoom_Level *= .9f;
+                    }
+
+                    Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
+                    //Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
+                }
+                //scroll on purchase menu
+                else if (C_Tag == Current_Strings.Tag_Purchase_Background || C_Tag == Current_Strings.Tag_Tower_Display)
+                {
+                    float tX = GameObject.Find(Current_Strings.Name_Purchase_Parent).transform.position.x;
+                    float tY = GameObject.Find(Current_Strings.Name_Purchase_Parent).transform.position.y;
+                    tY += Input.GetAxis("Mouse ScrollWheel") * -2f;
+                    GameObject.Find(Current_Strings.Name_Purchase_Parent).transform.position = new Vector2(tX, tY);
+                }
+            }
+
+            //reset the collider back to null since scroll is ifnished.
+            Collider_Working_With = null;
+        }
+    }
+
     //checks if the mouse has moved from one point to another point on a dragable item.
     bool Check_For_Drag()
     {
@@ -161,7 +182,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         if (Pos_Start != temp)
         {
             //set the object start posistion depending if it's tower or the map.
-            if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower))
+            if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Drag))
             {
                 Pos_Object_Start = Collider_Working_With.gameObject.transform.position;
             }
@@ -181,10 +202,10 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     void Mouse_Dragging_Fired()
     {
         //check if tower or the map we are working with.
-        if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower))
+        if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Drag) || Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
         {
             //check if a menu is open/blocking screen like invintory and such.
-            if (Cur_Open_Menu == null)
+            if (Cur_Open_Menu == null || Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
             {
                 //ghost dragging.
                 Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -199,26 +220,72 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //the sprite renderers.
                 SpriteRenderer Cur_SR = Collider_Working_With.gameObject.GetComponent<SpriteRenderer>();
                 SpriteRenderer Under_SR = null;
-                if (Under_This != null)
-                {
-                    Under_SR = Under_This.gameObject.GetComponent<SpriteRenderer>();
 
-                    //check if the item under it is the last spot it was in.
-                    if (Under_This.gameObject == Collider_Working_With.gameObject)
+                if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
+                {
+                    //set the ghost to visible.
+                    Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
+                    Pos_Start = Collider_Working_With.gameObject.transform.GetChild(0).position;
+                    Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = 100;
+
+                    bool b_Nothing_Under = true;
+
+                    if (Under_This != null)
                     {
-                        //set ghost transparenty.
-                        Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
-                        b_Moving_Tower_Field = false;
-                    }
-                    else
-                    {
-                        //in the hotbox Need GHOST!
-                        if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
+                        //Debug.Log(Under_This.gameObject.tag);
+
+                        //if under it is an empty hotspot we place it there.
+                        if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot && Under_This.gameObject.transform.childCount == 0)
                         {
+                            b_Nothing_Under = false;
+
+                            b_Purchasing_Tower = true;
+                            //snap it to the hotbar spot.
+                            Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
+                            
+                        }
+                    }
+
+
+                    //not over a hotspot and we just have it roam around.
+                    if( b_Nothing_Under)
+                    {
+                        b_Purchasing_Tower = false;
+
+                        Vector2 curScreenPointT = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                        Vector2 curPositionT = Camera.main.ScreenToWorldPoint(curScreenPointT);
+
+                        Vector3 Update_SpotT = curPositionT - Pos_Start;
+                        Update_SpotT.Set(Update_SpotT.x, Update_SpotT.y, 0);
+
+                        Pos_Start = curPositionT;
+                        Collider_Working_With.gameObject.transform.GetChild(0).position += Update_SpotT;
+
+
+                    }
+
+                }
+                else
+                {
+                    if (Under_This != null)
+                    {
+                        Under_SR = Under_This.gameObject.GetComponent<SpriteRenderer>();
+
+                        //Same cell/spot
+                        if (Under_This.gameObject == Collider_Working_With.gameObject)
+                        {
+                            //set ghost transparenty.
+                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                            b_Moving_Tower_Field = false;
+                        }
+                        //hotspot.
+                        else if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot && Under_This.gameObject.transform.childCount == 0)
+                        {
+
                             //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
                             if (Old_Parent != null)
                             {
-                                if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot))
+                                if (Old_Parent.tag.Contains(Current_Strings.Tag_Empty_Map_Spot) && Under_This.gameObject.transform.childCount == 0)
                                 {
                                     b_Moving_Tower_Field = true;
                                 }
@@ -226,31 +293,19 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                                 {
                                     b_Moving_Tower_Field = false;
                                 }
-                            }
-                            //nothing else in the hotbar.
-                            if (Under_This.gameObject.transform.childCount == 0)
-                            {
+
+
+
                                 //need to determain if it's moving around hotbar or going from map to hotbar.
                                 if (b_Moving_Tower_Field)
                                 {
                                     Pos_Start = Under_This.gameObject.transform.position;
                                     Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
-                                    //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.parent.localScale;
-
-                                    //not setting the parent yet.
-                                    //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-
-                                    //going from field to hotbar. need to adjust the scale.
-                                    //ghosts scale is 1 and it just follows what it's parent is.. so we need to calculate what it should be.
-                                    //take the map spot parent (eg .8), the scale (.5) and make it into 1.2 so the new scale should be .6 for the ghost..
-                                    //but since the ghost is 1 it needs to be changed.
-                                    //Debug.Log(Collider_Working_With.transform.parent.parent.localScale.x);
 
                                     //set the ghost's scale by taking what's under it's local scall and parent's local scale and timesing them together.
                                     float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x / Collider_Working_With.transform.parent.parent.localScale.x;
                                     Collider_Working_With.gameObject.transform.GetChild(0).transform.localScale = new Vector2(t_scale, t_scale);
 
-                                    //Collider_Working_With.gameObject.transform.GetChild(0).localScale = Under_This.gameObject.transform.localScale;
                                     //sprite render stuff.
                                     Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
                                     //set ghost transparenty.
@@ -264,7 +319,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                                     Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
                                     Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
 
-                                    
+
                                     //sprite render stuff.
                                     Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                                     //set ghost transparenty.
@@ -272,34 +327,39 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                                 }
                             }
                         }
-                        //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
-                        if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+                        //On map
+                        else if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot && Under_This.gameObject.transform.childCount == 0)
                         {
+
+                            //Debug.Log("First");
                             //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
                             b_Moving_Tower_Field = true;
                             //nothing else in the hotbar.
-                            if (Under_This.gameObject.transform.childCount == 0)
-                            {
-                                //used for test
-                                //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
+                            //used for test
+                            //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
 
-                                Pos_Start = Under_This.gameObject.transform.position;
-                                Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
-                                //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                            Pos_Start = Under_This.gameObject.transform.position;
+                            Collider_Working_With.gameObject.transform.GetChild(0).position = Under_This.gameObject.transform.position;
+                            //Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
 
-                                //set the ghost's scale by taking what's under it's local scall and parent's local scale and timesing them together.
-                                //float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x;// * Collider_Working_With.gameObject.transform.localScale.x;
-                                float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x / Collider_Working_With.transform.parent.parent.localScale.x;
+                            //set the ghost's scale by taking what's under it's local scall and parent's local scale and timesing them together.
+                            //float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x;// * Collider_Working_With.gameObject.transform.localScale.x;
+                            float t_scale = Under_This.gameObject.transform.parent.transform.localScale.x / Collider_Working_With.transform.parent.parent.localScale.x;
 
-                                Collider_Working_With.gameObject.transform.GetChild(0).transform.localScale = new Vector2(t_scale, t_scale);
+                            Collider_Working_With.gameObject.transform.GetChild(0).transform.localScale = new Vector2(t_scale, t_scale);
 
-                                //sprite render stuff.
-                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
-                                //Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+                            //sprite render stuff.
+                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = Under_SR.sortingOrder + 1;
+                            //Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
 
-                                //set ghost transparenty.
-                                Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
-                            }
+                            //set ghost transparenty.
+                            Collider_Working_With.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .6f);
+                        }
+                        else
+                        {
+                            //Can;t move here so false on move tower.
+                            b_Moving_Tower_Field = false;
+
                         }
                     }
                 }
@@ -307,6 +367,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             //non-ghost dragging.
             else
             {
+
                 Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
                 Vector2 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint);
 
@@ -315,7 +376,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 
                 //check what is under it before we confirm placement.
                 Collider2D Under_This = Find_Highest_Collider_At_Mouse(false);
-                
+
                 //the sprite renderers.
                 SpriteRenderer Cur_SR = Collider_Working_With.gameObject.GetComponent<SpriteRenderer>();
                 SpriteRenderer Under_SR = null;
@@ -334,7 +395,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                     }
 
                     //in the hotbox Need GHOST!
-                    if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot)
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot && Under_This.gameObject.transform.childCount == 0)
                     {
                         //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
                         if (Old_Parent != null)
@@ -349,41 +410,34 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                                 b_Moving_Tower_Field = false;
                             }
                         }
-                        //nothing else in the hotbar.
-                        if (Under_This.gameObject.transform.childCount == 0)
-                        {
-                            Pos_Start = Under_This.gameObject.transform.position;
-                            Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
-                            Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                            Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
-                            //sprite render stuff.
-                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
-                        }
+                        Pos_Start = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                        Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
+                        //sprite render stuff.
+                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                     }
                     //in the map NEED GHOST! need to make sure it's correctly set for the attacks and such.. could be difficult.
-                    if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot)
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Empty_Map_Spot && Under_This.gameObject.transform.childCount == 0)
                     {
                         //used to make sure if it is being dragged to map or from map to hotbar or just hotbar to hotbar.
                         b_Moving_Tower_Field = true;
                         //nothing else in the hotbar.
-                        if (Under_This.gameObject.transform.childCount == 0)
-                        {
-                            //used for test
-                            //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
+                        //used for test
+                        //Main_Script.Move_Tower_Field(Under_This.gameObject, Under_This.gameObject, Under_This.gameObject);
 
-                            Pos_Start = Under_This.gameObject.transform.position;
-                            Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
-                            Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
-                            Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
-                            //sprite render stuff.
-                            Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
-                        }
+                        Pos_Start = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                        Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
+                        //sprite render stuff.
+                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                     }
 
                 }
-                
+
             }
-            
+
 
         }
         //this is the map we are moving. very simple/easy.
@@ -412,12 +466,14 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //we get the highest collider at the mouses location.
         Collider2D Highest_Collider = Find_Highest_Collider_At_Mouse(false);
 
-        //set the old parent here and reset it to null on mouse up/trigger.
-        if (Old_Parent == null && Highest_Collider != null)
+        if (Highest_Collider.gameObject.transform.parent != null)
         {
-            Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
+            //set the old parent here and reset it to null on mouse up/trigger.
+            if (Old_Parent == null && Highest_Collider != null)
+            {
+                Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
+            }
         }
-        
 
         //Verify that there is a highest collider to work with.
         if (Highest_Collider != null)
@@ -438,11 +494,32 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //need to tell if the item was being dragged or not.
         if (b_Is_Dragging)
         {
+            
+
+            if (b_Purchasing_Tower)
+            {
+                //set it back to false since we did it.
+                b_Purchasing_Tower = false;
+                //Debug.Log("Moving Tower Reached Mouse Up");
+                //enable the confirmation
+                Main_Script.b_Confirmation_Open = true;
+                //Just need the tower, and the hotspot we are going to.
+                Main_Script.Confirmation_Objects = new GameObject[2] {Collider_Working_With.gameObject, Under_This.gameObject };
+
+
+                Main_Script.s_Confirmation_Action = Current_Strings.Confirm_Tower_Purchase;
+
+                //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
+                GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
+
+                
+            }
+
             //Debug.Log("Drag Reached Mouse Up");
             //the tower is being moved to a spot on the field.
-            if (b_Moving_Tower_Field)
+            else if (b_Moving_Tower_Field)
             {
-                
+                b_Moving_Tower_Field = false;
 
                 //Debug.Log("Moving Tower Reached Mouse Up");
                 //enable the confirmation
@@ -464,6 +541,13 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
                 GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
             }
+            //for resetting the ghost on drag.
+            else if (Collider_Working_With.tag.Contains(Current_Strings.Tag_Tower))
+            {
+                //we just set the ghost back to no opacity.
+                Collider_Working_With.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+
+            }
         }
         else
         {
@@ -482,6 +566,12 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                     }
 
                     //TOWERS
+                    //clicked tower.
+                    if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Drag))
+                    {
+                        Main_Script.b_Tower_Open = true;
+                        Main_Script.Tower_Open_Collider = Collider_Working_With;
+                    }
                 }
             }
 
@@ -563,25 +653,6 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //used to easily close open menus without searching.
         string Last_Menu_Tag_Open = "none";
 
-        //menu is open so we must now close. only for the large menus like invin, enemies, create
-        if (Cur_Open_Menu != null)
-        {
-            //move the open menu to the off screen.
-            Cur_Open_Menu.gameObject.transform.position = new Vector3(-500, -550);
-            Last_Menu_Tag_Open = Cur_Open_Menu.tag;
-            Cur_Open_Menu = null;
-        }
-
-        //invintory button click.
-        if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Inventory_UI))
-        {
-            if (GameObject.Find(Current_Strings.Name_Inventory_Parent).tag != Last_Menu_Tag_Open)
-            {
-                GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.position = new Vector3(0, 0);
-                Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Inventory_Parent);
-            }
-        }
-
         //confirm yes
         if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Confirmation_Yes))
         {
@@ -589,11 +660,60 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             Main_Script.b_Confirmation_Open = false;
         }
         //confirm no
-        if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Confirmation_No))
+        else if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Confirmation_No))
         {
             Main_Script.b_Confirmation_True = false;
             Main_Script.b_Confirmation_Open = false;
         }
+
+        //when you click outside the box of the various pop-ups. it closes and cancels if necssary.
+        else if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Background_Fade_Item))
+        {
+            Main_Script.b_Confirmation_True = false;
+            Main_Script.b_Confirmation_Open = false;
+
+            Main_Script.b_Tower_Open = false;
+        }
+        else if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Plus_Icon))
+        {
+            Main_Script.Plus_Icon_Clicked(But_Col);
+        }
+
+        //we are acessing a new menu item or something.
+        else
+        {
+            //menu is open so we must now close. only for the large menus like invin, enemies, create
+            if (Cur_Open_Menu != null)
+            {
+                //move the open menu to the off screen.
+                Cur_Open_Menu.gameObject.transform.position = new Vector3(-500, -550);
+                Last_Menu_Tag_Open = Cur_Open_Menu.tag;
+                Cur_Open_Menu = null;
+            }
+
+            //invintory button click.
+            if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Inventory_UI))
+            {
+                if (GameObject.Find(Current_Strings.Name_Inventory_Parent).tag != Last_Menu_Tag_Open)
+                {
+                    GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.position = new Vector3(0, 0);
+                    Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Inventory_Parent);
+                }
+            }
+
+            //Purchase button click.
+            if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Purchase_UI))
+            {
+                if (GameObject.Find(Current_Strings.Name_Purchase_Parent).tag != Last_Menu_Tag_Open)
+                {
+                    GameObject.Find(Current_Strings.Name_Purchase_Parent).transform.position = new Vector3(0, 0);
+                    Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Purchase_Parent);
+                }
+            }
+        }
+       
+
+        
 
     }
 

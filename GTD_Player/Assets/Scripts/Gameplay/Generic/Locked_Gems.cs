@@ -26,9 +26,9 @@ namespace Assets.Scripts.Gameplay.Generic
         //the stats.
         public bool b_Locked = true;
         public string Name;
-        public int Cost = 0;
+        public int i_Cost = 0;
         //how much exp is needed to reach the next level.
-        public int[] i_Exp_Level = new int[] { 10, 100, 100, 100, 100, 100, 100, 100, 10, 10 };
+        public int[] i_Exp_Level = new int[] { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0 };
         //10 levels is MAX unless it's set manually.
         public int[] i_Power_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Power_Amount = 1;
@@ -41,6 +41,11 @@ namespace Assets.Scripts.Gameplay.Generic
         public float f_Scale_Amount = 1;
 
         public string s_Prefab_Location;
+
+
+        //This is the description of the tower. Shows up in the purchase area.
+        public string s_Desc = "None";
+
     }
 
 
@@ -50,10 +55,13 @@ namespace Assets.Scripts.Gameplay.Generic
         public Ruby()
         {
             Name = "Ruby";
-            Cost = 50;
+            i_Cost = 50;
             f_Scale_Amount = .4f;
             s_Prefab_Location = Current_Strings.Prefab_Tower_Ruby;
             i_Range_Amount = 4;
+
+            s_Desc = "Rubies are often short fused gems.\nThey emit a flame based AOE attack.\nThis attack is centered at their location and spreads out.";
+
             //sp_Tower_Sprite = UnityEngine.Object.Instantiate(Resources.Load(Current_Strings.Texture_Tower_Ruby)) as Sprite;
         }
     }

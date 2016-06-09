@@ -17,12 +17,16 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         public GameObject Target;
         public GameObject Empty_Target_Pos;
 
+        public string s_Name_Of_Gem;
+
         public GameObject Owner;
 
 
 
 
-        public int i_Damage = 5;
+        public int i_Damage_Level = 5;
+        public int i_Range_Level = 5;
+
         public float i_Range_To_Target_Offset = .1f;
 
 
@@ -33,8 +37,12 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         //float f_Last_Zoom_Amount;
         //public Vector3 Offset;
 
-        public void Set_Up_Attack_Vars(GameObject Passed_Target, bool b_Is_Enemy_Attack_Passed)
+        public void Set_Up_Attack_Vars(GameObject Passed_Target, bool b_Is_Enemy_Attack_Passed, int Passed_Power_Level, int Passed_Range_Level)
         {
+            //set up the base power/range.
+            i_Damage_Level = Passed_Power_Level;
+            i_Range_Level = Passed_Range_Level;
+
             Empty_Target_Pos = new GameObject();
             Empty_Target_Pos.transform.parent = GameObject.Find(Current_Strings.Name_Map_Parent).transform;
             //set the parent to be the normal map.
@@ -89,13 +97,13 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
             //sorts out what needs to take damage since both towers and enemies share this.
             if (Enemy_To_Deal_Damage_To.tag.Contains(Current_Strings.Tag_Enemy))
             {
-                Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Take_Damage(i_Damage);
+                Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Take_Damage(i_Damage_Level);
             }
             else
             {
                 //temp for now, cause only temple attacks lolz.
-                Main_Script.i_HP -= i_Damage;
-                Debug.Log(Main_Script.i_HP);
+                Main_Script.i_HP -= i_Damage_Level;
+                //Debug.Log(Main_Script.i_HP);
             }
         }
 
@@ -107,7 +115,10 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         }
 
 
-        
+        public bool AnimatorIsPlaying(string stateName)
+        {
+            return GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        }
 
     }
 }

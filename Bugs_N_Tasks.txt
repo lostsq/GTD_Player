@@ -15,20 +15,22 @@ Tasks:
 (Done)*Give enemy gems a random number for extra range and y and x for moving so they don't stack.
 (Done)*Get scale implemented for gem size for enemies
 (Done)*Get hover over for gems and display stats
-(Started)*Give exp to towers, going to be shared exp so more towers = less exp for each tower and such.
+(Done)*Give exp to towers, going to be shared exp so more towers = less exp for each tower and such.
+(Done)*Get the upgrade/levels working for gems so points are given out and such.
+*Get attacks to use tower's power, ect.
 *Have confirmation message with text
 *Have confirm box above/below the spot, maybe center camera.
 *Get the Pause while confirm and menus are up going
-*Make enemies not all stack in the exact spot when they are attacking, have them spread out slightly
 *Get Bullet animation and sprite working
-*Add in death animation into sprite sheet.
+(Done)*Add in death animation into sprite sheet.
+(Started)*Place in death animation for enemies when they die.
 *Get background for invintory
 *Get background for map/playing field placed down
 *Get Enemies side bar
 *Get Fuse menu
-*Get Purchase Menu
+(Done)*Get Purchase Menu
 *Make ending scene or something after temple dies
 *Get hp of temple and enemies displayed as a bar above/below them
 *Need safegaurds for if the level doesn't load correct, maybe a master reset item.
-*Get the upgrade/levels working for gems
 *Get text on the UI placed down along with temple hp, energy and such at top
+*Make moving tower to/from field to reset exp.. maybe. Don't want a level one to max out cause of saved exp from high tower kills.

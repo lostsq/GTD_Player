@@ -18,6 +18,12 @@ TagManager:
   - Btn_Confirm_Yes
   - Btn_Confirm_No
   - Enemy
+  - Btn_Background_Fade
+  - Btn_Plus_Icon
+  - Btn_Purchase_Main
+  - Purchase_Background
+  - Btn_Purchase_UI
+  - Twr_Display_Drag
   layers:
   - Default
   - TransparentFX

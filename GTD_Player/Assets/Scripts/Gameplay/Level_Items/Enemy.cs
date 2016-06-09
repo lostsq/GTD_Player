@@ -15,6 +15,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
         float f_Spawn_Timer = 0;
         int i_Spawn_Inbetween = 1;
 
+        bool b_Is_Dead = false;
+
         //this is to make them not stack and give a little randomness.
         float f_Random_x;
         float f_Random_y;
@@ -169,51 +171,66 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Update is called once per frame
         void Update()
         {
-            //Debug.Log(f_Spawn_Timer);
-            f_Spawn_Timer += Time.deltaTime;
-
-            //make sure it's not a spawner.
-            if (!b_Spawn_Tracker)
+            //make sure not dead.
+            if (b_Is_Dead)
             {
-                //is attacking
-                if (GetComponent<Animator>().GetBool("Attacking"))
+                //fire death.
+                Death();
+            }
+            else
+            {
+                //Debug.Log(f_Spawn_Timer);
+                f_Spawn_Timer += Time.deltaTime;
+
+                //make sure it's not a spawner.
+                if (!b_Spawn_Tracker)
                 {
-                    //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
-                    if (The_Target != null)
+                    //is attacking
+                    if (GetComponent<Animator>().GetBool("Attacking"))
                     {
-                        GetComponent<Animator>().SetBool("Moving", false);
-                        GetComponent<Animator>().SetBool("Attacking", true);
-
-                        if (Still_In_Range())
+                        //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
+                        if (The_Target != null)
                         {
-                            if (AnimatorIsPlaying(s_Name + "_Attack"))
+                            GetComponent<Animator>().SetBool("Moving", false);
+                            GetComponent<Animator>().SetBool("Attacking", true);
+
+                            if (Still_In_Range())
                             {
-                                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                if (AnimatorIsPlaying(s_Name + "_Attack"))
                                 {
+                                    if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                    {
 
-                                    GetComponent<Animator>().SetBool("Moving", true);
-                                    GetComponent<Animator>().SetBool("Attacking", false);
-
-
-                                    f_Spawn_Timer = 0;
-                                    //then we need to attack and perform attack animation.
-
-                                    //we will spawn out a attack and assign out the variable on it.
-                                    GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                                    Vector3 Cur_Scale = New_Attack.transform.localScale;
-                                    New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
-                                    New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
-                                    //the location/spawn of the attack is the parent since the object can move.
-                                    New_Attack.transform.position = transform.position;
-                                    New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
-                                    New_Attack.transform.localScale = Cur_Scale;
-                                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                        GetComponent<Animator>().SetBool("Moving", true);
+                                        GetComponent<Animator>().SetBool("Attacking", false);
 
 
-                                    The_Target = null;
+                                        f_Spawn_Timer = 0;
+                                        //then we need to attack and perform attack animation.
+
+                                        //we will spawn out a attack and assign out the variable on it.
+                                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                        Vector3 Cur_Scale = New_Attack.transform.localScale;
+                                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, true, i_Power, i_Range);
+                                        New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
+                                        //the location/spawn of the attack is the parent since the object can move.
+                                        New_Attack.transform.position = transform.position;
+                                        New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
+                                        New_Attack.transform.localScale = Cur_Scale;
+                                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+
+
+                                        The_Target = null;
+                                    }
                                 }
-                            }
 
+                            }
+                            else
+                            {
+                                GetComponent<Animator>().SetBool("Moving", true);
+                                GetComponent<Animator>().SetBool("Attacking", false);
+                                //Move_Enemy();
+                            }
                         }
                         else
                         {
@@ -224,46 +241,57 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     }
                     else
                     {
-                        GetComponent<Animator>().SetBool("Moving", true);
-                        GetComponent<Animator>().SetBool("Attacking", false);
-                        //Move_Enemy();
-                    }
-                }
-                else
-                {
-                    //if the target is null we check for one.
-                    if (The_Target == null)
-                    {
-                        The_Target = Check_For_Target_In_Range();
-                    }
-
-                    if (The_Target != null && Still_In_Range())
-                    {
-                        //the attack timer/speed of attack.
-                        if (f_Spawn_Timer > 1f)
+                        //if the target is null we check for one.
+                        if (The_Target == null)
                         {
-                            GetComponent<Animator>().SetBool("Moving", false);
-                            GetComponent<Animator>().SetBool("Attacking", true);
+                            The_Target = Check_For_Target_In_Range();
                         }
-                        //set it to a idle state since it's waiting to attack.
+
+                        if (The_Target != null && Still_In_Range())
+                        {
+                            //the attack timer/speed of attack.
+                            if (f_Spawn_Timer > 1f)
+                            {
+                                GetComponent<Animator>().SetBool("Moving", false);
+                                GetComponent<Animator>().SetBool("Attacking", true);
+                            }
+                            //set it to a idle state since it's waiting to attack.
+                            else
+                            {
+                                GetComponent<Animator>().SetBool("Moving", false);
+                                GetComponent<Animator>().SetBool("Attacking", false);
+                            }
+                        }
+                        //either not in range or no target was found so we move.
                         else
                         {
-                            GetComponent<Animator>().SetBool("Moving", false);
+                            The_Target = null;
+                            GetComponent<Animator>().SetBool("Moving", true);
                             GetComponent<Animator>().SetBool("Attacking", false);
+                            Move_Enemy();
                         }
-                    }
-                    //either not in range or no target was found so we move.
-                    else
-                    {
-                        The_Target = null;
-                        GetComponent<Animator>().SetBool("Moving", true);
-                        GetComponent<Animator>().SetBool("Attacking", false);
-                        Move_Enemy();
                     }
                 }
             }
         }
+        void Death()
+        {
+            //is attacking
+            if (!GetComponent<Animator>().GetBool("Dead"))
+            {
+                    GetComponent<Animator>().SetBool("Dead", true);
+            }
 
+            //make sure the death animation is playing.
+            if (AnimatorIsPlaying(s_Name + "_Death"))
+            {
+                //perform the destory at the end of the death animation.
+                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                {
+                    Destroy(this.gameObject);
+                }
+            }
+        }
 
         GameObject Check_For_Target_In_Range()
         {
@@ -371,10 +399,15 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 //give the reward and destory this object.
                 Main_Script.i_Energy += i_Reward_Single;
 
-                //for now exp is 10% fo what the energy is.
-                Main_Script.f_Exp_Gathered += 3;//i_Reward_Single*.1f;
+                //for now exp is 10% fo what the energy is. EXP IS PLACEHOLDER FOR NOW
+                Main_Script.f_Exp_Gathered += 30;//i_Reward_Single*.1f;
 
-                Destroy(this.gameObject);
+                //we are dead so now we need to play the death animation and remove us as a target.
+                //no tag so not a target while death animation plays.
+                tag = "Untagged";
+                b_Is_Dead = true;
+
+               
             }
         }
 

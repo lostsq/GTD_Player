@@ -9,17 +9,34 @@ public class Attack_Ruby : Attack_Base {
 	void Start () {
         //RUBY SETUP
         Ruby_Setup();
+        //set the name of the gem we are working with.
+        s_Name_Of_Gem = "Ruby";
+
+        //set the animation to start the bullet animation.
+        if (!GetComponent<Animator>().GetBool("Bullet"))
+        {
+            GetComponent<Animator>().SetBool("Bullet", true);
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
-
-        //first we move to the desired location and then we check if we are in the range we want to attack.
-        Move_Towards_Target();
-        //range check.
-        if (Check_Range_To_Target())
+        //make sure the correct animation is playing.
+        if (AnimatorIsPlaying(s_Name_Of_Gem + "_Bullet"))
         {
-            Ruby_Attack();
+            //this is triggered at the end of the animation, but will keep going if nothing changes.
+            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+            {
+                //Destroy(this.gameObject);
+            }
+
+            //first we move to the desired location and then we check if we are in the range we want to attack.
+            Move_Towards_Target();
+            //range check.
+            if (Check_Range_To_Target())
+            {
+                Ruby_Attack();
+            }
         }
     }
 

@@ -12,11 +12,13 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_On_Field = false;
         bool b_Fused = false;
         public string s_Name = "Null";
+        public string s_Short_Description = "None";
+        public int i_Cost = 0;
         public int i_Level = 0;
         public int i_Max_Level = 10;
         public int i_Spending_Points = 0;
         public int i_exp = 0;
-        public int[] i_Exp_Level = new int[] {10,100,100,100,100,100,100,100,10,10,0 };
+        public int[] i_Exp_Level = new int[] {10,10,10,10,10,10,10,10,10,10,0 };
         //10 levels is MAX unless it's set manually.
         public int[] i_Power_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
         public int i_Power_Amount = 1;
@@ -111,12 +113,22 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
 
             //set the layering to be + 1 of the field.
-            GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder + 1;
+            GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Inventory_Parent).transform.GetChild(1).GetComponent<SpriteRenderer>().sortingOrder + 1;
         }
 
         public void Level_Up()
         {
-
+            if (i_Level < i_Max_Level)
+            {
+                //we make sure there is enough exp for the tower to level up then we set the items.
+                if (i_exp == i_Exp_Level[i_Level])
+                {
+                    //set new level, exp, points.
+                    i_Level += 1;
+                    i_exp = 0;
+                    i_Spending_Points += 1;
+                }
+            }
         }
 
         // Use this for initialization
@@ -227,7 +239,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
                                 //we will spawn out a attack and assign out the variable on it.
                                 GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
                                 Vector3 Cur_Scale = New_Attack.transform.localScale;
-                                New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false);
+                                
+                                New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false, i_Power_Amount, i_Range_Amount);
                                 //the location/spawn of the attack is the parent since the object can move.
                                 New_Attack.transform.position = transform.parent.position;
                                 New_Attack.transform.parent = transform.parent;

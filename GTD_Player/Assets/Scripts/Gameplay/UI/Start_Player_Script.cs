@@ -32,6 +32,9 @@ public class Start_Player_Script : MonoBehaviour {
         Setup_Inventory_Boxes();
         //loads the level we are playing.
         Load_Level_Save();
+
+        //after the level is loaded or default we then create/set up the purchase menu with the unlocked gems.
+        Setup_Purchase_Menu();
     }
 
     // Update is called once per frame
@@ -113,7 +116,7 @@ public class Start_Player_Script : MonoBehaviour {
                     {
                         if (Main_Script.Locked_Gems.Locked_Gem_List[j].Name == Arg1)
                         {
-                            Main_Script.Locked_Gems.Locked_Gem_List[j].Cost = int.Parse(Arg3);
+                            Main_Script.Locked_Gems.Locked_Gem_List[j].i_Cost = int.Parse(Arg3);
                             Main_Script.Locked_Gems.Locked_Gem_List[j].b_Locked = bool.Parse(Arg2);
                         }
                     }
@@ -287,6 +290,110 @@ public class Start_Player_Script : MonoBehaviour {
             //WILL ADD IN AFTER WE HAVE THE MAIN MENU SAVING AND PROFILE SAVING DONE.else if (Level_Items[i].Contains("Starting Energy("))
         }
 
+
+    }
+
+
+    //creates a vertical menu for the unlocked gems.
+    void Setup_Purchase_Menu()
+    {
+        //Display gem on left(will be idle animation, and have hover over information.) Hover info might include description since it's display.
+        //On right will be a buy/confirm button.
+
+        //the parent of the purchase menu.
+        GameObject Parent_Object = GameObject.Find(Current_Strings.Name_Purchase_Parent);
+
+        //Left/Right Spots
+        GameObject New_Spot_Left;
+        GameObject New_Spot_Right;
+
+        bool b_Top_Part_Made = false;
+
+        
+        //we will make the width 2 spots wide and it's height will be how ever many unlocked towers there are.
+        //Towers will be sorted price low to high.
+        for (int i = 0; i < Main_Script.Locked_Gems.Locked_Gem_List.Count; i++)
+        {
+             if (i == 0)
+            { 
+                //the top left/right.
+                New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Top_Left)) as GameObject;
+                New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Top_Right)) as GameObject;
+                //make a pruchase box.
+                GameObject New_Purchase_Button = Instantiate(Resources.Load(Current_Strings.Prefab_Purchase_Box)) as GameObject;
+
+                New_Purchase_Button.GetComponent<SpriteRenderer>().sortingOrder = 11;
+                New_Purchase_Button.transform.parent = Parent_Object.transform;
+
+                New_Spot_Left.GetComponent<SpriteRenderer>().sortingOrder = 10;
+                New_Spot_Right.GetComponent<SpriteRenderer>().sortingOrder = 10;
+
+                New_Spot_Left.tag = Current_Strings.Tag_Purchase_Background;
+                New_Spot_Right.tag = Current_Strings.Tag_Purchase_Background;
+
+                New_Spot_Left.transform.parent = Parent_Object.transform;
+                New_Spot_Right.transform.parent = Parent_Object.transform;
+
+                //set the posistion
+                float TxLz = (0 * (New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x)) - ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float TxRz = (0 * (New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float Tyz = (1 * (New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y) / 2);
+
+                New_Spot_Left.transform.position = new Vector2(TxLz, Tyz);
+                New_Spot_Right.transform.position = new Vector2(TxRz, Tyz);
+                New_Purchase_Button.transform.position = new Vector2(((TxRz + TxLz)/2), Tyz);
+            }
+
+            //make a tower for the menu.
+            GameObject New_Tower = Main_Script.Create_New_Tower(Main_Script.Locked_Gems.Locked_Gem_List[i].Name);
+            //Make a set of boxes and since it's the first set we will start off with corner pieces.
+                if (i == Main_Script.Locked_Gems.Locked_Gem_List.Count - 1)
+                {
+                    New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Left)) as GameObject;
+                    New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Right)) as GameObject;
+                }
+                else
+                {
+                    New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Left)) as GameObject;
+                    New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Right)) as GameObject;
+                }
+
+
+
+            
+
+            //set the layer order.
+            New_Spot_Left.GetComponent<SpriteRenderer>().sortingOrder = 10;
+            New_Spot_Right.GetComponent<SpriteRenderer>().sortingOrder = 10;
+            New_Tower.GetComponent<SpriteRenderer>().sortingOrder = 11;
+            
+
+            //set the tag.
+            New_Spot_Left.tag = Current_Strings.Tag_Purchase_Background;
+            New_Spot_Right.tag = Current_Strings.Tag_Purchase_Background;
+            New_Tower.tag = Current_Strings.Tag_Tower_Display;
+            //set the parent.
+            New_Spot_Left.transform.parent = Parent_Object.transform;
+            New_Spot_Right.transform.parent = Parent_Object.transform;
+            New_Tower.transform.parent = Parent_Object.transform;
+
+            //set the scale.
+            New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
+            
+            //set the posistion
+            float TxL = -((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x)/2);
+            float TxR = ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+            float Ty = (-1 * i * (New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y) / 2);
+
+            New_Spot_Left.transform.position = new Vector2(TxL, Ty);
+            New_Spot_Right.transform.position = new Vector2(TxR, Ty);
+            New_Tower.transform.position = new Vector2(((TxR + TxL) / 2), Ty);
+
+
+        }
+
+        //move the parent off screen.
+        Parent_Object.transform.position = new Vector2(500, 500);
 
     }
 

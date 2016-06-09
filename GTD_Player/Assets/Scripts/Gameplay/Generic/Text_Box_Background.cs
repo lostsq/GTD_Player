@@ -9,7 +9,6 @@ public class Text_Box_Background : MonoBehaviour {
 
     public bool b_Is_Enabled = false;
 
-
     string Last_String = "";
 
 	// Use this for initialization

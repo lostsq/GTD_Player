@@ -11,6 +11,7 @@ GameObject:
   - 212: {fileID: 21226116}
   - 61: {fileID: 6109462}
   - 114: {fileID: 11428954}
+  - 95: {fileID: 9556210}
   m_Layer: 0
   m_Name: Attack_Ruby
   m_TagString: Untagged
@@ -44,6 +45,23 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: 2.56, y: 2.56}
+--- !u!95 &9556210
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 158930}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 733b9c13e84df504faf085bb87dd209c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &11428954
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -58,9 +76,12 @@ MonoBehaviour:
   b_Is_Enemy_Attack: 0
   b_Set_Up_And_Ready: 0
   Target: {fileID: 0}
-  i_Damage: 5
+  Empty_Target_Pos: {fileID: 0}
+  s_Name_Of_Gem: 
+  Owner: {fileID: 0}
+  i_Damage_Level: 5
+  i_Range_Level: 5
   i_Range_To_Target_Offset: 0.1
-  Target_Position: {x: 0, y: 0}
 --- !u!212 &21226116
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -87,7 +108,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d2b1d3db33488fc41992486e442f753c, type: 3}
+  m_Sprite: {fileID: 21300042, guid: 8fc493d3b119507469cf92efc551bc54, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,7 +118,16 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300042, guid: 8fc493d3b119507469cf92efc551bc54,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 733b9c13e84df504faf085bb87dd209c, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 158930}

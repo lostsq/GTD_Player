@@ -10,16 +10,19 @@
         Name_Main_Script_Holder = "Main_Script",
         Name_Hotbar_Parent = "Hotbar_Parent",
         Name_Inventory_Parent = "Inventory_Parent",
+        Name_Purchase_Parent = "Purchase_Parent",
         Name_Map_Parent = "Map_Parent",
         Name_Map_Start = "Start_Point",
         Name_Map_Temple = "Temple",
         Name_Confirmation_Box = "Confirmation_Box",
         Name_Hover_Click_Box = "Hover_Click_Box",
         Name_Hover_Click_Text = "Hover_Click_Text",
+        Name_Fade_Background = "Fade_Background_Solid",
+        Name_Plus_Icons = "Plus_Icons",
 
         //PREFAB NAMES WITH FULL ADDRESSES
         //UI
-    Prefab_Hotbar_Box = "Prefabs/UI/HotBarBox_Empty",
+        Prefab_Hotbar_Box = "Prefabs/UI/HotBarBox_Empty",
         Prefab_Hotbar_Middle = "Prefabs/UI/HotBarMiddle",
         Prefab_I_Bot = "Prefabs/UI/Inventory_Boxes/I_Bottom",
         Prefab_I_Bot_Left = "Prefabs/UI/Inventory_Boxes/I_Bottom_Left",
@@ -31,6 +34,7 @@
         Prefab_I_Top_Left = "Prefabs/UI/Inventory_Boxes/I_Top_Left",
         Prefab_I_Top_Right = "Prefabs/UI/Inventory_Boxes/I_Top_Right",
         Prefab_Tower_Template = "Prefabs/Towers/Tower_Template",
+        Prefab_Purchase_Box = "Prefabs/UI/Purchase_Text_Box",
 
         //TOWERS
         Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
@@ -40,7 +44,7 @@
 
         //ATTACKS
         Prefab_Attacks_Location = "Prefabs/Attacks/Attack_",
-        
+
         //MAP ITEMS
         Prefab_MI_Decorations_Location = "Prefabs/Enviroment/Decorations/",
         Prefab_MI_Spots_Start = "Prefabs/Enviroment/Map_Spots/Map_Spot_Start",
@@ -61,6 +65,7 @@
         //CONFIRMATION ACTIONS
         Confirm_Tower_To_Field = "Tower_To_Field_From_Hotbar",
         Confirm_Tower_To_Hotbar = "Tower_To_Hotbar_From_Field",
+        Confirm_Tower_Purchase = "Tower_Purchase_Confirmation",
 
 
     //TAG PARTS
@@ -70,19 +75,26 @@
     //TAGS
     //Buttons
         Tag_Button_Inventory_UI = "Btn_Inventory",
+        Tag_Button_Purchase_UI = "Btn_Purchase_UI",
         Tag_Button_Create_UI = "Btn_Creator",
         Tag_Button_Enemies_UI = "Btn_Enemies",
         Tag_Button_Confirmation_Yes = "Btn_Confirm_Yes",
         Tag_Button_Confirmation_No = "Btn_Confirm_No",
+        Tag_Button_Background_Fade_Item = "Btn_Background_Fade",
+        Tag_Button_Plus_Icon = "Btn_Plus_Icon",
+        Tag_Button_Purchase_Main = "Btn_Purchase_Main",
     //Non-Buttons
         Tag_Inventory_Bag = "Inventory_Bag",
         Tag_Hotbar_Spot = "Hotbar_Spot",
+        Tag_Purchase_Background = "Purchase_Background",
 
         Tag_Empty_Map_Spot = "Empty_Map_Spot_Drag",
         Tag_Start_Spawn = "Start_Spawn_Map_Spot_Drag",
         Tag_Finish_Temple = "Finish_Temple_Map_Spot_Drag",
-        Tag_Tower = "Twr_Drag",
+        Tag_Tower = "Twr",
+        Tag_Tower_Drag = "Twr_Drag",
         Tag_Tower_On_Map = "Twr_Drag_On_Map",
+        Tag_Tower_Display = "Twr_Display_Drag",
 
         Tag_Enemy = "Enemy",
 
