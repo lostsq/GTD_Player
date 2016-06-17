@@ -7,7 +7,7 @@
 
         //GAME OBJECT NAMES
         //Name: This is the name of the gameobject holding the main script that holds all the information in the player.
-        Name_Main_Script_Holder = "Main_Script",
+        Name_Main_Script_Holder = "Main_Script",//FOR MAIN SCRIPT CHECK OTHER OBJECTS SINCE THIS ONE MIGHT BE USED AS A NORMAL STRING HERE/THERE JUST SO WE DON"T NEED STRING TRACKER EVERYWHERE
         Name_Hotbar_Parent = "Hotbar_Parent",
         Name_Inventory_Parent = "Inventory_Parent",
         Name_Purchase_Parent = "Purchase_Parent",

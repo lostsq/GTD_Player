@@ -393,11 +393,11 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 {
                     //think we can just set the parent spawner to null.. but might not destory it.. i'll have to check, so we'll skip for now.
                     //Parent_Spawner = null;
-                    Main_Script.i_Energy += i_Reward_Wave;
+                    Main_Script.f_Energy += i_Reward_Wave;
                 }
 
                 //give the reward and destory this object.
-                Main_Script.i_Energy += i_Reward_Single;
+                Main_Script.f_Energy += i_Reward_Single;
 
                 //for now exp is 10% fo what the energy is. EXP IS PLACEHOLDER FOR NOW
                 Main_Script.f_Exp_Gathered += 30;//i_Reward_Single*.1f;

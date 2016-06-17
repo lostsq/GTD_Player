@@ -6,7 +6,7 @@ using Assets.Scripts.Gameplay.Generic;
 
 public class Player_Main_Script : MonoBehaviour {
 
-    String_Tracker Current_Strings = new String_Tracker();
+    public String_Tracker Current_Strings = new String_Tracker();
 
     //This is if the game and all objects are paused.
     bool b_Is_Running = true;
@@ -18,7 +18,8 @@ public class Player_Main_Script : MonoBehaviour {
 
     //Level variables
     public string s_Level_Name = "";
-    public int i_Energy = 0;
+    public float f_Energy = 0;
+    //public float f_Max_Energy = 100;
     public int i_Max_HP = 0;
     public int i_HP = 0;
 

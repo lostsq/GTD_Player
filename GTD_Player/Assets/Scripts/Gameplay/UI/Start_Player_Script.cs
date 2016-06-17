@@ -75,7 +75,7 @@ public class Start_Player_Script : MonoBehaviour {
             }
             else if (Level_Items[i].Contains("Starting Energy("))
             {
-                Main_Script.i_Energy = int.Parse(Level_Items[i].Split('(')[1]);
+                Main_Script.f_Energy = float.Parse(Level_Items[i].Split('(')[1]);
             }
             else if (Level_Items[i].Contains("Shared Enery("))
             {

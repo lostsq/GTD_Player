@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 180908a7d57b0e14e836c115c390791d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  i_Order_Number: 90
+  i_Order_Number: 12
 --- !u!212 &21200950
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -181,6 +181,10 @@ Prefab:
         Drag To Purchase
 
         Scroll U/D To View'
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: i_Order_Number
+      value: 12
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
