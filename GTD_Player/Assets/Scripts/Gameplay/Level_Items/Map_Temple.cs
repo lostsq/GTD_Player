@@ -7,8 +7,6 @@ namespace Assets.Scripts.Gameplay.Level_Items
 {
     class Map_Temple : Map_Space 
     {
-        public int i_HP = 0;
-
         public void Map_Temple_Setup(string p_Name, int px, int py)
         {
             X_Spot = px;

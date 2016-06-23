@@ -35,9 +35,10 @@
         Prefab_I_Top_Right = "Prefabs/UI/Inventory_Boxes/I_Top_Right",
         Prefab_Tower_Template = "Prefabs/Towers/Tower_Template",
         Prefab_Purchase_Box = "Prefabs/UI/Purchase_Text_Box",
+        Prefab_HP_Gage = "Prefabs/UI/HP_Gage",
 
         //TOWERS
-        Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
+    Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
 
         //ENEMIES
         Prefab_Enemy_Location = "Prefabs/Enemies/",
