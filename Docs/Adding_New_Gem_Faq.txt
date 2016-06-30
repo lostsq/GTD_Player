@@ -1,0 +1,8 @@
+Steps: (Ensure correct name is used during entire process)
+1. Create sprite sheet and copy it in.
+2. In the editor convert sheet to sprite/multiple and slice up the sprites as needed.
+3. Create the various animations in the editor. (This takes the longest time. have not found a fast way to do it.)
+4. Copy an old tower/enemy/attack and change name/sprites/animation controller used. **Make sure you change the controller.
+5. In code add in prefab location in string tracker.
+6. In code create attack_(gem name) by copying other attack and changing games.
+7. In code in Locked_Gems add the new gem by copy/paste old gem and update name then add it in the All_Locked_Gems().

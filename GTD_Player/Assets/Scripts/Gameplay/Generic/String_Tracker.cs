@@ -38,10 +38,11 @@
         Prefab_HP_Gage = "Prefabs/UI/HP_Gage",
 
         //TOWERS
-    Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
+        Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
+        Prefab_Tower_Sapphire = "Prefabs/Towers/Sapphire",
 
         //ENEMIES
-        Prefab_Enemy_Location = "Prefabs/Enemies/",
+    Prefab_Enemy_Location = "Prefabs/Enemies/",
 
         //ATTACKS
         Prefab_Attacks_Location = "Prefabs/Attacks/Attack_",

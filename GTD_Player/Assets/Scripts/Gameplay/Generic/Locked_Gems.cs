@@ -14,6 +14,7 @@ namespace Assets.Scripts.Gameplay.Generic
         {
             //This will create all the gems.
             Locked_Gem_List.Add(new Ruby());
+            Locked_Gem_List.Add(new Sapphire());
         }
     }
 
@@ -50,7 +51,7 @@ namespace Assets.Scripts.Gameplay.Generic
 
 
 
-    class Ruby :Locked_Gems
+    class Ruby : Locked_Gems
     {
         public Ruby()
         {
@@ -61,6 +62,21 @@ namespace Assets.Scripts.Gameplay.Generic
             i_Range_Amount = 4;
 
             s_Desc = "Rubies are often short fused gems.\nThey emit a flame based AOE attack.\nThis attack is centered at their location and spreads out.";
+
+            //sp_Tower_Sprite = UnityEngine.Object.Instantiate(Resources.Load(Current_Strings.Texture_Tower_Ruby)) as Sprite;
+        }
+    }
+    class Sapphire : Locked_Gems
+    {
+        public Sapphire()
+        {
+            Name = "Sapphire";
+            i_Cost = 50;
+            f_Scale_Amount = .4f;
+            s_Prefab_Location = Current_Strings.Prefab_Tower_Sapphire;
+            i_Range_Amount = 4;
+
+            s_Desc = "Sapphire's are calm cool collected gems.\nThey chill enemies near them and can see a bit into the future.\nThis attack is centered at their location and spreads out.";
 
             //sp_Tower_Sprite = UnityEngine.Object.Instantiate(Resources.Load(Current_Strings.Texture_Tower_Ruby)) as Sprite;
         }
