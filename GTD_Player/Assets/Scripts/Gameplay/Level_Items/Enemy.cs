@@ -24,19 +24,19 @@ namespace Assets.Scripts.Gameplay.Level_Items
         //variables
         public string s_Name;
         public int i_Wave_Number;
-        public int i_HP;
-        public int i_Speed;
-        public int i_Power;
+        public float f_HP;
+        public float f_Speed;
+        public float f_Power;
         public int i_Amount;
         public int i_Start_After;
         public int i_Reward_Single;
         public int i_Reward_Wave;
         public string s_Mod;
 
-        public int i_Range;
+        public float f_Range;
 
 
-        public int i_Max_HP;
+        public float f_Max_HP;
 
         //this is the size of the gem.
         public float f_Scale_Amount = 1;
@@ -64,17 +64,17 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
 
         //Create the enemy with all the stats needed to get it going.
-        public void Set_Enemy(string p_Name, int p_Wave_Number, int p_HP, int p_Speed, int p_Power, int p_Amount, int p_Start_After, int p_Reward_Single, int p_Reward_Wave, string p_Mod, bool b_Is_Spawner)
+        public void Set_Enemy(string p_Name, int p_Wave_Number, float p_HP, float p_Speed, float p_Power, int p_Amount, int p_Start_After, int p_Reward_Single, int p_Reward_Wave, string p_Mod, bool b_Is_Spawner)
         {
             //get the main script to connect to it/start calls in it when we are finished setting things up.
             Main_Script = GameObject.Find(Current_Strings.Name_Main_Script_Holder).GetComponent<Player_Main_Script>();
 
             s_Name = p_Name;
             i_Wave_Number = p_Wave_Number;
-            i_HP = p_HP;
-            i_Max_HP = p_HP;
-            i_Speed = p_Speed;
-            i_Power = p_Power;
+            f_HP = p_HP;
+            f_Max_HP = p_HP;
+            f_Speed = p_Speed;
+            f_Power = p_Power;
             i_Amount = p_Amount;
             i_Start_After = p_Start_After;
             i_Reward_Single = p_Reward_Single;
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 if (Main_Script.Locked_Gems.Locked_Gem_List[i].Name == s_Name)
                 {
                     f_Scale_Amount = Main_Script.Locked_Gems.Locked_Gem_List[i].f_Scale_Amount;
-                    i_Range = Main_Script.Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
+                    f_Range = Main_Script.Locked_Gems.Locked_Gem_List[i].f_Range_Amount;
                 }
             }
 
@@ -119,7 +119,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 {
                     go_New_Enemy.AddComponent<Enemy>();
                     Enemy New_Enemy = go_New_Enemy.GetComponent<Enemy>();
-                    New_Enemy.Set_Enemy(s_Name, i_Wave_Number, i_HP, i_Speed, i_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
+                    New_Enemy.Set_Enemy(s_Name, i_Wave_Number, f_HP, f_Speed, f_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
                     New_Enemy.s_Bullet_Prefab = s_Bullet_Prefab;
                     New_Enemy.Parent_Spawner = this;//.gameObject.GetComponent<Enemy>();
 
@@ -171,59 +171,75 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Update is called once per frame
         void Update()
         {
-            //make sure not dead.
-            if (b_Is_Dead)
+            //check if running.
+            if (Main_Script.b_Is_Running)
             {
-                //fire death.
-                Death();
-            }
-            else
-            {
-                //Debug.Log(f_Spawn_Timer);
-                f_Spawn_Timer += Time.deltaTime;
-
-                //make sure it's not a spawner.
-                if (!b_Spawn_Tracker)
+                //unpause animation if paused.
+                if (GetComponent<Animator>().enabled == false)
                 {
-                    //is attacking
-                    if (GetComponent<Animator>().GetBool("Attacking"))
+                    GetComponent<Animator>().enabled = true;
+                }
+
+                //make sure not dead.
+                if (b_Is_Dead)
+                {
+                    //fire death.
+                    Death();
+                }
+                else
+                {
+                    //Debug.Log(f_Spawn_Timer);
+                    f_Spawn_Timer += Time.deltaTime;
+
+                    //make sure it's not a spawner.
+                    if (!b_Spawn_Tracker)
                     {
-                        //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
-                        if (The_Target != null)
+                        //is attacking
+                        if (GetComponent<Animator>().GetBool("Attacking"))
                         {
-                            GetComponent<Animator>().SetBool("Moving", false);
-                            GetComponent<Animator>().SetBool("Attacking", true);
-
-                            if (Still_In_Range())
+                            //for movement we just need to know the next spot and head towards it until we reach 0/on it then set the next parent.
+                            if (The_Target != null)
                             {
-                                if (AnimatorIsPlaying(s_Name + "_Attack"))
+                                GetComponent<Animator>().SetBool("Moving", false);
+                                GetComponent<Animator>().SetBool("Attacking", true);
+
+                                if (Still_In_Range())
                                 {
-                                    if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                    if (AnimatorIsPlaying(s_Name + "_Attack"))
                                     {
+                                        if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                        {
 
-                                        GetComponent<Animator>().SetBool("Moving", true);
-                                        GetComponent<Animator>().SetBool("Attacking", false);
-
-
-                                        f_Spawn_Timer = 0;
-                                        //then we need to attack and perform attack animation.
-
-                                        //we will spawn out a attack and assign out the variable on it.
-                                        GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                                        Vector3 Cur_Scale = New_Attack.transform.localScale;
-                                        New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, true, i_Power, i_Range);
-                                        New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
-                                        //the location/spawn of the attack is the parent since the object can move.
-                                        New_Attack.transform.position = transform.position;
-                                        New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
-                                        New_Attack.transform.localScale = Cur_Scale;
-                                        New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                            GetComponent<Animator>().SetBool("Moving", true);
+                                            GetComponent<Animator>().SetBool("Attacking", false);
 
 
-                                        The_Target = null;
+                                            f_Spawn_Timer = 0;
+                                            //then we need to attack and perform attack animation.
+
+                                            //we will spawn out a attack and assign out the variable on it.
+                                            GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                            Vector3 Cur_Scale = New_Attack.transform.localScale;
+                                            New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, true, f_Power, f_Range);
+                                            New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
+                                            //the location/spawn of the attack is the parent since the object can move.
+                                            New_Attack.transform.position = transform.position;
+                                            New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
+                                            New_Attack.transform.localScale = Cur_Scale;
+                                            New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+
+
+                                            The_Target = null;
+                                        }
                                     }
-                                }
 
+                                }
+                                else
+                                {
+                                    GetComponent<Animator>().SetBool("Moving", true);
+                                    GetComponent<Animator>().SetBool("Attacking", false);
+                                    //Move_Enemy();
+                                }
                             }
                             else
                             {
@@ -234,44 +250,42 @@ namespace Assets.Scripts.Gameplay.Level_Items
                         }
                         else
                         {
-                            GetComponent<Animator>().SetBool("Moving", true);
-                            GetComponent<Animator>().SetBool("Attacking", false);
-                            //Move_Enemy();
-                        }
-                    }
-                    else
-                    {
-                        //if the target is null we check for one.
-                        if (The_Target == null)
-                        {
-                            The_Target = Check_For_Target_In_Range();
-                        }
-
-                        if (The_Target != null && Still_In_Range())
-                        {
-                            //the attack timer/speed of attack.
-                            if (f_Spawn_Timer > 1f)
+                            //if the target is null we check for one.
+                            if (The_Target == null)
                             {
-                                GetComponent<Animator>().SetBool("Moving", false);
-                                GetComponent<Animator>().SetBool("Attacking", true);
+                                The_Target = Check_For_Target_In_Range();
                             }
-                            //set it to a idle state since it's waiting to attack.
+
+                            if (The_Target != null && Still_In_Range())
+                            {
+                                //the attack timer/speed of attack.
+                                if (f_Spawn_Timer > 1f)
+                                {
+                                    GetComponent<Animator>().SetBool("Moving", false);
+                                    GetComponent<Animator>().SetBool("Attacking", true);
+                                }
+                                //set it to a idle state since it's waiting to attack.
+                                else
+                                {
+                                    GetComponent<Animator>().SetBool("Moving", false);
+                                    GetComponent<Animator>().SetBool("Attacking", false);
+                                }
+                            }
+                            //either not in range or no target was found so we move.
                             else
                             {
-                                GetComponent<Animator>().SetBool("Moving", false);
+                                The_Target = null;
+                                GetComponent<Animator>().SetBool("Moving", true);
                                 GetComponent<Animator>().SetBool("Attacking", false);
+                                Move_Enemy();
                             }
-                        }
-                        //either not in range or no target was found so we move.
-                        else
-                        {
-                            The_Target = null;
-                            GetComponent<Animator>().SetBool("Moving", true);
-                            GetComponent<Animator>().SetBool("Attacking", false);
-                            Move_Enemy();
                         }
                     }
                 }
+            }
+            else
+            {
+                GetComponent<Animator>().enabled = false;
             }
         }
         void Death()
@@ -288,6 +302,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 //perform the destory at the end of the death animation.
                 if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
                 {
+                    
+                    //now destory this game object.
                     Destroy(this.gameObject);
                 }
             }
@@ -298,7 +314,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             GameObject This_Target = null;
 
             //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
-            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x + (f_Random_x * f_Scale_Amount)) , new Vector3(0, 0, 0));
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x + (f_Random_x * f_Scale_Amount)) , new Vector3(0, 0, 0));
 
                 foreach (RaycastHit2D hit2 in Hits)
                 {
@@ -332,7 +348,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             bool b_Results = false;
 
             //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
-            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
 
             foreach (RaycastHit2D hit2 in Hits)
             {
@@ -353,7 +369,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             Vector2 Move_Here = new Vector2(Next_Spot.transform.position.x + (f_Random_x * f_Scale_Amount), Next_Spot.transform.position.y + (f_Random_y * f_Scale_Amount));
 
             // Next_Spot
-            transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((i_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
+            transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((f_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
             //check and see if it is at it's next spot, and if so we set up the next spot at the parent and the next next spot.
 
             //need to have it close but not exact cause times it won't fall right on it.
@@ -382,10 +398,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         }
 
         //Is called when this enemy is taken damage.
-        public void Take_Damage(int i_Damage_Taken)
+        public void Take_Damage(float f_Damage_Taken)
         {
-            i_HP -= i_Damage_Taken;
-            if (i_HP <= 0)
+            f_HP -= f_Damage_Taken;
+            if (f_HP <= 0)
             {
                 //need to remove from spawner.
                 Parent_Spawner.i_Amount_Destoryed++;
@@ -407,7 +423,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 tag = "Untagged";
                 b_Is_Dead = true;
 
-               
+                //get the hp bar and destory it and stop updating it.
+                GetComponent<HP_Bar_Display>().Perform_Update = false;
+                GameObject.Destroy(GetComponent<HP_Bar_Display>().HP_Gage);
             }
         }
 

@@ -21,22 +21,37 @@ public class Attack_Ruby : Attack_Base {
 	
 	// Update is called once per frame
 	void Update () {
-        //make sure the correct animation is playing.
-        if (AnimatorIsPlaying(s_Name_Of_Gem + "_Bullet"))
+
+        if (Main_Script.b_Is_Running)
         {
-            //this is triggered at the end of the animation, but will keep going if nothing changes.
-            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+            //unpause animation if paused.
+            if (GetComponent<Animator>().enabled == false)
             {
-                //Destroy(this.gameObject);
+                GetComponent<Animator>().enabled = true;
             }
 
-            //first we move to the desired location and then we check if we are in the range we want to attack.
-            Move_Towards_Target();
-            //range check.
-            if (Check_Range_To_Target())
+            //make sure the correct animation is playing.
+            if (AnimatorIsPlaying(s_Name_Of_Gem + "_Bullet"))
             {
-                Ruby_Attack();
+                //this is triggered at the end of the animation, but will keep going if nothing changes.
+                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                {
+                    //Destroy(this.gameObject);
+                }
+
+                //first we move to the desired location and then we check if we are in the range we want to attack.
+                Move_Towards_Target();
+                //range check.
+                if (Check_Range_To_Target())
+                {
+                    Ruby_Attack();
+                }
             }
+        }
+        else
+        {
+            //we need to pause the animation.
+            Pause_Animation();
         }
     }
 

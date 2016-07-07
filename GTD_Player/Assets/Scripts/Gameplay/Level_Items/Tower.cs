@@ -20,12 +20,12 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public int i_exp = 0;
         public int[] i_Exp_Level = new int[] {10,10,10,10,10,10,10,10,10,10,0 };
         //10 levels is MAX unless it's set manually.
-        public int[] i_Power_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        public int i_Power_Amount = 1;
-        public int[] i_Range_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        public int i_Range_Amount = 1;
-        public int[] i_Speed_Levels = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        public int i_Speed_Amount = 1;
+        public float f_Power_Upgrade = 1;
+        public float f_Power_Amount = 1;
+        public float f_Range_Upgrade = 1;
+        public float f_Range_Amount = 1;
+        public float f_Speed_Upgrade = 1;
+        public float f_Speed_Amount = 1;
 
         //this is the size of the gem.
         public float f_Scale_Amount = 1;
@@ -151,113 +151,120 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Update is called once per frame
         void Update()
         {
-            /*
-            bool down = Input.GetKeyDown(KeyCode.Space);
-            bool held = Input.GetKey(KeyCode.Space);
-            bool up = Input.GetKeyUp(KeyCode.Space);
-
-            if (down)
+            //check if running.
+            if (Main_Script.b_Is_Running)
             {
-               
-                //GetComponent<Animator>().SetBool("Attacking", true);
-                
-            }
-            else if (held)
-            {
-                //graphic.texture = heldgfx;
-            }
-            else if (up)
-            {
-                GetComponent<Animator>().SetBool("Attacking", true);
-            }
-
-            if (AnimatorIsPlaying(s_Name + "_Attack"))
-            {
-                //if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length < GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime)
-                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                //unpause animation if paused.
+                if (GetComponent<Animator>().enabled == false)
                 {
-                    //GetComponent<Animator>().SetBool("Attacking", false);
-                   // Debug.Log("End");
+                    GetComponent<Animator>().enabled = true;
                 }
-            }
-            */
 
-            if (b_On_Field)
-            {
-                f_Timer += Time.deltaTime;
+                /*
+                bool down = Input.GetKeyDown(KeyCode.Space);
+                bool held = Input.GetKey(KeyCode.Space);
+                bool up = Input.GetKeyUp(KeyCode.Space);
 
-
-                //check the timer for cooldown on attacks.
-                if (f_Timer > .2f)
+                if (down)
                 {
-                    //need to find the closest target in range.
-                    RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
-                    //Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), 0), Color.red);
 
-                    //RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4, new Vector3(0, 0, 0));
+                    //GetComponent<Animator>().SetBool("Attacking", true);
 
-                    foreach (RaycastHit2D hit2 in Hits)
+                }
+                else if (held)
+                {
+                    //graphic.texture = heldgfx;
+                }
+                else if (up)
+                {
+                    GetComponent<Animator>().SetBool("Attacking", true);
+                }
+
+                if (AnimatorIsPlaying(s_Name + "_Attack"))
+                {
+                    //if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length < GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime)
+                    if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
                     {
-                        //Debug.Log(" obj " + hit2.collider.gameObject.name);
+                        //GetComponent<Animator>().SetBool("Attacking", false);
+                       // Debug.Log("End");
+                    }
+                }
+                */
 
-                        if (hit2.collider.gameObject.tag == Current_Strings.Tag_Enemy)
+                if (b_On_Field)
+                {
+                    f_Timer += Time.deltaTime;
+
+
+                    //check the timer for cooldown on attacks.
+                    if (f_Timer > f_Speed_Amount)
+                    {
+                        //need to find the closest target in range.
+                        RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
+                        //Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), 0), Color.red);
+
+                        //RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4, new Vector3(0, 0, 0));
+
+                        foreach (RaycastHit2D hit2 in Hits)
                         {
-                            //check if it's the closest one.
-                            if (The_Target != null)
+                            //Debug.Log(" obj " + hit2.collider.gameObject.name);
+
+                            if (hit2.collider.gameObject.tag == Current_Strings.Tag_Enemy)
                             {
-                                //finds the closest one. Will add in more for lowest hp and such.
-                                if (Vector2.Distance(The_Target.transform.position,transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                                //check if it's the closest one.
+                                if (The_Target != null)
+                                {
+                                    //finds the closest one. Will add in more for lowest hp and such.
+                                    if (Vector2.Distance(The_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                                    {
+                                        The_Target = hit2.collider.gameObject;
+                                    }
+                                }
+                                else
                                 {
                                     The_Target = hit2.collider.gameObject;
                                 }
                             }
-                            else
-                            {
-                                The_Target = hit2.collider.gameObject;
-                            }
+                            //transform.gameObject.SendMessage("GotHit", damage);
                         }
-                        //transform.gameObject.SendMessage("GotHit", damage);
-                    }
 
-                    //target found that we are going to attack.
-                    if (The_Target != null)
-                    {
-                        //set attacking to true.
-                        GetComponent<Animator>().SetBool("Attacking", true);
-
-                        //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length + "T1");
-                        //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime + "T2");
-
-                        if (AnimatorIsPlaying(s_Name + "_Attack"))
+                        //target found that we are going to attack.
+                        if (The_Target != null)
                         {
-                            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                            //set attacking to true.
+                            GetComponent<Animator>().SetBool("Attacking", true);
+
+                            //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length + "T1");
+                            //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime + "T2");
+
+                            if (AnimatorIsPlaying(s_Name + "_Attack"))
                             {
-                                //the the attack to false and timer to 0 to reset.
-                                GetComponent<Animator>().SetBool("Attacking", false);
-                                f_Timer = 0;
-                                
-                                //we will spawn out a attack and assign out the variable on it.
-                                GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
-                                Vector3 Cur_Scale = New_Attack.transform.localScale;
-                                
-                                New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false, i_Power_Amount, i_Range_Amount);
-                                //the location/spawn of the attack is the parent since the object can move.
-                                New_Attack.transform.position = transform.parent.position;
-                                New_Attack.transform.parent = transform.parent;
-                                New_Attack.transform.localScale = Cur_Scale;
-                                New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                                {
+                                    //the the attack to false and timer to 0 to reset.
+                                    GetComponent<Animator>().SetBool("Attacking", false);
+                                    f_Timer = 0;
+
+                                    //we will spawn out a attack and assign out the variable on it.
+                                    GameObject New_Attack = Instantiate(Resources.Load(s_Bullet_Prefab)) as GameObject;
+                                    Vector3 Cur_Scale = New_Attack.transform.localScale;
+
+                                    New_Attack.GetComponent<Attacks.Attack_Base>().Set_Up_Attack_Vars(The_Target, false, f_Power_Amount, f_Range_Amount);
+                                    //the location/spawn of the attack is the parent since the object can move.
+                                    New_Attack.transform.position = transform.parent.position;
+                                    New_Attack.transform.parent = transform.parent;
+                                    New_Attack.transform.localScale = Cur_Scale;
+                                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                }
                             }
+
                         }
-
                     }
-                    
-                    
-                    
-
-                    
-
                 }
-
+            }
+            else
+            {
+                GetComponent<Animator>().enabled = false;
             }
         }
 

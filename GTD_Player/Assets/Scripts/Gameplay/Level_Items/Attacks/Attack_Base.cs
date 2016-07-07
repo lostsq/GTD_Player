@@ -9,7 +9,7 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
 {
     public class Attack_Base : MonoBehaviour
     {
-        Player_Main_Script Main_Script;
+        public Player_Main_Script Main_Script;
         String_Tracker Current_Strings = new String_Tracker();
         //this bool is to determain if it's an enemy attack or tower attacking to know what to attack.
         public bool b_Is_Enemy_Attack = false;
@@ -24,8 +24,8 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
 
 
 
-        public int i_Damage_Level = 5;
-        public int i_Range_Level = 5;
+        public float f_Damage_Level = 5;
+        public float f_Range_Level = 5;
 
         public float i_Range_To_Target_Offset = .1f;
 
@@ -37,11 +37,11 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         //float f_Last_Zoom_Amount;
         //public Vector3 Offset;
 
-        public void Set_Up_Attack_Vars(GameObject Passed_Target, bool b_Is_Enemy_Attack_Passed, int Passed_Power_Level, int Passed_Range_Level)
+        public void Set_Up_Attack_Vars(GameObject Passed_Target, bool b_Is_Enemy_Attack_Passed, float Passed_Power_Level, float Passed_Range_Level)
         {
             //set up the base power/range.
-            i_Damage_Level = Passed_Power_Level;
-            i_Range_Level = Passed_Range_Level;
+            f_Damage_Level = Passed_Power_Level;
+            f_Range_Level = Passed_Range_Level;
 
             Empty_Target_Pos = new GameObject();
             Empty_Target_Pos.transform.parent = GameObject.Find(Current_Strings.Name_Map_Parent).transform;
@@ -97,12 +97,12 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
             //sorts out what needs to take damage since both towers and enemies share this.
             if (Enemy_To_Deal_Damage_To.tag.Contains(Current_Strings.Tag_Enemy))
             {
-                Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Take_Damage(i_Damage_Level);
+                Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Take_Damage(f_Damage_Level);
             }
             else
             {
                 //temp for now, cause only temple attacks lolz.
-                Main_Script.i_HP -= i_Damage_Level;
+                Main_Script.f_HP -= f_Damage_Level;
                 //Debug.Log(Main_Script.i_HP);
             }
         }
@@ -118,6 +118,11 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         public bool AnimatorIsPlaying(string stateName)
         {
             return GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        }
+
+        public void Pause_Animation()
+        {
+            GetComponent<Animator>().enabled = false;
         }
 
     }

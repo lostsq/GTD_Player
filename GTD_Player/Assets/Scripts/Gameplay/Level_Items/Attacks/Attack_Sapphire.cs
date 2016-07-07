@@ -21,22 +21,36 @@ public class Attack_Sapphire : Attack_Base {
 	
 	// Update is called once per frame
 	void Update () {
-        //make sure the correct animation is playing.
-        if (AnimatorIsPlaying(s_Name_Of_Gem + "_Bullet"))
-        {
-            //this is triggered at the end of the animation, but will keep going if nothing changes.
-            if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
-            {
-                //Destroy(this.gameObject);
-            }
 
-            //first we move to the desired location and then we check if we are in the range we want to attack.
-            Move_Towards_Target();
-            //range check.
-            if (Check_Range_To_Target())
+        if (Main_Script.b_Is_Running)
+        {
+            //unpause animation if paused.
+            if (GetComponent<Animator>().enabled == false)
             {
-                Sapphire_Attack();
+                GetComponent<Animator>().enabled = true;
             }
+            //make sure the correct animation is playing.
+            if (AnimatorIsPlaying(s_Name_Of_Gem + "_Bullet"))
+            {
+                //this is triggered at the end of the animation, but will keep going if nothing changes.
+                if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
+                {
+                    //Destroy(this.gameObject);
+                }
+
+                //first we move to the desired location and then we check if we are in the range we want to attack.
+                Move_Towards_Target();
+                //range check.
+                if (Check_Range_To_Target())
+                {
+                    Sapphire_Attack();
+                }
+            }
+        }
+        else
+        {
+            //we need to pause the animation.
+            Pause_Animation();
         }
     }
 

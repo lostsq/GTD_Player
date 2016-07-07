@@ -9,7 +9,10 @@ public class Player_Main_Script : MonoBehaviour {
     public String_Tracker Current_Strings = new String_Tracker();
 
     //This is if the game and all objects are paused.
-    bool b_Is_Running = true;
+    public bool b_Is_Running = true;
+    public bool b_Is_Not_Paused = true;
+
+    bool b_Was_Paused = false;
     //spawn/enemy items.
     float f_Spawn_Timer = 0;
     bool b_Wave_Transistion = false;
@@ -21,7 +24,7 @@ public class Player_Main_Script : MonoBehaviour {
     public float f_Energy = 0;
     //public float f_Max_Energy = 100;
     public int i_Max_HP = 0;
-    public int i_HP = 0;
+    public float f_HP = 0;
 
     public int i_Invintory_Space_Amount = 0;
 
@@ -40,7 +43,7 @@ public class Player_Main_Script : MonoBehaviour {
 
 
     //Lists and arrays.
-    public List<Enemy> Enemy_Spawns = new List<Enemy>();
+    List<Enemy> Enemy_Spawns = new List<Enemy>();
     public List<Enemy> Enemies_On_Field = new List<Enemy>();
     public List<GameObject> Tower_List = new List<GameObject>();
     public All_Locked_Gems Locked_Gems = new All_Locked_Gems();
@@ -58,38 +61,56 @@ public class Player_Main_Script : MonoBehaviour {
     void Start () {
 	    
 	}
+
+   
 	
 	// Update is called once per frame
 	void Update () {
 
-
+        //confirmation box is up so we pause.
+        if (b_Confirmation_Open)
+        {
+            b_Is_Running = false;
+        }
         //triggers when confirmation has been used and has an action.
         if (!b_Confirmation_Open && s_Confirmation_Action != "none")
         {
             Confirmation_Process();
+            //un-pause the game since confirm box closed.
+            b_Is_Running = true;
         }
-        //confirmation is enabled right now. we can pause the game here or perform how we want to handle it.
-        else
-        {
-               
-        }
+       
 
+        //we perform hover check.
+        Hover_Box();
 
+        //pause check.
         if (b_Is_Running)
         {
+            //check if it was paused.
+            if (b_Was_Paused)
+            {
+                b_Was_Paused = false;
+            }
+
             f_Spawn_Timer += Time.deltaTime;
             Update_Spawn();
         }
+        else
+        {
+            //Debug.Log(f_Spawn_Timer);
+            //Debug.Log(Enemy_Spawns[0].s_Name);
+            //lets us know that it was paused.
+            b_Was_Paused = true;
+        }
 
-            //we perform hover check.
-            Hover_Box();
 
         //tower is clicked/open.
         if (b_Tower_Open && Tower_Open_Collider != null)
         {
             Tower_Open_Stats();
         }
-        else if(!b_Tower_Open && Tower_Open_Collider != null)
+        else if (!b_Tower_Open && Tower_Open_Collider != null)
         {
             Tower_Close_Stats();
         }
@@ -186,12 +207,14 @@ public class Player_Main_Script : MonoBehaviour {
 
             if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Drag))
             {
+                
+
                 Text_To_Place += "Name: " + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Level: " + Hover_This.GetComponent<Tower>().i_Level + "/" + Hover_This.GetComponent<Tower>().i_Max_Level + "\n";
                 Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points + "\n";
-                Text_To_Place += "    Speed: " + Hover_This.GetComponent<Tower>().i_Speed_Amount + "\n";
-                Text_To_Place += "    Power: " + Hover_This.GetComponent<Tower>().i_Power_Amount + "\n";
-                Text_To_Place += "    Range: " + Hover_This.GetComponent<Tower>().i_Range_Amount + "\n";
+                Text_To_Place += "    Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Speed_Upgrade+Hover_This.GetComponent<Tower>().f_Speed_Amount) + "\n";
+                Text_To_Place += "    Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Power_Upgrade + Hover_This.GetComponent<Tower>().f_Power_Amount) + "\n";
+                Text_To_Place += "    Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Range_Upgrade + Hover_This.GetComponent<Tower>().f_Range_Amount) + "\n";
                 Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level];
                 
 
@@ -265,17 +288,17 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 if (Icon_Clicked.gameObject.name.Contains("Range"))
                 {
-                    Working_With.i_Range_Amount += 1;
+                    Working_With.f_Range_Amount += Working_With.f_Range_Upgrade;
                     Working_With.i_Spending_Points -= 1;
                 }
                 else if (Icon_Clicked.gameObject.name.Contains("Speed"))
                 {
-                    Working_With.i_Speed_Amount += 1;
+                    Working_With.f_Speed_Amount += Working_With.f_Speed_Upgrade;
                     Working_With.i_Spending_Points -= 1;
                 }
                 else if (Icon_Clicked.gameObject.name.Contains("Power"))
                 {
-                    Working_With.i_Power_Amount += 1;
+                    Working_With.f_Power_Amount += Working_With.f_Power_Upgrade;
                     Working_With.i_Spending_Points -= 1;
                 }
             }
@@ -297,9 +320,9 @@ public class Player_Main_Script : MonoBehaviour {
                 if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Drag))
                 {
                     Text_To_Place += "(L" + Hover_This.GetComponent<Tower>().i_Level + ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
-                    Text_To_Place += "Speed: " + Hover_This.GetComponent<Tower>().i_Speed_Amount + "\n";
-                    Text_To_Place += "Power: " + Hover_This.GetComponent<Tower>().i_Power_Amount + "\n";
-                    Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().i_Range_Amount + "\n";
+                    Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "\n";
+                    Text_To_Place += "Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "\n";
+                    Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "\n";
                     Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
                     Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
 
@@ -308,18 +331,18 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Cost:" + Hover_This.GetComponent<Tower>().i_Cost + "\n";
-                Text_To_Place += "Base Speed: " + Hover_This.GetComponent<Tower>().i_Speed_Amount + "\n";
-                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().i_Power_Amount + "\n";
-                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().i_Range_Amount + "\n";
+                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
+                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
+                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
                 Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
             }
                 else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
                 {
                     Text_To_Place += Hover_This.GetComponent<Enemy>().s_Name + "\n";
-                    Text_To_Place += "Speed: " + Hover_This.GetComponent<Enemy>().i_Speed + "\n";
-                    Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().i_Power + "\n";
-                    Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().i_Range + "\n";
-                    Text_To_Place += "HP: " + Hover_This.GetComponent<Enemy>().i_HP + "/" + Hover_This.GetComponent<Enemy>().i_Max_HP;
+                    Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Enemy>().f_Speed + "\n";
+                    Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().f_Power + "\n";
+                    Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().f_Range + "\n";
+                    Text_To_Place += "HP: " + Hover_This.GetComponent<Enemy>().f_HP + "/" + Hover_This.GetComponent<Enemy>().f_Max_HP;
                 }
                 else
                 {
@@ -396,12 +419,12 @@ public class Player_Main_Script : MonoBehaviour {
                 New_Tower.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + New_Tower.s_Name;
 
                 New_Tower.i_Exp_Level = Locked_Gems.Locked_Gem_List[i].i_Exp_Level;
-                New_Tower.i_Power_Levels = Locked_Gems.Locked_Gem_List[i].i_Power_Levels;
-                New_Tower.i_Power_Amount = Locked_Gems.Locked_Gem_List[i].i_Power_Amount;
-                New_Tower.i_Range_Levels = Locked_Gems.Locked_Gem_List[i].i_Range_Levels;
-                New_Tower.i_Range_Amount = Locked_Gems.Locked_Gem_List[i].i_Range_Amount;
-                New_Tower.i_Speed_Levels = Locked_Gems.Locked_Gem_List[i].i_Speed_Levels;
-                New_Tower.i_Speed_Amount = Locked_Gems.Locked_Gem_List[i].i_Speed_Amount;
+                New_Tower.f_Power_Upgrade = Locked_Gems.Locked_Gem_List[i].f_Power_Levels;
+                New_Tower.f_Power_Amount = Locked_Gems.Locked_Gem_List[i].f_Power_Amount;
+                New_Tower.f_Range_Upgrade = Locked_Gems.Locked_Gem_List[i].f_Range_Levels;
+                New_Tower.f_Range_Amount = Locked_Gems.Locked_Gem_List[i].f_Range_Amount;
+                New_Tower.f_Speed_Upgrade = Locked_Gems.Locked_Gem_List[i].f_Speed_Levels;
+                New_Tower.f_Speed_Amount = Locked_Gems.Locked_Gem_List[i].f_Speed_Amount;
                 New_Tower.f_Scale_Amount = Locked_Gems.Locked_Gem_List[i].f_Scale_Amount;
                 New_Tower.i_Cost = Locked_Gems.Locked_Gem_List[i].i_Cost;
                 New_Tower.s_Short_Description = Locked_Gems.Locked_Gem_List[i].s_Desc;
@@ -437,6 +460,14 @@ public class Player_Main_Script : MonoBehaviour {
     */
         //return the enemy we just created.
         return go_New_Enemy;
+    }
+
+
+    //This adds an enemy to the spawn list and will return what location the newly created enemy is. well returns how many.
+    public int Add_To_Enemy_Spawns(Enemy Passed)
+    {
+        Enemy_Spawns.Add(Passed);
+        return Enemy_Spawns.Count;
     }
 
     //This will update the enemies and spawn them in if needed.
@@ -623,6 +654,8 @@ public class Player_Main_Script : MonoBehaviour {
 
         //reset the confirmation message to "none"
         s_Confirmation_Action = "none";
+        
+
 
     }
 

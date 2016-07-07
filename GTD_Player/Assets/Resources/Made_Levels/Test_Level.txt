@@ -9,10 +9,10 @@ Lock Gem(Sapphire,True,200,True
 Lock Gem(Topaz,True,300,True
 Lock Gem(Emerald,True,400,True
 Tower(Ruby,1,1,1,1,1
-Tower(Sapphire,2,2,2,2,2
+Tower(Sapphire,2,20,2,2,2
 Tower(Topaz,3,3,3,3,3
 Tower(Emerald,4,4,4,4,4
-Enemies(Sapphire,1,30,1,1,20,10,5,10,None
+Enemies(Sapphire,1,5,1,1,20,10,5,10,None
 Enemies(Ruby,2,30,2,2,15,10,10,20,None
 Grid X(25
 Grid Y(8

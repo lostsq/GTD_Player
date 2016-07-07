@@ -10,12 +10,12 @@ public class HP_Bar_Display : MonoBehaviour {
 
     Player_Main_Script Main_Script;
 
-    GameObject HP_Gage;
+    public GameObject HP_Gage;
 
     float HP_Max = 100;
     float HP_Cur = 0;
 
-    bool Perform_Update = true;
+    public bool Perform_Update = true;
 
 	// Use this for initialization
 	void Start () {
@@ -27,7 +27,7 @@ public class HP_Bar_Display : MonoBehaviour {
         if (tag.Contains(Main_Script.Current_Strings.Tag_Enemy))
         {
             Object_Type = 'e';
-            HP_Max = GetComponent<Enemy>().i_Max_HP;
+            HP_Max = GetComponent<Enemy>().f_Max_HP;
         }
         else if (tag.Contains(Main_Script.Current_Strings.Tag_Finish_Temple))
         {
@@ -63,12 +63,12 @@ public class HP_Bar_Display : MonoBehaviour {
             //temple.
             if (Object_Type == 't')
             {
-                HP_Cur = Main_Script.i_HP;
+                HP_Cur = Main_Script.f_HP;
             }
             //enemy
             else if (Object_Type == 'e')
             {
-                HP_Cur = GetComponent<Enemy>().i_HP;
+                HP_Cur = GetComponent<Enemy>().f_HP;
             }
             //nothing (should not be hit.)
             else

@@ -41,6 +41,13 @@ public class Mouse_Interaction_Script : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        //check if menu open to pause game or not. we keep paused with menu open.
+        if (Cur_Open_Menu != null)
+        {
+            Main_Script.b_Is_Running = false;
+        }
+
+
         Hovering = true;
         
         //tower/stats is open no need to check for hover.
@@ -689,6 +696,8 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 Cur_Open_Menu.gameObject.transform.position = new Vector3(-500, -550);
                 Last_Menu_Tag_Open = Cur_Open_Menu.tag;
                 Cur_Open_Menu = null;
+                //un-pause the game.
+                Main_Script.b_Is_Running = true;
             }
 
             //invintory button click.

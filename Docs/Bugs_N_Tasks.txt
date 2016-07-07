@@ -8,6 +8,7 @@ Bugs:
 *Zooming in/out on map does not keep centered how I would expect/want.
 *Can move gems slightly out of invintory box depending on where they are grabbed.
 *Gems don't stack in the invintory box/bag. Want them to stack slightly and newest one is always on top.
+*Have non-field items remain in their idle animations when game is paused.
 
 Tasks:
 (Done)*Get scale implemented for gem size for towers
@@ -21,12 +22,11 @@ Tasks:
 (Done)*Place in death animation for enemies when they die.
 (Done)*Get Purchase Menu
 (Done)*Get hp of temple and enemies displayed as a bar above/below them
-
-(Started)*Get attacks to use tower's power, range, ect.
+(Done)*Get attacks to use tower's power, range, ect.
+(Done)*Get the Pause while confirm and menus are up going
 
 *Have confirmation message with text
 *Have confirm box above/below the spot, maybe center camera.
-*Get the Pause while confirm and menus are up going
 *Get background for invintory
 *Get background for map/playing field placed down
 *Get Enemies side bar

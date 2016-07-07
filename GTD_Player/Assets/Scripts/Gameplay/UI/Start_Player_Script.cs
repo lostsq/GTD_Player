@@ -83,7 +83,7 @@ public class Start_Player_Script : MonoBehaviour {
             }
             else if (Level_Items[i].Contains("Starting HP("))
             {
-                Main_Script.i_HP = int.Parse(Level_Items[i].Split('(')[1]);
+                Main_Script.f_HP = int.Parse(Level_Items[i].Split('(')[1]);
             }
             else if (Level_Items[i].Contains("Max HP("))
             {
@@ -135,11 +135,19 @@ public class Start_Player_Script : MonoBehaviour {
                     //create the tower, update the stats and move it.
                     GameObject go_New_Tower = Main_Script.Create_New_Tower(Arg1);
 
-                    //WE WILL SET UP THE TOWERS LATER, FOR NOW JUST ADDING THEM.
+                    
 
                     //tower not null, we add it to the list and move it to invintory.
                     if (go_New_Tower != null)
                     {
+                        Tower New_Tower = go_New_Tower.GetComponent<Tower>();
+                        //Sets up the tower.
+                        New_Tower.i_Level = Arg2;
+                        New_Tower.f_Power_Amount = Arg3;
+                        New_Tower.f_Speed_Amount = Arg4;
+                        New_Tower.f_Range_Amount = Arg5;
+                        New_Tower.i_Spending_Points = Arg6;
+
                         Main_Script.Tower_List.Add(go_New_Tower);
                         go_New_Tower.GetComponent<Tower>().Move_To_Invintory(true);
                     }
@@ -175,8 +183,8 @@ public class Start_Player_Script : MonoBehaviour {
                     //Debug.Log(New_Enemy.s_Bullet_Prefab);
 
                     //might need to create the item so it's not null and have it off screen.
-                    New_Enemy.i_Location_In_Spawn_Array = Main_Script.Enemy_Spawns.Count;
-                    Main_Script.Enemy_Spawns.Add(New_Enemy);
+                    New_Enemy.i_Location_In_Spawn_Array = Main_Script.Add_To_Enemy_Spawns(New_Enemy);// Main_Script.Enemy_Spawns.Count;
+                    //Main_Script.Enemy_Spawns.Add(New_Enemy);
                 }
             }
         }
