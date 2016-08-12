@@ -78,11 +78,15 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             Hovering = false;
             //Debug.Log(Collider_Working_With.gameObject.tag);
             //check if it's a tower or map spot.
+
+
+
             if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Part_Drag))
             {
                 //Debug.Log("C2");
                 //item can be dragged so we see if it's being dragged.
                 b_Is_Dragging = Check_For_Drag();
+
             }
         }
 
@@ -146,25 +150,47 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             {
                 string C_Tag = Collider_Working_With.gameObject.tag;
                 //scroll on map.
-                if (C_Tag == Current_Strings.Tag_Empty_Map_Spot)
+                if(Cur_Open_Menu == null)
                 {
-                    float tsx = Collider_Working_With.gameObject.transform.parent.transform.localScale.x;
-                    float tsy = Collider_Working_With.gameObject.transform.parent.transform.localScale.y;
+                    Vector2 Before_Test;
+                    Vector2 After_Test;
 
-                    //zoom in 10%
-                    //float Temp_Zoom_Amount = .10f;
+                    GameObject Map = GameObject.Find(Current_Strings.Name_Map_Parent);
+                    
+                    GameObject Center = GameObject.Find("Scroll_Zoom_Item");
+                    Center.transform.position = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+                    Before_Test = Center.transform.position;
+                    
                     if (Input.GetAxis("Mouse ScrollWheel") > 0)
                     {
                         //Temp_Zoom_Amount *= -1;
                         Main_Script.f_Zoom_Level /= .9f;
+                        
+                        //M_Start += M_Start_Offset *= .1f;
                     }
                     else
                     {
                         Main_Script.f_Zoom_Level *= .9f;
+                        //M_Start -= M_Start_Offset *= .1f;
                     }
 
-                    Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
-                    //Collider_Working_With.gameObject.transform.parent.transform.localScale = new Vector2(tsx + (tsx * Temp_Zoom_Amount), tsy + (tsy * Temp_Zoom_Amount));
+                    if (Main_Script.f_Zoom_Level > Main_Script.f_Zoom_Max)
+                    {
+                        Main_Script.f_Zoom_Level = Main_Script.f_Zoom_Max;
+                    }
+                    if (Main_Script.f_Zoom_Level < Main_Script.f_Zoom_Min)
+                    {
+                        Main_Script.f_Zoom_Level = Main_Script.f_Zoom_Min;
+                    }
+
+
+
+                    Map.transform.localScale = new Vector2(Main_Script.f_Zoom_Level, Main_Script.f_Zoom_Level);
+
+                    After_Test = Center.transform.position;
+
+                    Vector3 Diff = Before_Test - After_Test;
+                    Map.transform.position += Diff;
                 }
                 //scroll on purchase menu
                 else if (C_Tag == Current_Strings.Tag_Purchase_Background || C_Tag == Current_Strings.Tag_Tower_Display)
@@ -209,7 +235,9 @@ public class Mouse_Interaction_Script : MonoBehaviour {
     void Mouse_Dragging_Fired()
     {
         //check if tower or the map we are working with.
-        if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Drag) || Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
+        //if (Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Drag) || Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
+        //first check if it's a tower or if a menu is open. if not then we will move the map.
+        if(Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower) || Cur_Open_Menu != null)
         {
             //check if a menu is open/blocking screen like invintory and such.
             if (Cur_Open_Menu == null || Collider_Working_With.gameObject.tag.Contains(Current_Strings.Tag_Tower_Display))
@@ -450,15 +478,41 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         //this is the map we are moving. very simple/easy.
         else
         {
+            Transform Map = GameObject.Find(Current_Strings.Name_Map_Parent).transform;
+
             Vector2 curScreenPoint = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint);
 
             Vector3 Update_Spot = curPosition - Pos_Start;
-            Update_Spot.Set(Update_Spot.x, Update_Spot.y, 0);
 
-            Pos_Start = curPosition;
+            bool Update = true;
 
-            Collider_Working_With.gameObject.transform.parent.transform.position += Update_Spot;
+            //check bounds. Works for now, but would like it to be smoother later.
+            if (Update_Spot.x + Map.position.x > Main_Script.f_x_Bound * Main_Script.f_Zoom_Level)
+            {
+                Update = false;
+            }
+            if (Update_Spot.x + Map.position.x < (Main_Script.f_x_Bound * -1) * Main_Script.f_Zoom_Level)
+            {
+                Update = false;
+            }
+
+            if (Update_Spot.y + Map.position.y > Main_Script.f_y_Bound * Main_Script.f_Zoom_Level )
+            {
+                Update = false;
+            }
+            if (Update_Spot.y + Map.position.y < (Main_Script.f_y_Bound * -1) * Main_Script.f_Zoom_Level)
+            {
+                Update = false;
+            }
+
+           
+            if (Update)
+            {
+                Pos_Start = curPosition;
+
+                Map.position += Update_Spot;
+            }
         }
     }
 
@@ -470,24 +524,28 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         Collider_Working_With = null;
         b_Is_Dragging = false;
 
+        //set the start pos for where the mouse is at, even if it's not used.
+        Pos_Start = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+
         //we get the highest collider at the mouses location.
         Collider2D Highest_Collider = Find_Highest_Collider_At_Mouse(false);
-
-        if (Highest_Collider.gameObject.transform.parent != null)
-        {
-            //set the old parent here and reset it to null on mouse up/trigger.
-            if (Old_Parent == null && Highest_Collider != null)
-            {
-                Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
-            }
-        }
 
         //Verify that there is a highest collider to work with.
         if (Highest_Collider != null)
         {
+            if (Highest_Collider.gameObject.transform.parent != null)
+            {
+                //set the old parent here and reset it to null on mouse up/trigger.
+                if (Old_Parent == null)
+                {
+                    Old_Parent = Highest_Collider.gameObject.transform.parent.gameObject;
+                }
+            }
+
+
             //we now wait for a mouse up to perform actions or a drag so we have our object we are interacting with.
             //get the vector 3 of the spot the mouse is at in the world.
-            Pos_Start = Camera.main.ScreenToWorldPoint(new Vector2(Input.mousePosition.x, Input.mousePosition.y));
+            
             Collider_Working_With = Highest_Collider;
             Scale_Working_With_Collider = Highest_Collider.transform.localScale;
         }

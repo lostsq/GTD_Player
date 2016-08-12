@@ -3,12 +3,13 @@ Bugs:
 (Fixed)*Zooming in/out and then have ghost, doesn't scale correctly.
 (Fixed)*Zooming in/out causes bullets to move to the spot on field and not the correct scaled spot.
 (Fixed)*Enemy (and maybe tower) range for detecting enemies is not corrilated with the scale.
+(Fixed For Towers)*Have non-field items remain in their idle animations when game is paused.
+(Fixed)*Can't zoom in/out or drag on all tiles on map.
+(Fixed)*Zooming in/out on map does not keep centered how I would expect/want.
 
-*Can't zoom in/out or drag on all tiles on map.
-*Zooming in/out on map does not keep centered how I would expect/want.
 *Can move gems slightly out of invintory box depending on where they are grabbed.
 *Gems don't stack in the invintory box/bag. Want them to stack slightly and newest one is always on top.
-*Have non-field items remain in their idle animations when game is paused.
+
 
 Tasks:
 (Done)*Get scale implemented for gem size for towers
@@ -24,13 +25,15 @@ Tasks:
 (Done)*Get hp of temple and enemies displayed as a bar above/below them
 (Done)*Get attacks to use tower's power, range, ect.
 (Done)*Get the Pause while confirm and menus are up going
+(Done)*Get background for map/playing field placed down
+(Done)*Ensure the map can only move within the bounds of the field with certain zoom bounds as well.
+
 
 *Have confirmation message with text
 *Have confirm box above/below the spot, maybe center camera.
-*Get background for invintory
-*Get background for map/playing field placed down
 *Get Enemies side bar
 *Get Fuse menu
+*Get background art for invintory bag item
 *Make ending scene or something after temple dies
 *Need safegaurds for if the level doesn't load correct, maybe a master reset item.
 *Get text on the UI placed down along with temple hp, energy and such at top

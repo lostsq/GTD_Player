@@ -17,13 +17,15 @@ TagManager:
   - Drag_Spot_Field
   - Btn_Confirm_Yes
   - Btn_Confirm_No
-  - Enemy
+  - Enemy_Drag
   - Btn_Background_Fade
   - Btn_Plus_Icon
   - Btn_Purchase_Main
   - Purchase_Background
   - Btn_Purchase_UI
   - Twr_Display_Drag
+  - Deco_Drag
+  - Path_Drag
   layers:
   - Default
   - TransparentFX

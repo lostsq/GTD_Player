@@ -28,7 +28,14 @@ public class Player_Main_Script : MonoBehaviour {
 
     public int i_Invintory_Space_Amount = 0;
 
+    //zoom info
     public float f_Zoom_Level = 1;
+    public float f_Zoom_Max = 3;
+    public float f_Zoom_Min = .3f;
+
+    //pan bounds info. what is the min/max the center can go to on x/y.
+    public float f_x_Bound = 0;
+    public float f_y_Bound = 0;
 
     //exp stuff
     public bool Tower_Change = true;

@@ -117,6 +117,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 go_New_Enemy = Instantiate(Resources.Load(Current_Strings.Prefab_Enemy_Location + s_Name)) as GameObject;
                 if (go_New_Enemy != null)
                 {
+                    go_New_Enemy.tag = Current_Strings.Tag_Enemy;
+
                     go_New_Enemy.AddComponent<Enemy>();
                     Enemy New_Enemy = go_New_Enemy.GetComponent<Enemy>();
                     New_Enemy.Set_Enemy(s_Name, i_Wave_Number, f_HP, f_Speed, f_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
@@ -366,8 +368,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         void Move_Enemy()
         {
             //this is where we are trying to go. adding in the random amount to decrease stacking.
-            Vector2 Move_Here = new Vector2(Next_Spot.transform.position.x + (f_Random_x * f_Scale_Amount), Next_Spot.transform.position.y + (f_Random_y * f_Scale_Amount));
-
+            Vector2 Move_Here = new Vector2(Next_Spot.transform.position.x + (f_Random_x * Main_Script.f_Zoom_Level), Next_Spot.transform.position.y + (f_Random_y * Main_Script.f_Zoom_Level));
             // Next_Spot
             transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((f_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
             //check and see if it is at it's next spot, and if so we set up the next spot at the parent and the next next spot.

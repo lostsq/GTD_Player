@@ -62,6 +62,9 @@ public class Start_Player_Script : MonoBehaviour {
         bool b_Shared_Energy = false;
         bool b_Shared_Allies = false;
 
+        //This is the theme for the background of the map.
+        string s_Theme = "Default";
+
 
         //All the level string items.
         string[] Level_Items = Level.text.Split('\n');
@@ -211,15 +214,18 @@ public class Start_Player_Script : MonoBehaviour {
                     {
                         if (Arg1.Contains("Decoration"))
                         {
+                            
                             New_Item = Instantiate(Resources.Load(Current_Strings.Prefab_MI_Decorations_Location + Arg1)) as GameObject;
                             New_Item.AddComponent<Map_Deco>();
                             New_Item.GetComponent<Map_Deco>().Deco_Setup(Arg1, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;
+                            New_Item.tag = Current_Strings.Tag_Decoration;
                         }
                         else if (Arg1.Contains("Start_Point"))
                         {
                             New_Item = Instantiate(Resources.Load(Current_Strings.Prefab_MI_Spots_Start)) as GameObject;
                             New_Item.name = Current_Strings.Name_Map_Start;
+                            New_Item.tag = Current_Strings.Tag_Start_Spawn;
                             New_Item.AddComponent<Map_Start>();
                             New_Item.GetComponent<Map_Start>().Map_Start_Setup(Current_Strings.Name_Map_Start, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;
@@ -240,6 +246,7 @@ public class Start_Player_Script : MonoBehaviour {
                             New_Item.AddComponent<Map_Path>();
                             New_Item.GetComponent<Map_Path>().Map_Path_Setup(Arg1, Arg2, Arg3);
                             Space_Array[Arg2, Arg3] = New_Item;
+                            New_Item.tag = Current_Strings.Tag_Path;
                             //Might now work will need to check.
                             Main_Script.Path_List.Add(New_Item.GetComponent<Map_Path>());
                         }
@@ -288,6 +295,30 @@ public class Start_Player_Script : MonoBehaviour {
         //Set the array to the main script.
         Main_Script.Map_Spaces = Space_Array;
 
+
+
+        //Add in the background to size for the theme used. added more just so it covers the whole map no matter what.
+        int t_Total_W = (int)(t_Width * f_Default_Box_Size / 10.24f) + 16;
+        int t_Total_H = (int)(t_Height * f_Default_Box_Size / 10.24f) + 16;
+
+        int i_Number_For_Theme = 1;
+
+        for (int i = 0; i < t_Total_W; i++)
+        {
+            for (int j = 0; j < t_Total_H; j++)
+            {
+                //create the background item.
+                GameObject New_Background = Instantiate(Resources.Load(Current_Strings.Prefab_Theme_Location+s_Theme+"/"+s_Theme+"_"+ i_Number_For_Theme)) as GameObject;
+                float Offset_x = (((t_Total_W * 10.24f) / 2) * -1) + 5.12f;
+                float Offset_y = (((t_Total_H * 10.24f) / 2) * -1) + 5.12f;
+                New_Background.transform.position = new Vector2(Offset_x + (10.24f * i), Offset_y + (10.24f * j));
+                New_Background.transform.parent = Map_Parent_Trans;
+                
+
+            }
+        }
+
+
         //Sets the shared items to use.
         if (b_Shared_Energy)
         {
@@ -298,6 +329,10 @@ public class Start_Player_Script : MonoBehaviour {
             //WILL ADD IN AFTER WE HAVE THE MAIN MENU SAVING AND PROFILE SAVING DONE.else if (Level_Items[i].Contains("Starting Energy("))
         }
 
+
+        //setting up the pan bounds
+        Main_Script.f_x_Bound = (t_Width * f_Default_Box_Size) / 2;
+        Main_Script.f_y_Bound = (t_Height * f_Default_Box_Size) / 2;
 
     }
 

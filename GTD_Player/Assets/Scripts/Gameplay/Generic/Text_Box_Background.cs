@@ -26,7 +26,8 @@ public class Text_Box_Background : MonoBehaviour {
             {
                 Destroy(GetComponent<BoxCollider2D>());
                 gameObject.AddComponent<BoxCollider2D>();
-                //GetComponent<BoxCollider2D>().enabled = false;
+                //if this is not disabled for the energy at the top it will keep throwing exception cause of colliuder stuff. Was enabled, not sure why.. but sure there is a cause. commented here so i know.
+                GetComponent<BoxCollider2D>().enabled = false;
                 Last_String = GetComponent<TextMesh>().text;
             }
 

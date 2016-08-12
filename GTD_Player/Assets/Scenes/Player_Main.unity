@@ -620,6 +620,33 @@ SpriteRenderer:
   m_Color: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0.584}
   m_FlipX: 0
   m_FlipY: 0
+--- !u!1 &683533387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 683533388}
+  m_Layer: 0
+  m_Name: Scroll_Zoom_Item
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &683533388
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 683533387}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.95, y: 2.69, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1116245633}
+  m_RootOrder: 0
 --- !u!1 &708026076
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,8 +671,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 708026076}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 500, y: 500, z: 1}
+  m_LocalPosition: {x: -0.4, y: -2.3, z: 0}
+  m_LocalScale: {x: 50, y: 50, z: 1}
   m_Children: []
   m_Father: {fileID: 601190110}
   m_RootOrder: 0
@@ -691,7 +718,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 8
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 8798ae97971d0da4eb5e7229951c24b3, type: 3}
   m_Color: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0.584}
   m_FlipX: 0
   m_FlipY: 0
@@ -922,7 +949,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 683533388}
   m_Father: {fileID: 0}
   m_RootOrder: 13
 --- !u!1 &1131939988
@@ -1139,19 +1167,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   b_Is_Running: 1
+  b_Is_Not_Paused: 1
   s_Level_Name: 
   f_Energy: 0
   i_Max_HP: 0
   f_HP: 0
   i_Invintory_Space_Amount: 0
   f_Zoom_Level: 1
+  f_Zoom_Max: 3
+  f_Zoom_Min: 0.3
+  f_x_Bound: 0
+  f_y_Bound: 0
   Tower_Change: 1
   f_Exp_Gathered: 0
   b_Confirmation_Open: 0
   b_Confirmation_True: 1
   Confirmation_Objects: []
   s_Confirmation_Action: none
-  Enemy_Spawns: []
   Enemies_On_Field: []
   Tower_List: []
   Path_List: []

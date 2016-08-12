@@ -42,10 +42,13 @@
         Prefab_Tower_Sapphire = "Prefabs/Towers/Sapphire",
 
         //ENEMIES
-    Prefab_Enemy_Location = "Prefabs/Enemies/",
+        Prefab_Enemy_Location = "Prefabs/Enemies/",
 
         //ATTACKS
         Prefab_Attacks_Location = "Prefabs/Attacks/Attack_",
+
+        //THEME LOCATION
+        Prefab_Theme_Location = "Prefabs/Enviroment/Themes/",
 
         //MAP ITEMS
         Prefab_MI_Decorations_Location = "Prefabs/Enviroment/Decorations/",
@@ -53,6 +56,8 @@
         Prefab_MI_Spots_Temple = "Prefabs/Enviroment/Map_Spots/Temple",
         Prefab_MI_Path_Template = "Prefabs/Enviroment/Map_Spots/Map_Spot_Path",
         Prefab_MI_Map_Space = "Prefabs/Enviroment/Map_Spots/Map_Space",
+
+        
 
         //PATH SPRITES
         Sprite_Up_Basic = "Raw_Textures/Enviroment/Map_Spots/Path/Up_Basic",
@@ -97,8 +102,10 @@
         Tag_Tower_Drag = "Twr_Drag",
         Tag_Tower_On_Map = "Twr_Drag_On_Map",
         Tag_Tower_Display = "Twr_Display_Drag",
+        Tag_Decoration = "Deco_Drag",
+        Tag_Path = "Path_Drag",
 
-        Tag_Enemy = "Enemy",
+        Tag_Enemy = "Enemy_Drag",
 
         Tag_Path_Maker_Field_Move = "Drag_Spot_Field";
 

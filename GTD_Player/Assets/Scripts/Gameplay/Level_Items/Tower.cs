@@ -264,7 +264,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
             }
             else
             {
-                GetComponent<Animator>().enabled = false;
+                if (b_On_Field)
+                {
+                    GetComponent<Animator>().enabled = false;
+                }
             }
         }
 
