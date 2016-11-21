@@ -26,6 +26,14 @@ TagManager:
   - Twr_Display_Drag
   - Deco_Drag
   - Path_Drag
+  - Btn_Enemy_Viewer
+  - Btn_Gem_Fuse
+  - Btn_Fuse
+  - Fuse_Background
+  - Fuse_Insert_Box
+  - Fuse_Parent
+  - Purchase_Parent
+  - Inventory_Parent
   layers:
   - Default
   - TransparentFX

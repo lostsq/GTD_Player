@@ -63,6 +63,16 @@ public class Player_Main_Script : MonoBehaviour {
     public Collider2D Tower_Open_Collider = null;
     public bool b_Tower_Open = false;
 
+    //enemy viewer open or now.
+    bool b_Enemy_Viewer_Open = false;
+    //the amount of enemies the user can view.
+    int i_Enemy_Viewer_Count = 0;
+
+
+    //This is a list of the hotbar gameobjects. used for when fusing to ensure gems go back to an empty spot.
+    public List<GameObject> Hotbar_Gameobjects = new List<GameObject>();
+    
+
 
     // Use this for initialization
     void Start () {
@@ -312,28 +322,55 @@ public class Player_Main_Script : MonoBehaviour {
         }
     }
 
+    //show/hide the enemy viewer.
+    public void Enemy_Viewer_Clicked()
+    {
+        GameObject Enemy_Viewer = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Background);
+        //first check if it's showing or now.
+        if (b_Enemy_Viewer_Open)
+        {
+            //set it to false and close it.
+            b_Enemy_Viewer_Open = false;
+            Enemy_Viewer.transform.position = new Vector2(Enemy_Viewer.transform.position.x - Enemy_Viewer.GetComponent<BoxCollider2D>().size.x * Enemy_Viewer.transform.localScale.x, 0);
+        }
+        else
+        {
+            //it's closed so we update the enemy stuff and set it to open the move to open.
+            b_Enemy_Viewer_Open = true;
+            Update_Enemy_Viewer();
+            //now move it out to be visible.
+            Enemy_Viewer.transform.position = new Vector2(Enemy_Viewer.transform.position.x + Enemy_Viewer.GetComponent<BoxCollider2D>().size.x * Enemy_Viewer.transform.localScale.x, 0);
+        }
+    }
+
+    //this will update the viewer showing what it should.
+    void Update_Enemy_Viewer()
+    {
+
+    }
+
     //This is fired when we can hover a box over a gameobject. the object is passed.
     void Hover_Box()
     {
-            GameObject Hover_Text = GameObject.Find(Current_Strings.Name_Hover_Click_Text);
+        GameObject Hover_Text = GameObject.Find(Current_Strings.Name_Hover_Click_Text);
 
-            if (Hover_Collider != null)
+        if (Hover_Collider != null)
+        {
+            GameObject Hover_This = Hover_Collider.gameObject;
+            //set the text
+            string Text_To_Place = "";
+
+            //first we determin if it's a tower or a enemy.
+            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Drag))
             {
-                GameObject Hover_This = Hover_Collider.gameObject;
-                //set the text
-                string Text_To_Place = "";
+                Text_To_Place += "(L" + Hover_This.GetComponent<Tower>().i_Level + ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
+                Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "\n";
+                Text_To_Place += "Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "\n";
+                Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "\n";
+                Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
+                Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
 
-                //first we determin if it's a tower or a enemy.
-                if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Drag))
-                {
-                    Text_To_Place += "(L" + Hover_This.GetComponent<Tower>().i_Level + ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
-                    Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "\n";
-                    Text_To_Place += "Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "\n";
-                    Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "\n";
-                    Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
-                    Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
-
-                }
+            }
             else if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Display))
             {
                 Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
@@ -343,66 +380,76 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
                 Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
             }
-                else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
-                {
-                    Text_To_Place += Hover_This.GetComponent<Enemy>().s_Name + "\n";
-                    Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Enemy>().f_Speed + "\n";
-                    Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().f_Power + "\n";
-                    Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().f_Range + "\n";
-                    Text_To_Place += "HP: " + Hover_This.GetComponent<Enemy>().f_HP + "/" + Hover_This.GetComponent<Enemy>().f_Max_HP;
-                }
-                else
-                {
-                    Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = false;
-                }
-
-                if (Text_To_Place != "")
-                {
-                    Hover_Text.GetComponent<TextMesh>().text = Text_To_Place;
-                    Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = true;
-
-                    //Have to do this.. why.. not sure, can't find out where it is being enabled or how after i remove/add it in it's script.
-                    Hover_Text.GetComponent<BoxCollider2D>().enabled = false;
-
-
-                    //now need to find if there is more space to the left or right the unit for placing the hover box.
-                    Vector2 Box_Placement = Hover_This.transform.position;
-                    Vector2 GOpix = Camera.main.WorldToScreenPoint(Hover_This.transform.position);
-
-                    float Bx1 = (Hover_This.GetComponent<BoxCollider2D>().size.x / 2) * Hover_This.transform.localScale.x;
-                    float By1 = (Hover_This.GetComponent<BoxCollider2D>().size.y / 2) * Hover_This.transform.localScale.y;
-
-                    //x is bigger than half the screen we place it on the right.
-                    if (GOpix.x < ((float)Screen.width / 2))
-                    {
-                        Box_Placement.x += Bx1;
-                    }
-                    //else it goes on the left side.
-                    else
-                    {
-                        Box_Placement.x -= Bx1 + ((Hover_Text.GetComponent<BoxCollider2D>().size.x) * Hover_Text.transform.localScale.x);//Bx1 + 0;
-                    }
-
-                    //set up the y spot.
-
-                    if (GOpix.y > ((float)Screen.height / 2))
-                    {
-                        Box_Placement.y -= By1;//((Hover_Text.GetComponent<BoxCollider2D>().size.y) * Hover_Text.transform.localScale.y);
-                    }
-                    //else it goes on the left side.
-                    else
-                    {
-                        Box_Placement.y += By1 + ((Hover_Text.GetComponent<BoxCollider2D>().size.y) * Hover_Text.transform.localScale.y);
-                    }
-
-                    Hover_Text.transform.position = Box_Placement;
-                }
+            else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
+            {
+                Text_To_Place += Hover_This.GetComponent<Enemy>().s_Name + "\n";
+                Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Enemy>().f_Speed + "\n";
+                Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().f_Power + "\n";
+                Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().f_Range + "\n";
+                Text_To_Place += "HP: " + Hover_This.GetComponent<Enemy>().f_HP + "/" + Hover_This.GetComponent<Enemy>().f_Max_HP;
             }
             else
             {
                 Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = false;
             }
+
+            if (Text_To_Place != "")
+            {
+                Hover_Text.GetComponent<TextMesh>().text = Text_To_Place;
+                Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = true;
+
+                //Have to do this.. why.. not sure, can't find out where it is being enabled or how after i remove/add it in it's script.
+                Hover_Text.GetComponent<BoxCollider2D>().enabled = false;
+
+
+                //now need to find if there is more space to the left or right the unit for placing the hover box.
+                Vector2 Box_Placement = Hover_This.transform.position;
+                Vector2 GOpix = Camera.main.WorldToScreenPoint(Hover_This.transform.position);
+
+
+                //this is to get the map scale if hovering in the map area. right now using what layer they are on, anything less than 30 is map for now.
+                float f_tScale = 1;
+                if (Hover_This.GetComponent<SpriteRenderer>().sortingOrder < 30)
+                {
+                    f_tScale = f_Zoom_Level;
+                }
+
+                float Bx1 = (Hover_This.GetComponent<BoxCollider2D>().size.x / 2)* Hover_This.transform.localScale.x * f_tScale;
+                float By1 = (Hover_This.GetComponent<BoxCollider2D>().size.y / 2)* Hover_This.transform.localScale.y * f_tScale;
+                //Debug.Log(Bx1);
+                //x is bigger than half the screen we place it on the right.
+                if (GOpix.x < ((float)Screen.width / 2))
+                {
+                    Box_Placement.x += Bx1;
+                }
+                //else it goes on the left side.
+                else
+                {
+                    Box_Placement.x -= Bx1 + ((Hover_Text.GetComponent<BoxCollider2D>().size.x));// * Hover_Text.transform.localScale.x);//Bx1 + 0;
+                }
+
+                //set up the y spot.
+
+                if (GOpix.y > ((float)Screen.height / 2))
+                {
+                    Box_Placement.y -= By1;
+                }
+                //else it goes on the left side.
+                else
+                {
+                    Box_Placement.y += By1 + ((Hover_Text.GetComponent<BoxCollider2D>().size.y));// * Hover_Text.transform.localScale.y);
+                }
+
+               
+
+                Hover_Text.transform.position = Box_Placement;
+            }
         }
+        else
+        {
+            Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = false;
+        }
+    }
 
 
     //we create the tower and return that tower that is created.
@@ -421,9 +468,10 @@ public class Player_Main_Script : MonoBehaviour {
                 Tower New_Tower = go_New_Tower.GetComponent<Tower>();
 
                 New_Tower.s_Name = Locked_Gems.Locked_Gem_List[i].Name;
+                New_Tower.s_Attack_Name = Locked_Gems.Locked_Gem_List[i].Attack_Name;
 
                 //set up the bullet/attack prefab here.
-                New_Tower.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + New_Tower.s_Name;
+                New_Tower.s_Bullet_Prefab = Locked_Gems.Locked_Gem_List[i].s_Bullet_Prefab_Location;
 
                 New_Tower.i_Exp_Level = Locked_Gems.Locked_Gem_List[i].i_Exp_Level;
                 New_Tower.f_Power_Upgrade = Locked_Gems.Locked_Gem_List[i].f_Power_Levels;
@@ -522,6 +570,7 @@ public class Player_Main_Script : MonoBehaviour {
 
 
     //processes the confirmation when it's accepted or declined.
+    //The logic of what happens when something is confirmed happens here.
     void Confirmation_Process()
     {
         //regaurdless we need to move the box back to it's default spot.
@@ -626,7 +675,7 @@ public class Player_Main_Script : MonoBehaviour {
 
                 //set the ghsot back to invis.
                 Confirmation_Objects[0].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
-                
+
 
                 //create a new tower.
                 GameObject New_Tower = Create_New_Tower(Confirmation_Objects[0].GetComponent<Tower>().s_Name);
@@ -647,7 +696,7 @@ public class Player_Main_Script : MonoBehaviour {
 
                 //Add the tower to the tower list.
                 Tower_List.Add(New_Tower);
-                
+
 
             }
             //return the ghost to the correct location.
@@ -655,6 +704,72 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 //set the ghost back to invis.
                 Confirmation_Objects[0].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+            }
+        }
+
+        //FUSING GEMS
+        if (s_Confirmation_Action == Current_Strings.Confirm_Tower_Fuse)
+        {
+            //Moving tower from field to hotspot.
+            if (b_Confirmation_True)
+            {
+
+                //now we need to create a new tower with the merged stats and then remove the old two.
+                //place the new tower in the center area.
+
+
+                //need to perfrom MONEY check here.
+
+                //create the new tower
+                GameObject New_Tower = Create_New_Tower(Is_Fuse_Possible());
+
+
+                //get the two fuses for reference and to remove after making the new tower.
+                GameObject Fuse_01 = null;
+                GameObject Fuse_02 = null;
+
+                //first get the two items and make sure there are two, if not return no.
+                if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+                {
+                    Fuse_01 = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject;
+                }
+                if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
+                {
+                    Fuse_02 = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject;
+                }
+
+                //ensure there is a tower.
+                if (New_Tower != null)
+                {
+                    //need to disable tower
+                    New_Tower.GetComponent<Tower>().b_On_Field = false;
+                    //set posistion.
+                    New_Tower.transform.position = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.position;
+                    //set parent.
+                    New_Tower.transform.parent = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform;
+                    //set scale.
+                    New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
+                    //sprite render stuff.
+                    New_Tower.GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).GetComponent<SpriteRenderer>().sortingOrder + 2;
+                    //set up the tag.
+                    New_Tower.tag = Current_Strings.Tag_Tower_Drag;
+                    //Set Animation.
+                    New_Tower.GetComponent<Animator>().SetBool("Attacking", false);
+
+                    //Add the tower to the tower list.
+                    Tower_List.Add(New_Tower);
+
+                    //we remove the old towers.
+                    Tower_List.Remove(Fuse_01);
+                    Tower_List.Remove(Fuse_02);
+                    GameObject.Destroy(Fuse_01);
+                    GameObject.Destroy(Fuse_02);
+                }
+            }
+            //return the ghost to the correct location.
+            else
+            {
+
             }
         }
 
@@ -666,6 +781,72 @@ public class Player_Main_Script : MonoBehaviour {
 
     }
 
+    public void Attempt_Fuse()
+    {
+        string Fuse_Check_Answer = Is_Fuse_Possible();
 
+        //check if a fuse can even be done.
+        if (Fuse_Check_Answer != "No")
+        {
+            //ensure that there is not a gem/item in the complete box first.
+            if (GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.childCount == 0)
+            {
+                //ALSO NEED TO CHECK IF YOU HAVE ENOUGH MONEY.
+
+                //Enable the confirmation message for fusing gems.
+                s_Confirmation_Action = Current_Strings.Confirm_Tower_Fuse;
+                b_Confirmation_Open = true;
+                //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
+                GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
+            }
+            
+        }
+    }
+
+    //this checks if the two gems in the spots can fuse and if so what it will fuse into. 
+    //Will return a string of "No" if it's not possible.
+    public string Is_Fuse_Possible()
+    {
+        //we take the tower in the first location and pass it the name/kind of gem of the second.
+        //Then the tower it'self will check if it can make the fuse and return the name if any.
+
+        GameObject Fuse_01 = null;
+        GameObject Fuse_02 = null;
+
+        //first get the two items and make sure there are two, if not return no.
+        if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+        {
+            Fuse_01 = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject;
+        }
+        if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
+        {
+            Fuse_02 = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject;
+        }
+
+        //make sure there is a gem in both spots.
+        if (Fuse_01 != null && Fuse_02 != null)
+        {
+            //search the locked gems for the name of fuse 01 to start the compare.
+            for (int i = 0; i < Locked_Gems.Locked_Gem_List.Count; i++)
+            {
+                if (Locked_Gems.Locked_Gem_List[i].Name == Fuse_01.GetComponent<Tower>().s_Name)
+                {
+                    //once first name is found we search the fuse list to see if the second gem name is in there.
+                    for (int j = 0; j < Locked_Gems.Locked_Gem_List[i].Fuse_Tables.GetLength(0); j++)
+                    {
+                        //if there is a match we return the name of the gem that will be made from the fusion.
+                        if (Locked_Gems.Locked_Gem_List[i].Fuse_Tables[j,0] == Fuse_02.GetComponent<Tower>().s_Name)
+                        {
+                            //return the name of j-1; aka the fusion name.
+                            return Locked_Gems.Locked_Gem_List[i].Fuse_Tables[j, 1];
+                        }
+                    }
+                }
+            }
+        }
+
+        //there was either no gem in the second area, or no fuse options avilable.
+        return "No";
+    }
 
 }

@@ -33,6 +33,7 @@ public class Text_Box_Background : MonoBehaviour {
 
 
             //set the background's scale.
+            /*
             float Background_Scale_x = (GetComponent<BoxCollider2D>().size.x * transform.localScale.x) / Background_Item.GetComponent<BoxCollider2D>().size.x;
             float Background_Scale_y = (GetComponent<BoxCollider2D>().size.y * transform.localScale.y) / Background_Item.GetComponent<BoxCollider2D>().size.y;
             Background_Item.transform.localScale = new Vector2((Background_Scale_x * .1f) + Background_Scale_x, (Background_Scale_y * .05f) + Background_Scale_y);
@@ -40,6 +41,17 @@ public class Text_Box_Background : MonoBehaviour {
             //center the background to the text.
             float Background_Pos_x = transform.position.x + ((GetComponent<BoxCollider2D>().size.x * transform.localScale.x) / 2);
             float Background_Pos_y = transform.position.y - ((GetComponent<BoxCollider2D>().size.y * transform.localScale.y) / 2);
+            Background_Item.transform.position = new Vector2(Background_Pos_x, Background_Pos_y);
+
+            */
+
+            float Background_Scale_x = (GetComponent<BoxCollider2D>().size.x ) / Background_Item.GetComponent<BoxCollider2D>().size.x;
+            float Background_Scale_y = (GetComponent<BoxCollider2D>().size.y ) / Background_Item.GetComponent<BoxCollider2D>().size.y;
+            Background_Item.transform.localScale = new Vector2((Background_Scale_x * .1f) + Background_Scale_x, (Background_Scale_y * .05f) + Background_Scale_y);
+
+            //center the background to the text.
+            float Background_Pos_x = transform.position.x + ((GetComponent<BoxCollider2D>().size.x / 2));
+            float Background_Pos_y = transform.position.y - ((GetComponent<BoxCollider2D>().size.y / 2));
             Background_Item.transform.position = new Vector2(Background_Pos_x, Background_Pos_y);
 
         }

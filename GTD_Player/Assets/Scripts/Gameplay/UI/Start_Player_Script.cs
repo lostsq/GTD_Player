@@ -30,11 +30,16 @@ public class Start_Player_Script : MonoBehaviour {
         Setup_Hotbar();
         //set up the inventory boxes.
         Setup_Inventory_Boxes();
+        //we set up the fuse menu
+        Setup_Fuse_Menu();
         //loads the level we are playing.
         Load_Level_Save();
 
         //after the level is loaded or default we then create/set up the purchase menu with the unlocked gems.
         Setup_Purchase_Menu();
+
+        //This will set up the enemy UI screen.
+        Setup_Enemy_Viewer();
     }
 
     // Update is called once per frame
@@ -440,6 +445,109 @@ public class Start_Player_Script : MonoBehaviour {
 
     }
 
+    void Setup_Fuse_Menu()
+    {
+        //Display gem on left(will be idle animation, and have hover over information.) Hover info might include description since it's display.
+        //On right will be a buy/confirm button.
+
+        //this is the number of tiles across, but double for the abs for the item to give us good x location.
+        int Tiles_Across = -3;
+
+        //the parent of the fuse menu.
+        GameObject Parent_Object = GameObject.Find(Current_Strings.Name_Fuse_Parent);
+
+        //Left/Right Spots
+        GameObject New_Spot_Top;
+        GameObject New_Spot_Bottom;
+
+        //make the backgrou d 2x5 for the fuse menu.
+        for (int i = Tiles_Across; i < System.Math.Abs(Tiles_Across); i++)
+        {
+
+            //for the far most left spot first since it will use different sprites.
+            if (i == Tiles_Across)
+            {
+                //the top left/right.
+                New_Spot_Top = Instantiate(Resources.Load(Current_Strings.Prefab_I_Top_Left)) as GameObject;
+                New_Spot_Bottom = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Left)) as GameObject;
+
+                //we will move/place the combine/finish boxes here since it's only don't once.
+                GameObject Left_Box = GameObject.Find(Current_Strings.Name_Fuse_Box_01);
+                GameObject Right_Box = GameObject.Find(Current_Strings.Name_Fuse_Box_02);
+                GameObject Center_Box = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine);
+
+                //place them in the parent and then layer them.
+                Left_Box.transform.parent = Parent_Object.transform;
+                Left_Box.GetComponent<SpriteRenderer>().sortingOrder = 11;
+                Right_Box.transform.parent = Parent_Object.transform;
+                Right_Box.GetComponent<SpriteRenderer>().sortingOrder = 11;
+                Center_Box.transform.parent = Parent_Object.transform;
+                Center_Box.GetComponent<SpriteRenderer>().sortingOrder = 11;
+
+                //place the boxes on the left,right and center of the fuse area.
+                float Box_X = (New_Spot_Top.GetComponent<BoxCollider2D>().size.x * New_Spot_Top.transform.localScale.x);
+                float Y_Spot = Box_X / 1.3f;
+                Box_X = Box_X * i + (Box_X);
+
+                Left_Box.transform.position = new Vector2(Box_X, Y_Spot);
+                Right_Box.transform.position = new Vector2(-Box_X, Y_Spot);
+                Center_Box.transform.position = new Vector2(0, Y_Spot);
+
+                //the fuse button.
+                GameObject Fuse_Button = GameObject.Find(Current_Strings.Name_Fuse_Button_Complete);
+                Fuse_Button.transform.parent = Parent_Object.transform;
+                Fuse_Button.GetComponent<SpriteRenderer>().sortingOrder = 11;
+                Fuse_Button.transform.position = new Vector2(0, 0);
+
+
+
+            }
+
+            //Make a set of boxes and since it's the first set we will start off with corner pieces.
+            else if (i == System.Math.Abs(Tiles_Across) - 1)
+            {
+                New_Spot_Top = Instantiate(Resources.Load(Current_Strings.Prefab_I_Top_Right)) as GameObject;
+                New_Spot_Bottom = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Right)) as GameObject;
+            }
+            else
+            {
+                New_Spot_Top = Instantiate(Resources.Load(Current_Strings.Prefab_I_Top)) as GameObject;
+                New_Spot_Bottom = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot)) as GameObject;
+            }
+
+
+
+
+
+            New_Spot_Top.GetComponent<SpriteRenderer>().sortingOrder = 10;
+            New_Spot_Bottom.GetComponent<SpriteRenderer>().sortingOrder = 10;
+
+            New_Spot_Top.tag = Current_Strings.Tag_Fuse_Background;
+            New_Spot_Bottom.tag = Current_Strings.Tag_Fuse_Background;
+
+            New_Spot_Top.transform.parent = Parent_Object.transform;
+            New_Spot_Bottom.transform.parent = Parent_Object.transform;
+
+            
+            
+
+            //set the posistion
+            float TxStart = (New_Spot_Top.GetComponent<BoxCollider2D>().size.x * New_Spot_Top.transform.localScale.x);
+            TxStart = TxStart * (i+0) + (TxStart / 2);
+
+            float TyT = (New_Spot_Top.GetComponent<BoxCollider2D>().size.x * New_Spot_Top.transform.localScale.x);
+            float TyB = TyT - ((New_Spot_Bottom.GetComponent<BoxCollider2D>().size.x * New_Spot_Bottom.transform.localScale.x));
+
+            New_Spot_Top.transform.position = new Vector2(TxStart, TyT);
+            New_Spot_Bottom.transform.position = new Vector2(TxStart, TyB);
+            
+    
+        }
+
+        //Move the fuse menu to be away from the center.
+        Parent_Object.transform.position = new Vector2(100, 100);
+    }
+
     //make the invintory space for gems to be in.
     void Setup_Inventory_Boxes()
     {
@@ -562,7 +670,53 @@ public class Start_Player_Script : MonoBehaviour {
                 GameObject Empty_Hotbox = Instantiate(Resources.Load(Current_Strings.Prefab_Hotbar_Box)) as GameObject;
                 Empty_Hotbox.transform.position = new Vector3(tx, ty);
                 Empty_Hotbox.transform.parent = GameObject.Find(Current_Strings.Name_Hotbar_Parent).transform;
+
+                //add the hotbox to the list in the main script.
+                Main_Script.Hotbar_Gameobjects.Add(Empty_Hotbox);
             }
         }
+    }
+
+    //This sets up the enemy viewer by posistioning the background and view button and getting it ready to use.
+    void Setup_Enemy_Viewer()
+    {
+        //get the camera details
+        float screenAspect = (float)Screen.width / (float)Screen.height;
+        float cameraHeight = Camera.allCameras[0].orthographicSize * 2;
+        float cameraWidth = cameraHeight * screenAspect;
+
+        //get the enemy background item we will be changing the size of.
+        GameObject Enemy_Background_Viewer = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Background);
+
+        //we want the enemy screen to be 10% of screen width
+        float Enemy_Background_Width = cameraWidth * .1f;
+
+        //now we apply a scale to the width and height of the background viewer to make it fill the left side of the screen then move it.
+        float Scale_Width = (Enemy_Background_Width / Enemy_Background_Viewer.GetComponent<BoxCollider2D>().size.x);
+        float Scale_Height = (cameraHeight / Enemy_Background_Viewer.GetComponent<BoxCollider2D>().size.y);
+
+        Enemy_Background_Viewer.transform.localScale = new Vector2(Scale_Width, Scale_Height);
+
+        //now place it on the left side. the pivot is in the center.
+        Enemy_Background_Viewer.transform.position = new Vector2(-cameraWidth/2 - Enemy_Background_Width/2, 0);
+
+        //now move the open/close to the middle right of the background and make it's parent the viewer.
+        GameObject Enemy_Button = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Button);
+        //first move into place.
+        Enemy_Button.transform.position = new Vector2(-cameraWidth / 2 + (Enemy_Button.GetComponent<BoxCollider2D>().size.x / 2), 0);
+        //set the parent.
+        Enemy_Button.transform.parent = Enemy_Background_Viewer.transform;
+        //now need to adjust the scale since we don't want to use the parent's scale.
+        Enemy_Button.transform.localScale = new Vector2(Enemy_Button.transform.localScale.x / Enemy_Background_Viewer.transform.localScale.x, Enemy_Button.transform.localScale.y / Enemy_Background_Viewer.transform.localScale.y);
+
+
+        //now the hard part of placing in enemies. Could either place all of them in.. but for endless mode it would not work... 
+        //so maybe just load up 50 waves and future vision can't go past a certain amount.. so each wave kill it updates.
+        //or just load them up when it's opened and only show what future vision shows. then only update when the future vision number changes or a wave is complete.
+        //thinking i will go with the last one so look in the button opening and update for it calling the code to place in the sprites/info.
+
+        //Debug.Log("EEE::" + Enemy_Background_Width);
+
+
     }
 }

@@ -429,6 +429,18 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                         Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
                     }
 
+                    //in the Fuse_Spots
+                    if (Under_This.gameObject.tag == Current_Strings.Tag_Button_Fuse_Insert_Box && Under_This.gameObject.transform.childCount == 0)
+                    {
+                        Pos_Start = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.position = Under_This.gameObject.transform.position;
+                        Collider_Working_With.gameObject.transform.parent = Under_This.gameObject.transform;
+                        Collider_Working_With.gameObject.transform.localScale = Scale_Working_With_Collider;
+                        //sprite render stuff.
+                        Cur_SR.sortingOrder = Under_SR.sortingOrder + 2;
+
+                    }
+
                     //in the hotbox Need GHOST!
                     if (Under_This.gameObject.tag == Current_Strings.Tag_Hotbar_Spot && Under_This.gameObject.transform.childCount == 0)
                     {
@@ -743,6 +755,16 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         {
             Main_Script.Plus_Icon_Clicked(But_Col);
         }
+        //this is for the enemy viewer
+        else if(But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Enemy_Viewer_Button))
+        {
+            Main_Script.Enemy_Viewer_Clicked();
+        }
+        //this is for the fuse gem button. Tag_Button_Fuse_Purchase
+        else if (But_Col.gameObject.tag == Current_Strings.Tag_Button_Fuse_Purchase)
+        {
+            Main_Script.Attempt_Fuse();
+        }
 
         //we are acessing a new menu item or something.
         else
@@ -750,6 +772,52 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             //menu is open so we must now close. only for the large menus like invin, enemies, create
             if (Cur_Open_Menu != null)
             {
+                //need to check for fuse in case need to move stuff out of it.
+                if (Cur_Open_Menu == GameObject.Find(Current_Strings.Name_Fuse_Parent))
+                {
+                    //this is each of the possible spots in an array. will check if they are null on last for statement.
+                    GameObject[] Fuse_Box_Items = new GameObject[3] { null, null, null };
+
+                    //since the fuse menu we check if there is any gems in any of the spots and if so we move them.
+                    if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+                    {
+                        Fuse_Box_Items[0] = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject;
+                    }
+                    if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
+                    {
+                        Fuse_Box_Items[1] = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject;
+                    }
+                    if (GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.childCount > 0)
+                    {
+                        Fuse_Box_Items[2] = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.GetChild(0).gameObject;
+                    }
+
+                    for (int i = 0; i <= 2; i++)
+                    {
+                        if (Fuse_Box_Items[i] != null)
+                        {
+                            bool Returned = false;
+                            //there is an object and we move it to the first hotbar free.
+                            for (int j = 0; j < Main_Script.Hotbar_Gameobjects.Count; j++)
+                            {
+                                if (Main_Script.Hotbar_Gameobjects[j].transform.childCount == 0 && !Returned)
+                                {
+                                    Returned = true;
+                                    //changing the parents changes the scale so we need to keep a before so we can apply it after.
+                                    Scale_Working_With_Collider = Fuse_Box_Items[i].transform.transform.localScale;
+                                    //now we place the item in it and such.
+                                    Fuse_Box_Items[i].transform.position = Main_Script.Hotbar_Gameobjects[j].transform.position;
+                                    Fuse_Box_Items[i].transform.parent = Main_Script.Hotbar_Gameobjects[j].transform;
+                                    Fuse_Box_Items[i].transform.transform.localScale = Scale_Working_With_Collider;
+                                    //sprite render stuff.
+                                    Fuse_Box_Items[i].transform.GetComponent<SpriteRenderer>().sortingOrder = Main_Script.Hotbar_Gameobjects[j].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
                 //move the open menu to the off screen.
                 Cur_Open_Menu.gameObject.transform.position = new Vector3(-500, -550);
                 Last_Menu_Tag_Open = Cur_Open_Menu.tag;
@@ -775,6 +843,17 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 {
                     GameObject.Find(Current_Strings.Name_Purchase_Parent).transform.position = new Vector3(0, 0);
                     Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Purchase_Parent);
+                }
+            }
+
+
+            //Fuse button click.
+            if (But_Col.gameObject.tag.Contains(Current_Strings.Tag_Button_Fuse_UI))
+            {
+                if (GameObject.Find(Current_Strings.Name_Fuse_Parent).tag != Last_Menu_Tag_Open)
+                {
+                    GameObject.Find(Current_Strings.Name_Fuse_Parent).transform.position = new Vector3(0, 0);
+                    Cur_Open_Menu = GameObject.Find(Current_Strings.Name_Fuse_Parent);
                 }
             }
         }

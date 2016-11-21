@@ -62,7 +62,6 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public string s_Bullet_Prefab;
 
 
-
         //Create the enemy with all the stats needed to get it going.
         public void Set_Enemy(string p_Name, int p_Wave_Number, float p_HP, float p_Speed, float p_Power, int p_Amount, int p_Start_After, int p_Reward_Single, int p_Reward_Wave, string p_Mod, bool b_Is_Spawner)
         {

@@ -12,6 +12,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_On_Field = false;
         bool b_Fused = false;
         public string s_Name = "Null";
+        public string s_Attack_Name = "Null";
         public string s_Short_Description = "None";
         public int i_Cost = 0;
         public int i_Level = 0;
@@ -237,7 +238,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                             //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length + "T1");
                             //Debug.Log(GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime + "T2");
 
-                            if (AnimatorIsPlaying(s_Name + "_Attack"))
+                            if (AnimatorIsPlaying(s_Attack_Name + "_Attack"))
                             {
                                 if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
                                 {
@@ -258,6 +259,11 @@ namespace Assets.Scripts.Gameplay.Level_Items
                                 }
                             }
 
+                        }
+                        else
+                        {
+                            //set attacking to false for animation since the target is now null. (aka the target was killed while in attack animation. 
+                            GetComponent<Animator>().SetBool("Attacking", false);
                         }
                     }
                 }
