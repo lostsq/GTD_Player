@@ -35,6 +35,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         public float f_Range;
 
+        public float f_Move_Percent = 1;
+
 
         public float f_Max_HP;
 
@@ -57,6 +59,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_In_Progress = false;
         public int i_Location_In_Spawn_Array;
         public Enemy Parent_Spawner;
+
+        //this is the damage applied to the unit. it will go through them applying damage and effects as needed.
+        List<Attached_Damage> Damages = new List<Attached_Damage>();
+        List<Attached_Damage> Remove_Damages = new List<Attached_Damage>();
 
         //bullet prefab.
         public string s_Bullet_Prefab;
@@ -124,6 +130,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     New_Enemy.s_Bullet_Prefab = s_Bullet_Prefab;
                     New_Enemy.Parent_Spawner = this;//.gameObject.GetComponent<Enemy>();
 
+
                     
 
                     New_Enemy.f_Random_x = UnityEngine.Random.Range(-.5f, .5f);
@@ -180,6 +187,12 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 {
                     GetComponent<Animator>().enabled = true;
                 }
+
+                //reset the move speed in.
+                f_Move_Percent = 1;
+
+                //update the damages here.
+                Update_Damages();
 
                 //make sure not dead.
                 if (b_Is_Dead)
@@ -315,9 +328,12 @@ namespace Assets.Scripts.Gameplay.Level_Items
             GameObject This_Target = null;
 
             //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
-            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x + (f_Random_x * f_Scale_Amount)) , new Vector3(0, 0, 0));
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (f_Range * 2.56f * Main_Script.f_Zoom_Level) , new Vector3(0, 0, 0));
+            Vector3 Draw_End = new Vector3(transform.position.x, transform.position.y + ((f_Range * 2.56f * Main_Script.f_Zoom_Level)), 0);
+            Debug.DrawLine(transform.position, Draw_End, Color.blue);
 
-                foreach (RaycastHit2D hit2 in Hits)
+
+            foreach (RaycastHit2D hit2 in Hits)
                 {
                     //Debug.Log(" obj " + hit2.collider.gameObject.name);
 
@@ -349,7 +365,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             bool b_Results = false;
 
             //need to find the closest target in range. ((range * box collider size * zoom level * local scale.))
-            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
+            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (f_Range * 2.56f * Main_Script.f_Zoom_Level), new Vector3(0, 0, 0));
 
             foreach (RaycastHit2D hit2 in Hits)
             {
@@ -369,7 +385,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             //this is where we are trying to go. adding in the random amount to decrease stacking.
             Vector2 Move_Here = new Vector2(Next_Spot.transform.position.x + (f_Random_x * Main_Script.f_Zoom_Level), Next_Spot.transform.position.y + (f_Random_y * Main_Script.f_Zoom_Level));
             // Next_Spot
-            transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((f_Speed * Time.deltaTime) * Main_Script.f_Zoom_Level));
+            transform.position = Vector2.MoveTowards(transform.position, Move_Here, ((f_Speed * f_Move_Percent * Time.deltaTime) * Main_Script.f_Zoom_Level));
             //check and see if it is at it's next spot, and if so we set up the next spot at the parent and the next next spot.
 
             //need to have it close but not exact cause times it won't fall right on it.
@@ -398,10 +414,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         }
 
         //Is called when this enemy is taken damage.
-        public void Take_Damage(float f_Damage_Taken)
+        void Take_Damage(float f_Damage_Taken)
         {
             f_HP -= f_Damage_Taken;
-            if (f_HP <= 0)
+            if (f_HP <= 0 && b_Is_Dead == false)
             {
                 //need to remove from spawner.
                 Parent_Spawner.i_Amount_Destoryed++;
@@ -414,6 +430,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
                 //give the reward and destory this object.
                 Main_Script.f_Energy += i_Reward_Single;
+
+                //increate the count for score.
+                Main_Script.i_Score++;
 
                 //for now exp is 10% fo what the energy is. EXP IS PLACEHOLDER FOR NOW
                 Main_Script.f_Exp_Gathered += 30;//i_Reward_Single*.1f;
@@ -429,9 +448,98 @@ namespace Assets.Scripts.Gameplay.Level_Items
             }
         }
 
+        //a bullet will access this to pass the information of what damage is being applied.
+        public void Apply_Damage(string s_Pass_Name, float f_Pass_Amount, float f_Pass_Time_Amount, bool b_Pass_Over_Time_Effect)
+        {
+            //we create the attack and add it to the damages that will be gone through each turn.
+            Attached_Damage Temp = new Attached_Damage();
+            Temp.b_Over_Time_Effect = b_Pass_Over_Time_Effect;
+            Temp.f_Amount = f_Pass_Amount;
+            Temp.f_Time_Amount = f_Pass_Time_Amount;
+            Temp.f_Start_Time_Amount = f_Pass_Time_Amount;
+            Temp.s_Attached = s_Pass_Name;
+
+            //add the temp to the list.
+            Damages.Add(Temp);
+        }
+
         bool AnimatorIsPlaying(string stateName)
         {
             return GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        }
+
+        //this goes through all the damages and performs the various actions needed.
+        void Update_Damages()
+        {
+
+            //this is where over time and such all go into effect.
+            foreach (Attached_Damage Damage in Damages)
+            {
+                //Raw attack, no over time just a flat amount then done.
+                if (Damage.s_Attached == Current_Strings.Atk_Raw)
+                {
+                    Take_Damage(Damage.f_Amount);
+                    //we add it to the remove list since it's a one shot attack.
+                    Remove_Damages.Add(Damage);
+                }
+                //Fire attack, will cause burining over the time.
+                else if (Damage.s_Attached == Current_Strings.Atk_Fire)
+                {
+                    float Delta_Time = Time.deltaTime;
+                    Damage.f_Time_Amount = Damage.f_Time_Amount - Delta_Time;
+
+                    //get a percentage of the damage that we will be infliecting.
+                    float f_Dmg = (Delta_Time / Damage.f_Start_Time_Amount) * Damage.f_Amount;
+
+                    //we deal that much dmg.
+                    Take_Damage(f_Dmg);
+
+                    //we check if the amount is less than 0 if so we remove.
+                    if (Damage.f_Time_Amount <= 0)
+                    {
+                        Remove_Damages.Add(Damage);
+                    }
+                }
+                //Ice Attack deals damage over time.
+                else if (Damage.s_Attached == Current_Strings.Atk_Ice)
+                {
+                    float Delta_Time = Time.deltaTime;
+                    Damage.f_Time_Amount = Damage.f_Time_Amount - Delta_Time;
+
+                    //get a percentage of the damage that we will be infliecting.
+                    float f_Dmg = (Delta_Time / Damage.f_Start_Time_Amount) * Damage.f_Amount;
+
+                    //we deal that much dmg.
+                    Take_Damage(f_Dmg);
+
+                    //we check if the amount is less than 0 if so we remove.
+                    if (Damage.f_Time_Amount <= 0)
+                    {
+                        Remove_Damages.Add(Damage);
+                    }
+                }
+            }
+
+
+
+            //we remove all damages that need to be removed.
+            foreach (Attached_Damage Damage in Remove_Damages)
+            {
+                Damages.Remove(Damage);
+            }
+            //clear out the removed damages list.
+            Remove_Damages.Clear();
+        }
+
+        //this is a class of the damages an enemy can take like fire, slow, ect.  
+        class Attached_Damage
+        {
+            public bool b_Over_Time_Effect = false;
+            public float f_Time_Amount = 0;
+            public string s_Attached = "none";
+            public float f_Amount = 0;
+
+            public float f_Start_Time_Amount = 0;
         }
 
     }

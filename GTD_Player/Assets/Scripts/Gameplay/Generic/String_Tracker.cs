@@ -26,6 +26,7 @@
         Name_Fuse_Box_02 = "Fuse_Box_02",
         Name_Fuse_Box_Combine = "Fuse_Box_Combine",
         Name_Fuse_Button_Complete = "Fuse_Button_Complete",
+        Name_Range_Circle_One = "Range_Circle_One",
 
     //PREFAB NAMES WITH FULL ADDRESSES
     //UI
@@ -122,8 +123,15 @@
 
         Tag_Enemy = "Enemy_Drag",
 
-        Tag_Path_Maker_Field_Move = "Drag_Spot_Field";
+        Tag_Path_Maker_Field_Move = "Drag_Spot_Field",
 
+    //THIS is the attack names of bullets like fire/ice/whip, ect.
+        Atk_Fire = "Fire",
+
+        Atk_Ice = "Ice",
+        Atk_Slow = "Slow",
+
+        Atk_Raw = "Raw";
 
 
 }

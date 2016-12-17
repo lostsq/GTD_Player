@@ -71,7 +71,16 @@ public class Player_Main_Script : MonoBehaviour {
 
     //This is a list of the hotbar gameobjects. used for when fusing to ensure gems go back to an empty spot.
     public List<GameObject> Hotbar_Gameobjects = new List<GameObject>();
-    
+
+
+    //this is for endless mode.
+    public bool b_Endless_Mode = true;
+    public List<Enemy> Endless_Enemy_List = new List<Enemy>();
+    public int i_Endless_Current_Spawn_Count = 0;
+    public float f_Endless_Count = 1;
+    public float f_Endless_HP_Gain = .05f;
+    public float f_Endless_Attack_Gain = .02f;
+    public int i_Score = 0;
 
 
     // Use this for initialization
@@ -112,6 +121,7 @@ public class Player_Main_Script : MonoBehaviour {
 
             f_Spawn_Timer += Time.deltaTime;
             Update_Spawn();
+            
         }
         else
         {
@@ -134,6 +144,39 @@ public class Player_Main_Script : MonoBehaviour {
 
         //perform exp stuff
         Exp_Handler();
+    }
+
+    void Add_For_Endless()
+    {
+        f_Endless_Count++;
+
+
+        //check the spawn number to update it so we can create a new spawn.
+        if (i_Endless_Current_Spawn_Count == Endless_Enemy_List.Count)
+        {
+            i_Endless_Current_Spawn_Count = 0;
+        }
+
+        //create a new enemy
+        float tHP = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Max_HP + Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Max_HP * (f_Endless_HP_Gain * f_Endless_Count);
+        float tPow = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Power + Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Power * (f_Endless_Attack_Gain * f_Endless_Count);
+
+        Enemy New_Enemy = new Enemy();
+        //set up the new enemy as a spawner.
+        New_Enemy.Set_Enemy(Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Name, (int)f_Endless_Count, tHP, Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Speed, tPow, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Amount, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Start_After, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Reward_Single, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Reward_Wave, Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Mod, true);
+
+        //set up the bullet prefab location.
+        New_Enemy.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Bullet_Prefab;
+        //Debug.Log(New_Enemy.s_Bullet_Prefab);
+
+        //might need to create the item so it's not null and have it off screen.
+        New_Enemy.i_Location_In_Spawn_Array = Add_To_Enemy_Spawns(New_Enemy);// Main_Script.Enemy_Spawns.Count;
+        //update the stats of the enemy.
+
+        //add on the current spawn so we get the next one in the list next time around.
+        i_Endless_Current_Spawn_Count++;
+
+
     }
 
     //This gives each tower exp as fit and tells them when to level.
@@ -205,6 +248,10 @@ public class Player_Main_Script : MonoBehaviour {
         GameObject.Find(Current_Strings.Name_Fade_Background).transform.position = new Vector2(500, 500);
         //move the icons.
         GameObject.Find(Current_Strings.Name_Plus_Icons).transform.position = new Vector2(500, 500);
+
+
+        //move the range back to a safe spot.
+        GameObject.Find(Current_Strings.Name_Range_Circle_One).transform.position = new Vector2(500, 500);
 
         Tower_Open_Collider = null;
     }
@@ -286,11 +333,31 @@ public class Player_Main_Script : MonoBehaviour {
                 Hover_Text.transform.position = Box_Placement;
                 //place the plus icons and such.
                 GameObject.Find(Current_Strings.Name_Plus_Icons).transform.position = Hover_Text.transform.position;
+
+
+                //need to add in if statement so the range does not show in hotbar or invintory, or fix it so no matter where it shows then it shows the correct amount.
+                if (Hover_This.GetComponent<Tower>().b_On_Field)
+                {
+                    //need to move the range viewer and change the scale/sprite order and such.
+                    GameObject.Find(Current_Strings.Name_Range_Circle_One).transform.position = Hover_This.transform.position;
+                    Tower Working_With = Hover_This.GetComponent<Tower>();
+                    //update the range circle.
+                    GameObject.Find(Current_Strings.Name_Range_Circle_One).transform.localScale = new Vector2((Working_With.f_Range_Amount * 2) * f_Zoom_Level, (Working_With.f_Range_Amount * 2) * f_Zoom_Level);
+                    //update the sprite order.
+                    GameObject.Find(Current_Strings.Name_Range_Circle_One).GetComponent<SpriteRenderer>().sortingOrder = Hover_This.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                }
+
             }
         }
         else
         {
             Hover_Text.GetComponent<Text_Box_Background>().b_Is_Enabled = false;
+
+
+            //move the range back to a safe spot.
+            GameObject.Find(Current_Strings.Name_Range_Circle_One).transform.position = new Vector2(500,500);
+
+
         }
     }
 
@@ -307,6 +374,10 @@ public class Player_Main_Script : MonoBehaviour {
                 {
                     Working_With.f_Range_Amount += Working_With.f_Range_Upgrade;
                     Working_With.i_Spending_Points -= 1;
+
+                    //update the range circle.
+                    GameObject.Find(Current_Strings.Name_Range_Circle_One).transform.localScale = new Vector2((Working_With.f_Range_Amount * 2) * f_Zoom_Level, (Working_With.f_Range_Amount * 2) * f_Zoom_Level);
+
                 }
                 else if (Icon_Clicked.gameObject.name.Contains("Speed"))
                 {
@@ -375,7 +446,7 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Cost:" + Hover_This.GetComponent<Tower>().i_Cost + "\n";
-                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
+                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: -" + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
                 Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
                 Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
                 Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
@@ -386,7 +457,7 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Enemy>().f_Speed + "\n";
                 Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().f_Power + "\n";
                 Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().f_Range + "\n";
-                Text_To_Place += "HP: " + Hover_This.GetComponent<Enemy>().f_HP + "/" + Hover_This.GetComponent<Enemy>().f_Max_HP;
+                Text_To_Place += "HP: " + string.Format("{0:0.00}", Hover_This.GetComponent<Enemy>().f_HP);      // "123.46"
             }
             else
             {
@@ -551,6 +622,8 @@ public class Player_Main_Script : MonoBehaviour {
         //check transistion times and set up next wave.
         if (b_none_active && !b_Wave_Transistion)
         {
+            
+
             b_Wave_Transistion = true;
             f_Spawn_Timer = 0;
         }
@@ -558,6 +631,13 @@ public class Player_Main_Script : MonoBehaviour {
         {
             if (f_Spawn_Timer > i_Transistion_Time)
             {
+                //if it's endless mode we add on spawns.
+                Add_For_Endless();
+
+                if (b_Endless_Mode)
+                {
+                }
+
                 f_Spawn_Timer = 0;
                 i_Wave_Number++;
                 b_Wave_Transistion = false;

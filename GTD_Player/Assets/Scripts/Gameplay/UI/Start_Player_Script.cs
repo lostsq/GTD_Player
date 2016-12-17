@@ -192,7 +192,16 @@ public class Start_Player_Script : MonoBehaviour {
 
                     //might need to create the item so it's not null and have it off screen.
                     New_Enemy.i_Location_In_Spawn_Array = Main_Script.Add_To_Enemy_Spawns(New_Enemy);// Main_Script.Enemy_Spawns.Count;
-                    //Main_Script.Enemy_Spawns.Add(New_Enemy);
+                                                                                                     //Main_Script.Enemy_Spawns.Add(New_Enemy);
+
+                    //this is for endless mode if it's used. since not sure at this point cause still loading the file we just assume it is.
+                    if (New_Enemy.i_Wave_Number > Main_Script.f_Endless_Count)
+                    {
+                        Main_Script.f_Endless_Count = (float)New_Enemy.i_Wave_Number;
+                        
+                    }
+                    Main_Script.Endless_Enemy_List.Add(New_Enemy);
+
                 }
             }
         }

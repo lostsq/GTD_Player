@@ -12,16 +12,8 @@ Tower(Ruby,1,1,1,1,1
 Tower(Sapphire,2,20,2,2,2
 Tower(Topaz,3,3,3,3,3
 Tower(Emerald,4,4,4,4,4
-Enemies(Ruby,1,100,1,100,1,1,5,1,None
-Enemies(Sapphire,2,200,1,200,1,5,1,1,None
-Enemies(Ruby,3,100,1,100,1,1,5,1,None
-Enemies(Sapphire,4,200,1,200,1,5,1,1,None
-Enemies(Ruby,5,100,1,100,1,1,5,1,None
-Enemies(Sapphire,6,200,1,200,1,5,1,1,None
-Enemies(Ruby,7,100,1,100,1,1,5,1,None
-Enemies(Sapphire,8,200,1,200,1,5,1,1,None
-Enemies(Ruby,9,100,1,100,1,1,5,1,None
-Enemies(Sapphire,10,1200,1,1200,1,5,1,1,None
+Enemies(Sapphire,1,5,1,1,20,10,5,10,None
+Enemies(Ruby,2,30,2,2,15,10,10,20,None
 Grid X(25
 Grid Y(8
 Field Object X/Y(Decoration_01,0,0

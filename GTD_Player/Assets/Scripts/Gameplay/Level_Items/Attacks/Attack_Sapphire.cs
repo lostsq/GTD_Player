@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts.Gameplay.Level_Items.Attacks;
+using Assets.Scripts.Gameplay.Level_Items;
+
+
 
 public class Attack_Sapphire : Attack_Base {
 
@@ -85,5 +88,27 @@ public class Attack_Sapphire : Attack_Base {
         }
     }
 
-   
+
+    //This deals damage to the enemy that is passed.
+    void Deal_Damage(GameObject Enemy_To_Deal_Damage_To)
+    {
+        //This is where each bullet has it's own unique attack placed in the enemy/item.
+        if (Enemy_To_Deal_Damage_To.tag.Contains(Current_Strings.Tag_Enemy))
+        {
+            //Sapphire.
+            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Ice, f_Damage_Level, 5, true);
+            //now apply the slow.
+            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .4f, 5, true);
+
+
+        }
+        else
+        {
+            //temp for now, cause only temple attacks lolz.
+            Main_Script.f_HP -= f_Damage_Level;
+            //Debug.Log(Main_Script.i_HP);
+        }
+    }
+
+
 }

@@ -149,9 +149,15 @@ namespace Assets.Scripts.Gameplay.Level_Items
             //this.gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
         }
 
+
+
         // Update is called once per frame
         void Update()
         {
+
+            //Vector3 Draw_End = new Vector3(transform.position.x, transform.position.y + ((2.56f * Main_Script.f_Zoom_Level)), 0);
+            //Debug.DrawLine(transform.position, Draw_End, Color.red);
+
             //check if running.
             if (Main_Script.b_Is_Running)
             {
@@ -161,36 +167,6 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     GetComponent<Animator>().enabled = true;
                 }
 
-                /*
-                bool down = Input.GetKeyDown(KeyCode.Space);
-                bool held = Input.GetKey(KeyCode.Space);
-                bool up = Input.GetKeyUp(KeyCode.Space);
-
-                if (down)
-                {
-
-                    //GetComponent<Animator>().SetBool("Attacking", true);
-
-                }
-                else if (held)
-                {
-                    //graphic.texture = heldgfx;
-                }
-                else if (up)
-                {
-                    GetComponent<Animator>().SetBool("Attacking", true);
-                }
-
-                if (AnimatorIsPlaying(s_Name + "_Attack"))
-                {
-                    //if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length < GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime)
-                    if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
-                    {
-                        //GetComponent<Animator>().SetBool("Attacking", false);
-                       // Debug.Log("End");
-                    }
-                }
-                */
 
                 if (b_On_Field)
                 {
@@ -200,35 +176,51 @@ namespace Assets.Scripts.Gameplay.Level_Items
                     //check the timer for cooldown on attacks.
                     if (f_Timer > f_Speed_Amount)
                     {
-                        //need to find the closest target in range.
-                        RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (((f_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), new Vector3(0, 0, 0));
-                        //Debug.DrawLine(transform.position, new Vector3(transform.position.x, transform.position.y + (((i_Range_Amount * gameObject.GetComponent<BoxCollider2D>().size.x) * Main_Script.f_Zoom_Level) * transform.localScale.x), 0), Color.red);
 
-                        //RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4, new Vector3(0, 0, 0));
 
-                        foreach (RaycastHit2D hit2 in Hits)
+                        //need to check if there is a target and if so if it's within range.
+                        if (The_Target != null)
                         {
-                            //Debug.Log(" obj " + hit2.collider.gameObject.name);
-
-                            if (hit2.collider.gameObject.tag == Current_Strings.Tag_Enemy)
+                            if (Math.Abs(Vector2.Distance(The_Target.transform.position, transform.parent.position)) > (f_Range_Amount * 2.56f * Main_Script.f_Zoom_Level))
                             {
-                                //check if it's the closest one.
-                                if (The_Target != null)
+                                //we null the target since it is now out of range.
+                                The_Target = null;
+                            }
+                        }
+
+                        //only perform the check if there is no target. Might add in different things like target lowest hp or closest or highest hp later.
+                        if (The_Target == null)
+                        {
+                            //need to find the closest target in range.
+                            RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, (f_Range_Amount * 2.56f * Main_Script.f_Zoom_Level), new Vector3(0, 0, 0));
+                            Vector3 Draw_End = new Vector3(transform.position.x, transform.position.y + ((f_Range_Amount * 2.56f * Main_Script.f_Zoom_Level)), 0);
+                            Debug.DrawLine(transform.position, Draw_End, Color.red);
+
+                            //RaycastHit2D[] Hits = Physics2D.CircleCastAll(transform.position, 4, new Vector3(0, 0, 0));
+
+                            foreach (RaycastHit2D hit2 in Hits)
+                            {
+                                //Debug.Log(" obj " + hit2.collider.gameObject.name);
+
+                                if (hit2.collider.gameObject.tag == Current_Strings.Tag_Enemy)
                                 {
-                                    //finds the closest one. Will add in more for lowest hp and such.
-                                    if (Vector2.Distance(The_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                                    //check if it's the closest one.
+                                    if (The_Target != null)
+                                    {
+                                        //finds the closest one. Will add in more for lowest hp and such.
+                                        if (Vector2.Distance(The_Target.transform.position, transform.parent.position) > Vector2.Distance(hit2.collider.gameObject.transform.position, transform.parent.position))
+                                        {
+                                            The_Target = hit2.collider.gameObject;
+                                        }
+                                    }
+                                    else
                                     {
                                         The_Target = hit2.collider.gameObject;
                                     }
                                 }
-                                else
-                                {
-                                    The_Target = hit2.collider.gameObject;
-                                }
+                                //transform.gameObject.SendMessage("GotHit", damage);
                             }
-                            //transform.gameObject.SendMessage("GotHit", damage);
                         }
-
                         //target found that we are going to attack.
                         if (The_Target != null)
                         {

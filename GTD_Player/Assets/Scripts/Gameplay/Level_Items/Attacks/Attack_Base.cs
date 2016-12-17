@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Collections;
+using Assets.Scripts.Gameplay.Level_Items;
+
 
 namespace Assets.Scripts.Gameplay.Level_Items.Attacks
 {
     public class Attack_Base : MonoBehaviour
     {
         public Player_Main_Script Main_Script;
-        String_Tracker Current_Strings = new String_Tracker();
+        public String_Tracker Current_Strings = new String_Tracker();
         //this bool is to determain if it's an enemy attack or tower attacking to know what to attack.
         public bool b_Is_Enemy_Attack = false;
         public bool b_Set_Up_And_Ready = false;
@@ -91,21 +93,7 @@ namespace Assets.Scripts.Gameplay.Level_Items.Attacks
         }
 
 
-        //This deals damage to the enemy that is passed.
-        public void Deal_Damage(GameObject Enemy_To_Deal_Damage_To)
-        {
-            //sorts out what needs to take damage since both towers and enemies share this.
-            if (Enemy_To_Deal_Damage_To.tag.Contains(Current_Strings.Tag_Enemy))
-            {
-                Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Take_Damage(f_Damage_Level);
-            }
-            else
-            {
-                //temp for now, cause only temple attacks lolz.
-                Main_Script.f_HP -= f_Damage_Level;
-                //Debug.Log(Main_Script.i_HP);
-            }
-        }
+       
 
         //This destorys this bullet/attack.
         public void Destory_Attack()
