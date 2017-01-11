@@ -23,6 +23,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         //variables
         public string s_Name;
+        public string s_Animation_Name;
         public int i_Wave_Number;
         public float f_HP;
         public float f_Speed;
@@ -35,6 +36,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
         public float f_Range;
 
+        //Used for slow effects.
         public float f_Move_Percent = 1;
 
 
@@ -59,6 +61,10 @@ namespace Assets.Scripts.Gameplay.Level_Items
         public bool b_In_Progress = false;
         public int i_Location_In_Spawn_Array;
         public Enemy Parent_Spawner;
+
+        //used in enemy viewers.
+        public bool b_Enemy_Viewer = false;
+        public string s_Enemy_Viewer_String = "";
 
         //this is the damage applied to the unit. it will go through them applying damage and effects as needed.
         List<Attached_Damage> Damages = new List<Attached_Damage>();
@@ -122,11 +128,19 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 go_New_Enemy = Instantiate(Resources.Load(Current_Strings.Prefab_Enemy_Location + s_Name)) as GameObject;
                 if (go_New_Enemy != null)
                 {
+
+                    //used for endless
+                    float f_Set_HP = f_HP;
+                    if (Main_Script.b_Endless_Mode)
+                    {
+                        f_Set_HP += f_HP * i_Wave_Number * Main_Script.f_Endless_HP_Gain;
+                    }
+
                     go_New_Enemy.tag = Current_Strings.Tag_Enemy;
 
                     go_New_Enemy.AddComponent<Enemy>();
                     Enemy New_Enemy = go_New_Enemy.GetComponent<Enemy>();
-                    New_Enemy.Set_Enemy(s_Name, i_Wave_Number, f_HP, f_Speed, f_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
+                    New_Enemy.Set_Enemy(s_Name, i_Wave_Number, f_Set_HP, f_Speed, f_Power, i_Amount, i_Start_After, i_Reward_Single, i_Reward_Wave, s_Mod, false);
                     New_Enemy.s_Bullet_Prefab = s_Bullet_Prefab;
                     New_Enemy.Parent_Spawner = this;//.gameObject.GetComponent<Enemy>();
 
@@ -171,16 +185,23 @@ namespace Assets.Scripts.Gameplay.Level_Items
         // Use this for initialization
         void Start()
         {
+            //used for animation.
+            s_Animation_Name = s_Name.Split(' ')[0];
+
             //Debug.Log("Working");
             //set moving to start by default.
-            GetComponent<Animator>().SetBool("Moving", true);
+            if (!b_Enemy_Viewer)
+            {
+
+                GetComponent<Animator>().SetBool("Moving", true);
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
             //check if running.
-            if (Main_Script.b_Is_Running)
+            if (Main_Script.b_Is_Running && !b_Enemy_Viewer)
             {
                 //unpause animation if paused.
                 if (GetComponent<Animator>().enabled == false)
@@ -219,7 +240,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
                                 if (Still_In_Range())
                                 {
-                                    if (AnimatorIsPlaying(s_Name + "_Attack"))
+                                    if (AnimatorIsPlaying(s_Animation_Name + "_Attack"))
                                     {
                                         if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
                                         {
@@ -238,6 +259,8 @@ namespace Assets.Scripts.Gameplay.Level_Items
                                             New_Attack.GetComponent<Attacks.Attack_Base>().Owner = gameObject;
                                             //the location/spawn of the attack is the parent since the object can move.
                                             New_Attack.transform.position = transform.position;
+                                            New_Attack.GetComponent<Attacks.Attack_Base>().Owner = this.gameObject;
+
                                             New_Attack.transform.parent = transform.parent;//GameObject.Find(Current_Strings.Name_Map_Parent).transform;
                                             New_Attack.transform.localScale = Cur_Scale;
                                             New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
@@ -302,7 +325,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 GetComponent<Animator>().enabled = false;
             }
         }
-        void Death()
+        public void Death()
         {
             //is attacking
             if (!GetComponent<Animator>().GetBool("Dead"))
@@ -311,7 +334,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
             }
 
             //make sure the death animation is playing.
-            if (AnimatorIsPlaying(s_Name + "_Death"))
+            if (AnimatorIsPlaying(s_Animation_Name + "_Death"))
             {
                 //perform the destory at the end of the death animation.
                 if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !GetComponent<Animator>().IsInTransition(0))
@@ -471,6 +494,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         //this goes through all the damages and performs the various actions needed.
         void Update_Damages()
         {
+            //reset the speed so slow can be applied if it happens, if not then speed is back to 100% aka 1.
+            f_Move_Percent = 1;
+
 
             //this is where over time and such all go into effect.
             foreach (Attached_Damage Damage in Damages)
@@ -511,6 +537,25 @@ namespace Assets.Scripts.Gameplay.Level_Items
 
                     //we deal that much dmg.
                     Take_Damage(f_Dmg);
+
+                    //we check if the amount is less than 0 if so we remove.
+                    if (Damage.f_Time_Amount <= 0)
+                    {
+                        Remove_Damages.Add(Damage);
+                    }
+                }
+                //Slow attacks will slow the movement down of the enemy for x number of seconds, if the seconds is less than max it remaxes it.
+                else if (Damage.s_Attached == Current_Strings.Atk_Slow)
+                {
+                    //calculate how much time is left on the effect.
+                    float Delta_Time = Time.deltaTime;
+                    Damage.f_Time_Amount = Damage.f_Time_Amount - Delta_Time;
+
+                    //we now see if the speed is slower than what this is and if so then we change it.
+                    if (f_Move_Percent > Damage.f_Amount)
+                    {
+                        f_Move_Percent = Damage.f_Amount;
+                    }
 
                     //we check if the amount is less than 0 if so we remove.
                     if (Damage.f_Time_Amount <= 0)

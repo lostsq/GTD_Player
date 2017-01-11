@@ -6,3 +6,4 @@ Steps: (Ensure correct name is used during entire process)
 5. In code add in prefab location in string tracker.
 6. In code create attack_(gem name) by copying other attack and changing games.
 7. In code in Locked_Gems add the new gem by copy/paste old gem and update name then add it in the All_Locked_Gems().
+8. Create bullet/attack pre-fabs.

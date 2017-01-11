@@ -204,6 +204,10 @@ public class Start_Player_Script : MonoBehaviour {
 
                 }
             }
+
+
+            
+
         }
 
         //make the map with the items in it. We do it a longer way since only done once and will prevent out of index errors.
@@ -348,6 +352,16 @@ public class Start_Player_Script : MonoBehaviour {
         Main_Script.f_x_Bound = (t_Width * f_Default_Box_Size) / 2;
         Main_Script.f_y_Bound = (t_Height * f_Default_Box_Size) / 2;
 
+
+        //after loading the level we check if it's endless and if so then we load up like 30x endless waves.
+        if (Main_Script.b_Endless_Mode)
+        {
+            for (int w = 0; w < 30; w++)
+            {
+                Main_Script.Add_For_Endless();
+            }
+        }
+
     }
 
 
@@ -366,7 +380,9 @@ public class Start_Player_Script : MonoBehaviour {
 
         bool b_Top_Part_Made = false;
 
-        
+        //used to keep track of how many gems are locked/unlocked.
+        int i_Unlocked_Gem_Count = -1;
+
         //we will make the width 2 spots wide and it's height will be how ever many unlocked towers there are.
         //Towers will be sorted price low to high.
         for (int i = 0; i < Main_Script.Locked_Gems.Locked_Gem_List.Count; i++)
@@ -401,50 +417,83 @@ public class Start_Player_Script : MonoBehaviour {
                 New_Purchase_Button.transform.position = new Vector2(((TxRz + TxLz)/2), Tyz);
             }
 
-            //make a tower for the menu.
-            GameObject New_Tower = Main_Script.Create_New_Tower(Main_Script.Locked_Gems.Locked_Gem_List[i].Name);
+            GameObject New_Tower = null;
+
+            //only make if the tower is not locked.
+            if (!Main_Script.Locked_Gems.Locked_Gem_List[i].b_Locked)
+            {
+
+
+                //make a tower for the menu.
+                New_Tower = Main_Script.Create_New_Tower(Main_Script.Locked_Gems.Locked_Gem_List[i].Name);
+                New_Tower.GetComponent<SpriteRenderer>().sortingOrder = 11;
+                New_Tower.tag = Current_Strings.Tag_Tower_Display;
+                New_Tower.transform.parent = Parent_Object.transform;
+                //set the scale.
+                New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
+
+
+                i_Unlocked_Gem_Count++;
+
+               
+                New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Left)) as GameObject;
+                New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Right)) as GameObject;
+
+
+
+                //set the layer order.
+                New_Spot_Left.GetComponent<SpriteRenderer>().sortingOrder = 10;
+                New_Spot_Right.GetComponent<SpriteRenderer>().sortingOrder = 10;
+
+
+                //set the tag.
+                New_Spot_Left.tag = Current_Strings.Tag_Purchase_Background;
+                New_Spot_Right.tag = Current_Strings.Tag_Purchase_Background;
+                //set the parent.
+                New_Spot_Left.transform.parent = Parent_Object.transform;
+                New_Spot_Right.transform.parent = Parent_Object.transform;
+
+
+
+                //set the posistion
+                float TxL = -((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float TxR = ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float Ty = (-1 * i_Unlocked_Gem_Count * (New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y) / 2);
+
+                New_Spot_Left.transform.position = new Vector2(TxL, Ty);
+                New_Spot_Right.transform.position = new Vector2(TxR, Ty);
+
+                New_Tower.transform.position = new Vector2(((TxR + TxL) / 2), Ty);
+            }
+
             //Make a set of boxes and since it's the first set we will start off with corner pieces.
-                if (i == Main_Script.Locked_Gems.Locked_Gem_List.Count - 1)
-                {
-                    New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Left)) as GameObject;
-                    New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Right)) as GameObject;
-                }
-                else
-                {
-                    New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Left)) as GameObject;
-                    New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Right)) as GameObject;
-                }
+            if (i == Main_Script.Locked_Gems.Locked_Gem_List.Count - 1)
+            {
+                New_Spot_Left = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Left)) as GameObject;
+                New_Spot_Right = Instantiate(Resources.Load(Current_Strings.Prefab_I_Bot_Right)) as GameObject;
+
+                //set the layer order.
+                New_Spot_Left.GetComponent<SpriteRenderer>().sortingOrder = 10;
+                New_Spot_Right.GetComponent<SpriteRenderer>().sortingOrder = 10;
+
+
+                //set the tag.
+                New_Spot_Left.tag = Current_Strings.Tag_Purchase_Background;
+                New_Spot_Right.tag = Current_Strings.Tag_Purchase_Background;
+                //set the parent.
+                New_Spot_Left.transform.parent = Parent_Object.transform;
+                New_Spot_Right.transform.parent = Parent_Object.transform;
 
 
 
-            
+                //set the posistion
+                float TxL = -((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float TxR = ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
+                float Ty = (-1 * (i_Unlocked_Gem_Count + 1) * (New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y) / 2);
 
-            //set the layer order.
-            New_Spot_Left.GetComponent<SpriteRenderer>().sortingOrder = 10;
-            New_Spot_Right.GetComponent<SpriteRenderer>().sortingOrder = 10;
-            New_Tower.GetComponent<SpriteRenderer>().sortingOrder = 11;
-            
-
-            //set the tag.
-            New_Spot_Left.tag = Current_Strings.Tag_Purchase_Background;
-            New_Spot_Right.tag = Current_Strings.Tag_Purchase_Background;
-            New_Tower.tag = Current_Strings.Tag_Tower_Display;
-            //set the parent.
-            New_Spot_Left.transform.parent = Parent_Object.transform;
-            New_Spot_Right.transform.parent = Parent_Object.transform;
-            New_Tower.transform.parent = Parent_Object.transform;
-
-            //set the scale.
-            New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
-            
-            //set the posistion
-            float TxL = -((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x)/2);
-            float TxR = ((New_Spot_Left.GetComponent<BoxCollider2D>().size.x * New_Spot_Left.transform.localScale.x) / 2);
-            float Ty = (-1 * i * (New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y)) + ((New_Spot_Left.GetComponent<BoxCollider2D>().size.y * New_Spot_Left.transform.localScale.y) / 2);
-
-            New_Spot_Left.transform.position = new Vector2(TxL, Ty);
-            New_Spot_Right.transform.position = new Vector2(TxR, Ty);
-            New_Tower.transform.position = new Vector2(((TxR + TxL) / 2), Ty);
+                New_Spot_Left.transform.position = new Vector2(TxL, Ty);
+                New_Spot_Right.transform.position = new Vector2(TxR, Ty);
+            }
 
 
         }

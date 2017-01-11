@@ -31,6 +31,9 @@ namespace Assets.Scripts.Gameplay.Level_Items
         //this is the size of the gem.
         public float f_Scale_Amount = 1;
 
+        //this is for future sight gems, adding here since it's a 0 for none, ect.
+        public float f_Future_Sight_Amount = 0;
+
 
         public float f_Timer = 0;
 
@@ -247,6 +250,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                                     New_Attack.transform.position = transform.parent.position;
                                     New_Attack.transform.parent = transform.parent;
                                     New_Attack.transform.localScale = Cur_Scale;
+                                    New_Attack.GetComponent<Attacks.Attack_Base>().Owner = this.gameObject;
                                     New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
                                 }
                             }

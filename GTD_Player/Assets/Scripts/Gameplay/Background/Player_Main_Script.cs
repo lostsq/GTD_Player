@@ -67,6 +67,8 @@ public class Player_Main_Script : MonoBehaviour {
     bool b_Enemy_Viewer_Open = false;
     //the amount of enemies the user can view.
     int i_Enemy_Viewer_Count = 0;
+    public List<Enemy> Enemy_Viewer_List = new List<Enemy>();
+
 
 
     //This is a list of the hotbar gameobjects. used for when fusing to ensure gems go back to an empty spot.
@@ -82,6 +84,10 @@ public class Player_Main_Script : MonoBehaviour {
     public float f_Endless_Attack_Gain = .02f;
     public int i_Score = 0;
 
+    //this if for the fuse stuff.
+    GameObject Fuse_Combo_Display = null;
+    int Fuse_Number = 0;
+    float f_Fuse_Cost_Percent = .7f;
 
     // Use this for initialization
     void Start () {
@@ -93,60 +99,77 @@ public class Player_Main_Script : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        //confirmation box is up so we pause.
-        if (b_Confirmation_Open)
+        //we end the game.
+        if (f_HP <= 0)
         {
+            //is no longer running.
             b_Is_Running = false;
-        }
-        //triggers when confirmation has been used and has an action.
-        if (!b_Confirmation_Open && s_Confirmation_Action != "none")
-        {
-            Confirmation_Process();
-            //un-pause the game since confirm box closed.
-            b_Is_Running = true;
-        }
-       
 
-        //we perform hover check.
-        Hover_Box();
-
-        //pause check.
-        if (b_Is_Running)
-        {
-            //check if it was paused.
-            if (b_Was_Paused)
-            {
-                b_Was_Paused = false;
-            }
-
-            f_Spawn_Timer += Time.deltaTime;
-            Update_Spawn();
-            
+            //we move the score and button to return to the menu into the center of the screen.
+            GameObject.Find("Units_Killed_Background").transform.position = new Vector2(0, 0);
+            GameObject.Find("Score_Text").GetComponent<TextMesh>().text = "Units Killed: " + i_Score;
         }
         else
         {
-            //Debug.Log(f_Spawn_Timer);
-            //Debug.Log(Enemy_Spawns[0].s_Name);
-            //lets us know that it was paused.
-            b_Was_Paused = true;
-        }
+
+            //confirmation box is up so we pause.
+            if (b_Confirmation_Open)
+            {
+                b_Is_Running = false;
+            }
+            //triggers when confirmation has been used and has an action.
+            if (!b_Confirmation_Open && s_Confirmation_Action != "none")
+            {
+                Confirmation_Process();
+                //un-pause the game since confirm box closed.
+                b_Is_Running = true;
+            }
 
 
-        //tower is clicked/open.
-        if (b_Tower_Open && Tower_Open_Collider != null)
-        {
-            Tower_Open_Stats();
-        }
-        else if (!b_Tower_Open && Tower_Open_Collider != null)
-        {
-            Tower_Close_Stats();
-        }
+            //we perform hover check.
+            Hover_Box();
 
-        //perform exp stuff
-        Exp_Handler();
+            //Perfrom afuse box check
+            Display_Fuse();
+
+            //pause check.
+            if (b_Is_Running)
+            {
+                //check if it was paused.
+                if (b_Was_Paused)
+                {
+                    b_Was_Paused = false;
+                }
+
+                f_Spawn_Timer += Time.deltaTime;
+                Update_Spawn();
+
+            }
+            else
+            {
+                //Debug.Log(f_Spawn_Timer);
+                //Debug.Log(Enemy_Spawns[0].s_Name);
+                //lets us know that it was paused.
+                b_Was_Paused = true;
+            }
+
+
+            //tower is clicked/open.
+            if (b_Tower_Open && Tower_Open_Collider != null)
+            {
+                Tower_Open_Stats();
+            }
+            else if (!b_Tower_Open && Tower_Open_Collider != null)
+            {
+                Tower_Close_Stats();
+            }
+
+            //perform exp stuff
+            Exp_Handler();
+        }
     }
 
-    void Add_For_Endless()
+    public void Add_For_Endless()
     {
         f_Endless_Count++;
 
@@ -158,8 +181,8 @@ public class Player_Main_Script : MonoBehaviour {
         }
 
         //create a new enemy
-        float tHP = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Max_HP + Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Max_HP * (f_Endless_HP_Gain * f_Endless_Count);
-        float tPow = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Power + Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Power * (f_Endless_Attack_Gain * f_Endless_Count);
+        float tHP = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Max_HP;
+        float tPow = Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Power;
 
         Enemy New_Enemy = new Enemy();
         //set up the new enemy as a spawner.
@@ -417,7 +440,114 @@ public class Player_Main_Script : MonoBehaviour {
     //this will update the viewer showing what it should.
     void Update_Enemy_Viewer()
     {
+        //this is how much we will check into the future laid all out here.
+        float f_Future_Amount = 0;
+        int This_Spawn_Number = i_Wave_Number + 1;
+        int Placement_For_Objects = 0;
+        //cl
+        GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position = new Vector2(GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.position.x, 0);
+        //.25f Name
+        //.5f  Name/Speed
+        //.75f Name/Speed/Power
+        //1f   Name/Speed/Power/Range
 
+        //delete all the game objects in the enemy viewer list then clear it out.
+        foreach (Enemy Cur_Ene in Enemy_Viewer_List)
+        {
+            Destroy(Cur_Ene.gameObject);
+        }
+
+        Enemy_Viewer_List.Clear();
+
+        //now we go through all the towers on the field and add up how many are future sight towers and gather the numbers.
+        for (int i = 0; i < Tower_List.Count; i++)
+        {
+            if (Tower_List[i].tag.Contains(Current_Strings.Tag_Tower_On_Map))
+            {
+                f_Future_Amount += Tower_List[i].GetComponent<Tower>().f_Future_Sight_Amount;
+            }
+        }
+
+        //this is where we will create the enemies to place into the viewer and how much detail to add for the hover over effect and also placing them.
+        while (f_Future_Amount > 0)
+        {
+
+            //go through all of the spawners and check if any need to update their spawn.
+            for (int i = 0; i < Enemy_Spawns.Count; i++)
+            {
+                //check for wave numbers.
+                if (Enemy_Spawns[i].i_Wave_Number == This_Spawn_Number)
+                {
+                    GameObject go_New_Enemy = null;
+                    go_New_Enemy = Instantiate(Resources.Load(Current_Strings.Prefab_Enemy_Location + Enemy_Spawns[i].s_Name)) as GameObject;
+                    if (go_New_Enemy != null)
+                    {
+
+                        go_New_Enemy.tag = Current_Strings.Tag_Enemy_Viewer_Object;
+
+                        go_New_Enemy.AddComponent<Enemy>();
+                        Enemy New_Enemy = go_New_Enemy.GetComponent<Enemy>();
+
+                        Enemy_Viewer_List.Add(New_Enemy);
+
+
+                        float f_Set_HP = Enemy_Spawns[i].f_HP;
+                        if (b_Endless_Mode)
+                        {
+                            f_Set_HP += Enemy_Spawns[i].f_HP * Enemy_Spawns[i].i_Wave_Number * f_Endless_HP_Gain;
+                        }
+
+
+                        New_Enemy.Set_Enemy(Enemy_Spawns[i].s_Name, i_Wave_Number, f_Set_HP, Enemy_Spawns[i].f_Speed, Enemy_Spawns[i].f_Power, Enemy_Spawns[i].i_Amount, Enemy_Spawns[i].i_Start_After, Enemy_Spawns[i].i_Reward_Single, Enemy_Spawns[i].i_Reward_Wave, Enemy_Spawns[i].s_Mod, true);
+                        New_Enemy.b_Enemy_Viewer = true;
+
+
+
+                        //set the text that will be used for the hover over.
+                        //.25f Name/HP
+                        //.5f  Name/HP/Speed
+                        //.75f Name/HP/Speed/Power
+                        //1f   Name/HP/Speed/Power/Range
+                        if (f_Future_Amount - 1 >= 0)
+                        {
+                            New_Enemy.s_Enemy_Viewer_String = "Name: " + New_Enemy.s_Name + "\n" + "HP: " + string.Format("{0:0.00}",New_Enemy.f_HP) + "\n" + "Speed: " + New_Enemy.f_Speed + "\n" + "Power: " + New_Enemy.f_Power + "\n" + "Range: " + New_Enemy.f_Range;
+                        }
+                        else if (f_Future_Amount - .75f >= 0)
+                        {
+                            New_Enemy.s_Enemy_Viewer_String = "Name: " + New_Enemy.s_Name + "\n" + "HP: " + string.Format("{0:0.00}", New_Enemy.f_HP) + "\n" + "Speed: " + New_Enemy.f_Speed + "\n" + "Power: " + New_Enemy.f_Power;
+                        }
+                        else if (f_Future_Amount - .50f >= 0)
+                        {
+                            New_Enemy.s_Enemy_Viewer_String = "Name: " + New_Enemy.s_Name + "\n" + "HP: " + string.Format("{0:0.00}", New_Enemy.f_HP) + "\n" + "Speed: " + New_Enemy.f_Speed;
+                        }
+                        else
+                        {
+                            New_Enemy.s_Enemy_Viewer_String = "Name: " + New_Enemy.s_Name + "\n" + "HP: " + string.Format("{0:0.00}", New_Enemy.f_HP);
+                        }
+
+                        //place it at the correct location with scale/laying/ect.
+                        go_New_Enemy.transform.position = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position;
+                        go_New_Enemy.GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                        go_New_Enemy.transform.parent = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform;
+
+                        go_New_Enemy.transform.localScale = new Vector2(1, 1);
+
+                        float lsx = 1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.x;
+                        float lsy = 1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.y;
+
+                        go_New_Enemy.transform.localScale = new Vector2(lsx, lsy);
+
+                        float yspot = (((GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.y * go_New_Enemy.GetComponent<BoxCollider2D>().size.y) /2) - go_New_Enemy.GetComponent<BoxCollider2D>().size.y) - (Placement_For_Objects * go_New_Enemy.GetComponent<BoxCollider2D>().size.y);
+                        go_New_Enemy.transform.position = new Vector2(GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position.x, yspot);
+
+                        Placement_For_Objects++;
+                    }
+                }
+            }
+            f_Future_Amount--;
+            This_Spawn_Number++;
+
+        }
     }
 
     //This is fired when we can hover a box over a gameobject. the object is passed.
@@ -432,7 +562,17 @@ public class Player_Main_Script : MonoBehaviour {
             string Text_To_Place = "";
 
             //first we determin if it's a tower or a enemy.
-            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Drag))
+            
+            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Display))
+            {
+                Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
+                Text_To_Place += "Cost:" + Hover_This.GetComponent<Tower>().i_Cost + "\n";
+                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: -" + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
+                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
+                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
+                Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
+            }
+            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower))
             {
                 Text_To_Place += "(L" + Hover_This.GetComponent<Tower>().i_Level + ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "\n";
@@ -442,15 +582,6 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
 
             }
-            else if (Hover_This.tag.Contains(Current_Strings.Tag_Tower_Display))
-            {
-                Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
-                Text_To_Place += "Cost:" + Hover_This.GetComponent<Tower>().i_Cost + "\n";
-                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: -" + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
-                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
-                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
-                Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
-            }
             else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
             {
                 Text_To_Place += Hover_This.GetComponent<Enemy>().s_Name + "\n";
@@ -458,6 +589,10 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "Power: " + Hover_This.GetComponent<Enemy>().f_Power + "\n";
                 Text_To_Place += "Range: " + Hover_This.GetComponent<Enemy>().f_Range + "\n";
                 Text_To_Place += "HP: " + string.Format("{0:0.00}", Hover_This.GetComponent<Enemy>().f_HP);      // "123.46"
+            }
+            else if (Hover_This.tag == Current_Strings.Tag_Enemy_Viewer_Object)
+            {
+                Text_To_Place = Hover_This.GetComponent<Enemy>().s_Enemy_Viewer_String;
             }
             else
             {
@@ -555,6 +690,9 @@ public class Player_Main_Script : MonoBehaviour {
                 New_Tower.i_Cost = Locked_Gems.Locked_Gem_List[i].i_Cost;
                 New_Tower.s_Short_Description = Locked_Gems.Locked_Gem_List[i].s_Desc;
 
+                //for future sight
+                New_Tower.f_Future_Sight_Amount = Locked_Gems.Locked_Gem_List[i].f_Future_Sight_Amount;
+
                 //go_New_Tower.transform.localScale = new Vector2(New_Tower.f_Scale_Amount, New_Tower.f_Scale_Amount);
             }
         }
@@ -637,6 +775,8 @@ public class Player_Main_Script : MonoBehaviour {
                 if (b_Endless_Mode)
                 {
                 }
+
+
 
                 f_Spawn_Timer = 0;
                 i_Wave_Number++;
@@ -750,33 +890,43 @@ public class Player_Main_Script : MonoBehaviour {
             {
 
                 //HERE WE PLACE IN MONEY CHECK WHEN IT IS PLACED IN.
+                if (Confirmation_Objects[0].GetComponent<Tower>().i_Cost <= f_Energy)
+                {
+                    //we remove the energy and continue, else we act like nothing happened.
+                    f_Energy -= Confirmation_Objects[0].GetComponent<Tower>().i_Cost;
 
 
 
-                //set the ghsot back to invis.
-                Confirmation_Objects[0].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                    //set the ghsot back to invis.
+                    Confirmation_Objects[0].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
 
 
-                //create a new tower.
-                GameObject New_Tower = Create_New_Tower(Confirmation_Objects[0].GetComponent<Tower>().s_Name);
-                //need to disable tower
-                New_Tower.GetComponent<Tower>().b_On_Field = false;
-                //set posistion.
-                New_Tower.transform.position = Confirmation_Objects[1].transform.position;
-                //set parent.
-                New_Tower.transform.parent = Confirmation_Objects[1].transform;
-                //set scale.
-                New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
-                //sprite render stuff.
-                New_Tower.GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder + 2;
-                //set up the tag.
-                New_Tower.tag = Current_Strings.Tag_Tower_Drag;
-                //Set Animation.
-                New_Tower.GetComponent<Animator>().SetBool("Attacking", false);
+                    //create a new tower.
+                    GameObject New_Tower = Create_New_Tower(Confirmation_Objects[0].GetComponent<Tower>().s_Name);
+                    //need to disable tower
+                    New_Tower.GetComponent<Tower>().b_On_Field = false;
+                    //set posistion.
+                    New_Tower.transform.position = Confirmation_Objects[1].transform.position;
+                    //set parent.
+                    New_Tower.transform.parent = Confirmation_Objects[1].transform;
+                    //set scale.
+                    New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
+                    //sprite render stuff.
+                    New_Tower.GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                    //set up the tag.
+                    New_Tower.tag = Current_Strings.Tag_Tower_Drag;
+                    //Set Animation.
+                    New_Tower.GetComponent<Animator>().SetBool("Attacking", false);
 
-                //Add the tower to the tower list.
-                Tower_List.Add(New_Tower);
+                    //Add the tower to the tower list.
+                    Tower_List.Add(New_Tower);
 
+                }
+                else
+                {
+                    //set the ghost back to invis.
+                    Confirmation_Objects[0].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+                }
 
             }
             //return the ghost to the correct location.
@@ -796,54 +946,92 @@ public class Player_Main_Script : MonoBehaviour {
 
                 //now we need to create a new tower with the merged stats and then remove the old two.
                 //place the new tower in the center area.
-
+                int t_Cost = Return_Fuse_Cost_Of_Possible_Gems();
 
                 //need to perfrom MONEY check here.
-
-                //create the new tower
-                GameObject New_Tower = Create_New_Tower(Is_Fuse_Possible());
-
-
-                //get the two fuses for reference and to remove after making the new tower.
-                GameObject Fuse_01 = null;
-                GameObject Fuse_02 = null;
-
-                //first get the two items and make sure there are two, if not return no.
-                if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+                //ALSO NEED TO CHECK IF YOU HAVE ENOUGH MONEY.
+                if (t_Cost <= f_Energy)
                 {
-                    Fuse_01 = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject;
-                }
-                if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
-                {
-                    Fuse_02 = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject;
-                }
 
-                //ensure there is a tower.
-                if (New_Tower != null)
-                {
-                    //need to disable tower
-                    New_Tower.GetComponent<Tower>().b_On_Field = false;
-                    //set posistion.
-                    New_Tower.transform.position = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.position;
-                    //set parent.
-                    New_Tower.transform.parent = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform;
-                    //set scale.
-                    New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
-                    //sprite render stuff.
-                    New_Tower.GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).GetComponent<SpriteRenderer>().sortingOrder + 2;
-                    //set up the tag.
-                    New_Tower.tag = Current_Strings.Tag_Tower_Drag;
-                    //Set Animation.
-                    New_Tower.GetComponent<Animator>().SetBool("Attacking", false);
 
-                    //Add the tower to the tower list.
-                    Tower_List.Add(New_Tower);
+                    //create the new tower
+                    GameObject New_Tower = Create_New_Tower(Is_Fuse_Possible());
 
-                    //we remove the old towers.
-                    Tower_List.Remove(Fuse_01);
-                    Tower_List.Remove(Fuse_02);
-                    GameObject.Destroy(Fuse_01);
-                    GameObject.Destroy(Fuse_02);
+
+                    //get the two fuses for reference and to remove after making the new tower.
+                    GameObject Fuse_01 = null;
+                    GameObject Fuse_02 = null;
+
+                    //first get the two items and make sure there are two, if not return no.
+                    if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+                    {
+                        Fuse_01 = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject;
+                    }
+                    if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
+                    {
+                        Fuse_02 = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject;
+                    }
+
+                    //ensure there is a tower.
+                    if (New_Tower != null)
+                    {
+                        //need to disable tower
+                        New_Tower.GetComponent<Tower>().b_On_Field = false;
+                        //set posistion.
+                        New_Tower.transform.position = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.position;
+                        //set parent.
+                        New_Tower.transform.parent = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform;
+                        //set scale.
+                        New_Tower.transform.localScale = new Vector2(New_Tower.GetComponent<Tower>().f_Scale_Amount, New_Tower.GetComponent<Tower>().f_Scale_Amount);
+                        //sprite render stuff.
+                        New_Tower.GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).GetComponent<SpriteRenderer>().sortingOrder + 2;
+                        //set up the tag.
+                        New_Tower.tag = Current_Strings.Tag_Tower_Drag;
+                        //Set Animation.
+                        New_Tower.GetComponent<Animator>().SetBool("Attacking", false);
+
+
+                        //place it in a hotbar then close the menu.
+                        bool Returned = false;
+                        //there is an object and we move it to the first hotbar free.
+                        for (int j = 0; j < Hotbar_Gameobjects.Count; j++)
+                        {
+                            if (Hotbar_Gameobjects[j].transform.childCount == 0 && !Returned)
+                            {
+                                Returned = true;
+                                //changing the parents changes the scale so we need to keep a before so we can apply it after.
+                                //Scale_Working_With_Collider = Fuse_Box_Items[i].transform.transform.localScale;
+                                //now we place the item in it and such.
+                                New_Tower.transform.position = Hotbar_Gameobjects[j].transform.position;
+                                New_Tower.transform.parent = Hotbar_Gameobjects[j].transform;
+                                //Fuse_Box_Items[i].transform.transform.localScale = Scale_Working_With_Collider;
+                                //sprite render stuff.
+                                New_Tower.transform.GetComponent<SpriteRenderer>().sortingOrder = Hotbar_Gameobjects[j].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                            }
+                        }
+
+
+
+                        //Add the tower to the tower list.
+                        Tower_List.Add(New_Tower);
+
+                        //apply the point/ect for it.
+                        int i_Average_Points = (Fuse_01.GetComponent<Tower>().i_Level + Fuse_02.GetComponent<Tower>().i_Level) / 2;
+                        //set the points/level for the new tower.
+                        New_Tower.GetComponent<Tower>().i_Level = i_Average_Points;
+                        New_Tower.GetComponent<Tower>().i_Spending_Points = i_Average_Points;
+
+                        //we remove the old towers.
+                        Tower_List.Remove(Fuse_01);
+                        Tower_List.Remove(Fuse_02);
+                        GameObject.Destroy(Fuse_01);
+                        GameObject.Destroy(Fuse_02);
+
+                        //remove the energy.
+                        f_Energy -= t_Cost;
+
+                        Display_Fuse();
+                    }
                 }
             }
             //return the ghost to the correct location.
@@ -856,9 +1044,54 @@ public class Player_Main_Script : MonoBehaviour {
 
         //reset the confirmation message to "none"
         s_Confirmation_Action = "none";
-        
+        //reset the text in the confiramtion to blank.
+        GameObject.Find(Current_Strings.Name_Confirmation_Text).GetComponent<TextMesh>().text = "";
 
 
+
+    }
+
+    public void Display_Fuse()
+    {
+
+        int Count = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount + GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount;
+
+        //the count is checked, if it's changed then we know we need to check it.
+        if (Count != Fuse_Number)
+        {
+            //set the fuse number to the count so we don't do this every itteration.
+            Fuse_Number = Count;
+
+            //create the new tower
+            Fuse_Combo_Display = Create_New_Tower(Is_Fuse_Possible());
+
+            if (Fuse_Combo_Display != null)
+            {
+                //we place the new tower in the fuse location.
+                //need to disable tower
+                Fuse_Combo_Display.GetComponent<Tower>().b_On_Field = false;
+                //set posistion.
+                Fuse_Combo_Display.transform.position = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.position;
+                //set parent.
+                Fuse_Combo_Display.transform.parent = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform;
+                //set scale.
+                Fuse_Combo_Display.transform.localScale = new Vector2(Fuse_Combo_Display.GetComponent<Tower>().f_Scale_Amount, Fuse_Combo_Display.GetComponent<Tower>().f_Scale_Amount);
+                //sprite render stuff.
+                Fuse_Combo_Display.GetComponent<SpriteRenderer>().sortingOrder = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).GetComponent<SpriteRenderer>().sortingOrder + 2;
+                //set up the tag.
+                Fuse_Combo_Display.tag = Current_Strings.Tag_Tower;
+                //Set Animation.
+                Fuse_Combo_Display.GetComponent<Animator>().SetBool("Attacking", false);
+
+            }
+            else
+            {
+                if (GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.childCount > 0)
+                {
+                    GameObject.Destroy(GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.GetChild(0).gameObject);
+                }
+            }
+        }
     }
 
     public void Attempt_Fuse()
@@ -868,19 +1101,45 @@ public class Player_Main_Script : MonoBehaviour {
         //check if a fuse can even be done.
         if (Fuse_Check_Answer != "No")
         {
-            //ensure that there is not a gem/item in the complete box first.
-            if (GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.childCount == 0)
-            {
-                //ALSO NEED TO CHECK IF YOU HAVE ENOUGH MONEY.
 
-                //Enable the confirmation message for fusing gems.
-                s_Confirmation_Action = Current_Strings.Confirm_Tower_Fuse;
-                b_Confirmation_Open = true;
-                //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
-                GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
-            }
-            
+            //Enable the confirmation message for fusing gems.
+            s_Confirmation_Action = Current_Strings.Confirm_Tower_Fuse;
+            b_Confirmation_Open = true;
+            //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
+            GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
+
+            //add the confirmation text.
+            GameObject.Find(Current_Strings.Name_Confirmation_Text).GetComponent<TextMesh>().text = "Energy Cost: " + Return_Fuse_Cost_Of_Possible_Gems().ToString();
         }
+    }
+
+    public int Return_Fuse_Cost_Of_Possible_Gems()
+    {
+        int Return_Cost = 0;
+
+        if (Is_Fuse_Possible() != "No")
+        {
+            Tower Fuse_01 = null;
+            Tower Fuse_02 = null;
+
+            //first get the two items and make sure there are two, if not return no.
+            if (GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.childCount > 0)
+            {
+                Fuse_01 = GameObject.Find(Current_Strings.Name_Fuse_Box_01).transform.GetChild(0).gameObject.GetComponent<Tower>();
+            }
+            if (GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.childCount > 0)
+            {
+                Fuse_02 = GameObject.Find(Current_Strings.Name_Fuse_Box_02).transform.GetChild(0).gameObject.GetComponent<Tower>();
+            }
+
+            //Math for cost is done here.
+            if (Fuse_01 != null && Fuse_02 != null)
+            {
+                Return_Cost = (int)((Fuse_01.i_Cost + Fuse_02.i_Cost) * f_Fuse_Cost_Percent);
+            }
+
+        }
+        return Return_Cost;
     }
 
     //this checks if the two gems in the spots can fuse and if so what it will fuse into. 

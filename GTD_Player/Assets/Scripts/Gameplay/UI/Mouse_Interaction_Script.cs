@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
+using Assets.Scripts.Gameplay.Level_Items;
 
 public class Mouse_Interaction_Script : MonoBehaviour {
 
@@ -149,8 +151,17 @@ public class Mouse_Interaction_Script : MonoBehaviour {
             if (Collider_Working_With != null)
             {
                 string C_Tag = Collider_Working_With.gameObject.tag;
+
+                if (C_Tag == Current_Strings.Tag_Enemy_Viewer_Background || C_Tag == Current_Strings.Tag_Enemy_Viewer_Object)
+                {
+                    float tX = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position.x;
+                    float tY = GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position.y;
+                    tY += Input.GetAxis("Mouse ScrollWheel") * -2f;
+                    GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.position = new Vector2(tX, tY);
+
+                }
                 //scroll on map.
-                if(Cur_Open_Menu == null)
+                else if(Cur_Open_Menu == null)
                 {
                     Vector2 Before_Test;
                     Vector2 After_Test;
@@ -589,6 +600,10 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                 //move the confirmation to the spot where the item is. want it directly above the item but for now middle.
                 GameObject.Find(Current_Strings.Name_Confirmation_Box).transform.position = new Vector3(0, 0);
 
+                //update the confirmation text to be how much it will cost.
+                string E_Cost = Collider_Working_With.gameObject.GetComponent<Tower>().i_Cost.ToString();
+                GameObject.Find(Current_Strings.Name_Confirmation_Text).GetComponent<TextMesh>().text = "Energy Cost: " + E_Cost;
+
                 
             }
 
@@ -701,23 +716,30 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                     Highest_Collider = c;
                 }
 
-                //here is the highest collider's sprite layer order.
-                int Layer_Number = Highest_Collider.gameObject.GetComponent<SpriteRenderer>().sortingOrder;
-
-                //Make sure there is a sprite renderer before attempting to do anything with it.
-                if (T_Sprite != null)
+                //make sure there is a collider with a game object.
+                if (Highest_Collider != null && Highest_Collider.gameObject != null)
                 {
-                    //check if the sprite has a higher layer.
-                    if (T_Sprite.sortingOrder > Layer_Number)
+                    //make sure there is a sprite renderer.
+                    if (Highest_Collider.gameObject.GetComponent<SpriteRenderer>() != null)
                     {
+                        //here is the highest collider's sprite layer order.
+                        int Layer_Number = Highest_Collider.gameObject.GetComponent<SpriteRenderer>().sortingOrder;
 
-                        //does have a higher layer so we change the highest collider.
-                        Highest_Collider = c;
+                        //Make sure there is a sprite renderer before attempting to do anything with it.
+                        if (T_Sprite != null)
+                        {
+                            //check if the sprite has a higher layer.
+                            if (T_Sprite.sortingOrder > Layer_Number)
+                            {
+
+                                //does have a higher layer so we change the highest collider.
+                                Highest_Collider = c;
+                            }
+                        }
                     }
                 }
             }
         }
-
         //we return the highest
         return Highest_Collider;
 
@@ -765,6 +787,11 @@ public class Mouse_Interaction_Script : MonoBehaviour {
         {
             Main_Script.Attempt_Fuse();
         }
+        //for loading the main menu.
+        else if (But_Col.gameObject.tag == Current_Strings.Tag_Button_Main_Menu)
+        {
+            SceneManager.LoadScene("Main_Menu");
+        }
 
         //we are acessing a new menu item or something.
         else
@@ -789,7 +816,7 @@ public class Mouse_Interaction_Script : MonoBehaviour {
                     }
                     if (GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.childCount > 0)
                     {
-                        Fuse_Box_Items[2] = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.GetChild(0).gameObject;
+                        //Fuse_Box_Items[2] = GameObject.Find(Current_Strings.Name_Fuse_Box_Combine).transform.GetChild(0).gameObject;
                     }
 
                     for (int i = 0; i <= 2; i++)

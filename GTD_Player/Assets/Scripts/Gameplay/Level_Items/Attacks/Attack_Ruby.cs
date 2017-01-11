@@ -153,7 +153,7 @@ public class Attack_Ruby : Attack_Base {
         //destroy the attack after it's past 100%
         if (f_Percent_Total > 1)
         {
-            Debug.Log(f_Percent_Total);
+            //Debug.Log(f_Percent_Total);
 
             Destory_Attack();
         }

@@ -34,6 +34,11 @@ TagManager:
   - Fuse_Parent
   - Purchase_Parent
   - Inventory_Parent
+  - Btn_Main_Menu
+  - Twr
+  - Viewer_Enemy
+  - Enemy
+  - Viewer_Enemy_Background
   layers:
   - Default
   - TransparentFX

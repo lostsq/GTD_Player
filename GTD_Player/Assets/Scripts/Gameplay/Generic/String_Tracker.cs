@@ -27,6 +27,8 @@
         Name_Fuse_Box_Combine = "Fuse_Box_Combine",
         Name_Fuse_Button_Complete = "Fuse_Button_Complete",
         Name_Range_Circle_One = "Range_Circle_One",
+        Name_Confirmation_Text = "Confirmation_Text",
+        Name_Enemy_Viewer_Holder = "Enemy_Viewer_Holder",
 
     //PREFAB NAMES WITH FULL ADDRESSES
     //UI
@@ -49,6 +51,12 @@
         //TOWERS
         Prefab_Tower_Ruby = "Prefabs/Towers/Ruby",
         Prefab_Tower_Sapphire = "Prefabs/Towers/Sapphire",
+        Prefab_Tower_Garnet = "Prefabs/Towers/Garnet",
+        Prefab_Tower_Pearl = "Prefabs/Towers/Pearl",
+        Prefab_Tower_Amethyst = "Prefabs/Towers/Amethyst",
+        Prefab_Tower_Opal = "Prefabs/Towers/Opal",
+        Prefab_Tower_Sardonyx = "Prefabs/Towers/Sardonyx",
+        Prefab_Tower_Sugilite = "Prefabs/Towers/Sugilite",
 
         //ENEMIES
         Prefab_Enemy_Location = "Prefabs/Enemies/",
@@ -103,6 +111,7 @@
         Tag_Button_Plus_Icon = "Btn_Plus_Icon",
         Tag_Button_Purchase_Main = "Btn_Purchase_Main",
         Tag_Button_Enemy_Viewer_Button = "Btn_Enemy_Viewer",
+        Tag_Button_Main_Menu = "Btn_Main_Menu",
     //Non-Buttons
         Tag_Button_Fuse_Insert_Box = "Fuse_Insert_Box",
 
@@ -122,6 +131,8 @@
         Tag_Path = "Path_Drag",
 
         Tag_Enemy = "Enemy_Drag",
+        Tag_Enemy_Viewer_Object = "Viewer_Enemy",
+        Tag_Enemy_Viewer_Background = "Viewer_Enemy_Background",
 
         Tag_Path_Maker_Field_Move = "Drag_Spot_Field",
 
