@@ -187,7 +187,7 @@ public class Start_Player_Script : MonoBehaviour {
                     New_Enemy.Set_Enemy(Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10,true);
 
                     //set up the bullet prefab location.
-                    New_Enemy.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + Arg1;
+                    New_Enemy.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + Arg1.Split(' ')[0];
                     //Debug.Log(New_Enemy.s_Bullet_Prefab);
 
                     //might need to create the item so it's not null and have it off screen.

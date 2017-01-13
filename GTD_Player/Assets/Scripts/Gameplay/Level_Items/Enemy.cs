@@ -458,7 +458,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                 Main_Script.i_Score++;
 
                 //for now exp is 10% fo what the energy is. EXP IS PLACEHOLDER FOR NOW
-                Main_Script.f_Exp_Gathered += 30;//i_Reward_Single*.1f;
+                Main_Script.f_Exp_Gathered += i_Reward_Single;
 
                 //we are dead so now we need to play the death animation and remove us as a target.
                 //no tag so not a target while death animation plays.

@@ -98,7 +98,7 @@ public class Attack_Garnet : Attack_Base {
             //Garnet.
             Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Raw, f_Damage_Level, 0, false);
             //now apply the slow. it's 0 cause garnet stops them for a couple seconds.
-            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, 0f, 3, true);
+            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .05f, 3, true);
 
 
         }

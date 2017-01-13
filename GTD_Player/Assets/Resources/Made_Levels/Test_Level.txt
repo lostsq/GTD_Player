@@ -4,14 +4,7 @@ Shared Enery(False
 Starting HP(100
 Max HP(100
 Shared Allies(True
-Lock Gem(Ruby 1,False,100,True
-Lock Gem(Sapphire 1,False,200,True
-Lock Gem(Topaz,False,300,True
 Lock Gem(Emerald,False,400,True
-Tower(Ruby 1,1,1,1,1,1
-Tower(Sapphire 1,2,20,2,2,2
-Tower(Topaz,3,3,3,3,3
-Tower(Emerald,4,4,4,4,4
 Enemies(Ruby 1,1,35,1,8,20,1,5,1,None
 Enemies(Sapphire 1,2,40,1,10,20,5,1,1,None
 Grid X(25
