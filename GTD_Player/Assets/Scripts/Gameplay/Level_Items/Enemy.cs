@@ -13,7 +13,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
         Player_Main_Script Main_Script;
         String_Tracker Current_Strings = new String_Tracker();
         float f_Spawn_Timer = 0;
-        int i_Spawn_Inbetween = 1;
+        float i_Spawn_Inbetween = 2.5f;
 
         bool b_Is_Dead = false;
 

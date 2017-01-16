@@ -251,7 +251,7 @@ namespace Assets.Scripts.Gameplay.Level_Items
                                     New_Attack.transform.parent = transform.parent;
                                     New_Attack.transform.localScale = Cur_Scale;
                                     New_Attack.GetComponent<Attacks.Attack_Base>().Owner = this.gameObject;
-                                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = transform.parent.GetComponent<SpriteRenderer>().sortingOrder + 1;
+                                    New_Attack.GetComponent<SpriteRenderer>().sortingOrder = GetComponent<SpriteRenderer>().sortingOrder - 1;
                                 }
                             }
 

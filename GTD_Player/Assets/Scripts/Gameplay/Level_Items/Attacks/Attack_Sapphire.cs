@@ -155,7 +155,7 @@ public class Attack_Sapphire : Attack_Base {
             //Sapphire.
             Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Ice, f_Damage_Level, 5, true);
             //now apply the slow.
-            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .4f, 5, true);
+            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .4f, f_Damage_Level * .8f, true);
 
 
         }

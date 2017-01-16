@@ -10,13 +10,13 @@ namespace Assets.Scripts.Gameplay.Generic
     public class All_Locked_Gems
     {
         //this is used for price and point/level increases.
-        float f_Level_Attack_Percent = .05f;
-        float f_Level_Range_Percent = .05f;
-        float f_Level_Cooldown_Percent = .03f;
+        float f_Level_Attack_Percent = .08f;
+        float f_Level_Range_Percent = .08f;
+        float f_Level_Cooldown_Percent = .04f;
         //the fuse gem amounts.
-        float f_Fuse_Attack_Percent = .15f;
-        float f_Fuse_Range_Percent = .15f;
-        float f_Fuse_Cooldown_Percent = .1f;
+        float f_Fuse_Attack_Percent = .18f;
+        float f_Fuse_Range_Percent = .18f;
+        float f_Fuse_Cooldown_Percent = .12f;
         //cost increases.
         float f_Cost_Increase = .1f;
 
@@ -106,7 +106,10 @@ namespace Assets.Scripts.Gameplay.Generic
 
                         Locked_Gem_List[i].f_Power_Levels = Locked_Gem_List[i].f_Power_Amount * f_Level_Attack_Percent;
 
-                        //it is now set up so we set it up to true.
+                        Locked_Gem_List[i].i_Exp_Level = new int[] { (int)(Locked_Gem_List[i].i_Cost * .1f), (int)(Locked_Gem_List[i].i_Cost * .2f), (int)(Locked_Gem_List[i].i_Cost * .3f), (int)(Locked_Gem_List[i].i_Cost * .4f), (int)(Locked_Gem_List[i].i_Cost * .5f), (int)(Locked_Gem_List[i].i_Cost * .6f), (int)(Locked_Gem_List[i].i_Cost * .7f), (int)(Locked_Gem_List[i].i_Cost * .8f), (int)(Locked_Gem_List[i].i_Cost * .9f), (int)(Locked_Gem_List[i].i_Cost * 1f), 0 };
+
+
+                        //t is now set up so we set it up to true.
                         Locked_Gem_List[i].b_Is_Set_Up = true;
                     }
                     else
@@ -135,6 +138,9 @@ namespace Assets.Scripts.Gameplay.Generic
 
                                     //cost
                                     Locked_Gem_List[i].i_Cost = Convert.ToInt32(((Locked_Gem_List[j].i_Cost / Gem_Number2) * Gem_Number) + ((Locked_Gem_List[j].i_Cost / Gem_Number2) * f_Cost_Increase));
+
+                                    //exp
+                                    Locked_Gem_List[i].i_Exp_Level = new int[] { (int)(Locked_Gem_List[i].i_Cost * .1f), (int)(Locked_Gem_List[i].i_Cost * .2f), (int)(Locked_Gem_List[i].i_Cost * .3f), (int)(Locked_Gem_List[i].i_Cost * .4f), (int)(Locked_Gem_List[i].i_Cost * .5f), (int)(Locked_Gem_List[i].i_Cost * .6f), (int)(Locked_Gem_List[i].i_Cost * .7f), (int)(Locked_Gem_List[i].i_Cost * .8f), (int)(Locked_Gem_List[i].i_Cost * .9f), (int)(Locked_Gem_List[i].i_Cost * 1f), 0 };
 
                                     //it is now set up so we set it up to true.
                                     Locked_Gem_List[i].b_Is_Set_Up = true;
@@ -220,15 +226,11 @@ namespace Assets.Scripts.Gameplay.Generic
 
 
 
-            f_Range_Amount = 1.5f;
+            f_Range_Amount = 1.75f;
+            f_Speed_Amount = 7;
+            f_Power_Amount = 5.5f;
 
 
-            f_Speed_Amount = 8;
-
-            f_Power_Amount = 5;
-
-
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
 
 
 
@@ -270,7 +272,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Flame AOE Attack from center.";
 
@@ -309,7 +311,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Flame AOE Attack from center.";
 
@@ -347,7 +349,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Flame AOE Attack from center.";
 
@@ -384,7 +386,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Flame AOE Attack from center.";
 
@@ -412,10 +414,9 @@ namespace Assets.Scripts.Gameplay.Generic
             b_Locked = false;
 
 
-            f_Range_Amount = 2;
-            //seconds before an attack.
-            f_Speed_Amount = 6.5f;
-            f_Power_Amount = 5;
+            f_Range_Amount = 2.25f;
+            f_Speed_Amount = 7f;
+            f_Power_Amount = 4.5f;
 
             //how much range is added. Remember this is based off of scale.
             f_Range_Levels = 3;
@@ -423,7 +424,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Speed_Levels = -.5f;
             f_Power_Levels = 1.2f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Ice AOE Attack From Center.\nSlows Hit Enemies.\nCan See What Waves Will Be Attacking.";
 
@@ -469,7 +470,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Speed_Levels = -.5f;
             f_Power_Levels = 1.2f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Ice AOE Attack From Center.\nSlows Hit Enemies.\nCan See What Waves Will Be Attacking.";
 
@@ -514,7 +515,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Speed_Levels = -.5f;
             f_Power_Levels = 1.2f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Ice AOE Attack From Center.\nSlows Hit Enemies.\nCan See What Waves Will Be Attacking.";
 
@@ -558,7 +559,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Speed_Levels = -.5f;
             f_Power_Levels = 1.2f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Ice AOE Attack From Center.\nSlows Hit Enemies.\nCan See What Waves Will Be Attacking.";
 
@@ -601,7 +602,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Speed_Levels = -.5f;
             f_Power_Levels = 1.2f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
 
             s_Desc = "Ice AOE Attack From Center.\nSlows Hit Enemies.\nCan See What Waves Will Be Attacking.";
@@ -625,7 +626,7 @@ namespace Assets.Scripts.Gameplay.Generic
             b_Locked = false;
 
 
-            i_Cost = 70;
+            i_Cost = 80;
             f_Scale_Amount = .2f;
             s_Prefab_Location = Current_Strings.Prefab_Tower_Pearl;
 
@@ -633,15 +634,15 @@ namespace Assets.Scripts.Gameplay.Generic
             s_Bullet_Prefab_Location = Current_Strings.Prefab_Attacks_Location + "Pearl";
 
 
-            f_Range_Amount = 3f;
+            f_Range_Amount = 3.75f;
 
 
-            f_Speed_Amount = 7;
+            f_Speed_Amount = 3.5f;
 
             f_Power_Amount = 7f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "A Fast Ranged Attack With A Spear.";
 
@@ -682,7 +683,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "A Fast Ranged Attack With A Spear.";
 
@@ -722,7 +723,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "A Fast Ranged Attack With A Spear.";
 
@@ -761,7 +762,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "A Fast Ranged Attack With A Spear.";
 
@@ -799,7 +800,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "A Fast Ranged Attack With A Spear.";
 
@@ -830,10 +831,10 @@ namespace Assets.Scripts.Gameplay.Generic
 
             f_Range_Amount = 2.5f;
             f_Speed_Amount = 6;
-            f_Power_Amount = 5f;
+            f_Power_Amount = 5.5f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Performs A Spin AOE Attack From Center.";
 
@@ -875,7 +876,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Performs A Spin AOE Attack From Center.";
 
@@ -916,7 +917,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Performs A Spin AOE Attack From Center.";
 
@@ -956,7 +957,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Performs A Spin AOE Attack From Center.";
 
@@ -995,7 +996,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Performs A Spin AOE Attack From Center.";
 
@@ -1024,12 +1025,12 @@ namespace Assets.Scripts.Gameplay.Generic
             s_Bullet_Prefab_Location = Current_Strings.Prefab_Attacks_Location + "Opal";
 
 
-            f_Range_Amount = 3.5f;
-            f_Speed_Amount = 5;
-            f_Power_Amount = 5f;
+            f_Range_Amount = 3.75f;
+            f_Speed_Amount = 3.5f;
+            f_Power_Amount = 6f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires On Multiple Enemies At Once.";
 
@@ -1069,7 +1070,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires On Multiple Enemies At Once.";
 
@@ -1108,7 +1109,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires On Multiple Enemies At Once.";
 
@@ -1146,7 +1147,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires On Multiple Enemies At Once.";
 
@@ -1183,7 +1184,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires On Multiple Enemies At Once.";
 
@@ -1210,11 +1211,11 @@ namespace Assets.Scripts.Gameplay.Generic
 
 
             f_Range_Amount = 2.5f;
-            f_Speed_Amount = 6;
-            f_Power_Amount = 7f;
+            f_Speed_Amount = 5;
+            f_Power_Amount = 8f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Attacks One Ranged And Stuns Them.";
 
@@ -1255,7 +1256,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Attacks One Ranged And Stuns Them.";
 
@@ -1295,7 +1296,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Attacks One Ranged And Stuns Them.";
 
@@ -1334,7 +1335,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Attacks One Ranged And Stuns Them.";
 
@@ -1372,7 +1373,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Attacks One Ranged And Stuns Them.";
 
@@ -1401,12 +1402,12 @@ namespace Assets.Scripts.Gameplay.Generic
             s_Bullet_Prefab_Location = Current_Strings.Prefab_Attacks_Location + "Sardonyx";
 
 
-            f_Range_Amount = 4f;
+            f_Range_Amount = 4.25f;
             f_Speed_Amount = 6;
             f_Power_Amount = 7f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires Ranged To Target Then AOE From That Location.\nWill Cause First Target To Stun.";
 
@@ -1446,7 +1447,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires Ranged To Target Then AOE From That Location.\nWill Cause First Target To Stun.";
 
@@ -1485,7 +1486,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires Ranged To Target Then AOE From That Location.\nWill Cause First Target To Stun.";
 
@@ -1523,7 +1524,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires Ranged To Target Then AOE From That Location.\nWill Cause First Target To Stun.";
 
@@ -1560,7 +1561,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Fires Ranged To Target Then AOE From That Location.\nWill Cause First Target To Stun.";
 
@@ -1588,11 +1589,11 @@ namespace Assets.Scripts.Gameplay.Generic
 
 
             f_Range_Amount = 4.5f;
-            f_Speed_Amount = 10;
-            f_Power_Amount = 11f;
+            f_Speed_Amount = 9f;
+            f_Power_Amount = 12f;
 
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Slow Yet Powerful AOE Attack That Stuns All.";
 
@@ -1632,7 +1633,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Slow Yet Powerful AOE Attack That Stuns All.";
 
@@ -1671,7 +1672,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
             s_Desc = "Slow Yet Powerful AOE Attack That Stuns All.";
 
@@ -1709,7 +1710,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
 
             s_Desc = "Slow Yet Powerful AOE Attack That Stuns All.";
@@ -1747,7 +1748,7 @@ namespace Assets.Scripts.Gameplay.Generic
             f_Power_Amount = 6.8f;
             f_Power_Levels = .3f;
 
-            i_Exp_Level = new int[] { (int)(i_Cost * .1f), (int)(i_Cost * .2f), (int)(i_Cost * .3f), (int)(i_Cost * .4f), (int)(i_Cost * .5f), (int)(i_Cost * .6f), (int)(i_Cost * .7f), (int)(i_Cost * .8f), (int)(i_Cost * .9f), (int)(i_Cost * 1f), 0 };
+
 
 
             s_Desc = "Slow Yet Powerful AOE Attack That Stuns All.";

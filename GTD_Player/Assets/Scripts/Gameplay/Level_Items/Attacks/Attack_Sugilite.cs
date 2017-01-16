@@ -194,7 +194,7 @@ public class Attack_Sugilite : Attack_Base {
         {
             //Sugilite. Just raw shoot dmg.
             Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Raw, f_Damage_Level, 0, false);
-            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .1f, 4, true);
+            Enemy_To_Deal_Damage_To.GetComponent<Enemy>().Apply_Damage(Current_Strings.Atk_Slow, .1f, f_Damage_Level * .2f, true);
 
 
         }

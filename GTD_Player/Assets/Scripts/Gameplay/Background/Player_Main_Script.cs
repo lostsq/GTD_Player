@@ -80,14 +80,14 @@ public class Player_Main_Script : MonoBehaviour {
     public List<Enemy> Endless_Enemy_List = new List<Enemy>();
     public int i_Endless_Current_Spawn_Count = 0;
     public float f_Endless_Count = 1;
-    public float f_Endless_HP_Gain = .05f;
+    public float f_Endless_HP_Gain = .065f;
     public float f_Endless_Attack_Gain = .02f;
     public int i_Score = 0;
 
     //this if for the fuse stuff.
     GameObject Fuse_Combo_Display = null;
     int Fuse_Number = 0;
-    float f_Fuse_Cost_Percent = .7f;
+    float f_Fuse_Cost_Percent = .4f;
 
     // Use this for initialization
     void Start () {
@@ -132,9 +132,17 @@ public class Player_Main_Script : MonoBehaviour {
             //Perfrom afuse box check
             Display_Fuse();
 
-            //pause check.
-            if (b_Is_Running)
+            //check enemy viewer open to tell if game should be paused. just simple pause menu for now.
+            if (b_Enemy_Viewer_Open)
             {
+                b_Is_Running = false;
+            }
+
+                //pause check.
+                if (b_Is_Running)
+            {
+
+
                 //check if it was paused.
                 if (b_Was_Paused)
                 {
@@ -189,7 +197,7 @@ public class Player_Main_Script : MonoBehaviour {
         New_Enemy.Set_Enemy(Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Name, (int)f_Endless_Count, tHP, Endless_Enemy_List[i_Endless_Current_Spawn_Count].f_Speed, tPow, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Amount, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Start_After, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Reward_Single, Endless_Enemy_List[i_Endless_Current_Spawn_Count].i_Reward_Wave, Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Mod, true);
 
         //set up the bullet prefab location.
-        New_Enemy.s_Bullet_Prefab = Current_Strings.Prefab_Attacks_Location + Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Bullet_Prefab;
+        New_Enemy.s_Bullet_Prefab = Endless_Enemy_List[i_Endless_Current_Spawn_Count].s_Bullet_Prefab;
         //Debug.Log(New_Enemy.s_Bullet_Prefab);
 
         //might need to create the item so it's not null and have it off screen.
@@ -302,8 +310,9 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "    Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Speed_Upgrade+Hover_This.GetComponent<Tower>().f_Speed_Amount) + "\n";
                 Text_To_Place += "    Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Power_Upgrade + Hover_This.GetComponent<Tower>().f_Power_Amount) + "\n";
                 Text_To_Place += "    Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + " >> " + (Hover_This.GetComponent<Tower>().f_Range_Upgrade + Hover_This.GetComponent<Tower>().f_Range_Amount) + "\n";
-                Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level];
-                
+                Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
+                Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
+
 
             }
             else
@@ -423,9 +432,12 @@ public class Player_Main_Script : MonoBehaviour {
         //first check if it's showing or now.
         if (b_Enemy_Viewer_Open)
         {
+
             //set it to false and close it.
             b_Enemy_Viewer_Open = false;
             Enemy_Viewer.transform.position = new Vector2(Enemy_Viewer.transform.position.x - Enemy_Viewer.GetComponent<BoxCollider2D>().size.x * Enemy_Viewer.transform.localScale.x, 0);
+
+            b_Is_Running = true;
         }
         else
         {
@@ -434,6 +446,8 @@ public class Player_Main_Script : MonoBehaviour {
             Update_Enemy_Viewer();
             //now move it out to be visible.
             Enemy_Viewer.transform.position = new Vector2(Enemy_Viewer.transform.position.x + Enemy_Viewer.GetComponent<BoxCollider2D>().size.x * Enemy_Viewer.transform.localScale.x, 0);
+
+            b_Is_Running = false;
         }
     }
 
@@ -532,8 +546,8 @@ public class Player_Main_Script : MonoBehaviour {
 
                         go_New_Enemy.transform.localScale = new Vector2(1, 1);
 
-                        float lsx = 1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.x;
-                        float lsy = 1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.y;
+                        float lsx = (1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.x) * GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.x;
+                        float lsy = (1 / GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.y) * GameObject.Find(Current_Strings.Name_Enemy_Viewer_Holder).transform.parent.transform.localScale.x;
 
                         go_New_Enemy.transform.localScale = new Vector2(lsx, lsy);
 
@@ -567,12 +581,12 @@ public class Player_Main_Script : MonoBehaviour {
             {
                 Text_To_Place += "Name:" + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Cost:" + Hover_This.GetComponent<Tower>().i_Cost + "\n";
-                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "::Added Per Point: -" + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
-                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
-                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "::Added Per Point: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
+                Text_To_Place += "Base Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + ":Upgrade: " + Hover_This.GetComponent<Tower>().f_Speed_Upgrade + "\n";
+                Text_To_Place += "Base Power: " + Hover_This.GetComponent<Tower>().f_Power_Amount + ":Upgrade: " + Hover_This.GetComponent<Tower>().f_Power_Upgrade + "\n";
+                Text_To_Place += "Base Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + ":Upgrade: " + Hover_This.GetComponent<Tower>().f_Range_Upgrade + "\n";
                 Text_To_Place += Hover_This.GetComponent<Tower>().s_Short_Description;
             }
-            if (Hover_This.tag.Contains(Current_Strings.Tag_Tower))
+            else if (Hover_This.tag.Contains(Current_Strings.Tag_Tower))
             {
                 Text_To_Place += "(L" + Hover_This.GetComponent<Tower>().i_Level + ")" + Hover_This.GetComponent<Tower>().s_Name + "\n";
                 Text_To_Place += "Cooldown: " + Hover_This.GetComponent<Tower>().f_Speed_Amount + "\n";
@@ -580,6 +594,10 @@ public class Player_Main_Script : MonoBehaviour {
                 Text_To_Place += "Range: " + Hover_This.GetComponent<Tower>().f_Range_Amount + "\n";
                 Text_To_Place += "Xp: " + Hover_This.GetComponent<Tower>().i_exp + "/" + Hover_This.GetComponent<Tower>().i_Exp_Level[Hover_This.GetComponent<Tower>().i_Level] + "\n";
                 Text_To_Place += "Points: " + Hover_This.GetComponent<Tower>().i_Spending_Points;
+                if (!b_Is_Running)
+                {
+                    Text_To_Place += "\n" + Hover_This.GetComponent<Tower>().s_Short_Description;
+                }
 
             }
             else if (Hover_This.tag.Contains(Current_Strings.Tag_Enemy))
@@ -821,7 +839,7 @@ public class Player_Main_Script : MonoBehaviour {
                 //Confirmation_Objects[1].transform.GetChild(0).parent = Confirmation_Objects[1].transform;
 
                 //sprite render stuff.
-                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 2;
+                Confirmation_Objects[1].GetComponent<SpriteRenderer>().sortingOrder = Confirmation_Objects[2].GetComponent<SpriteRenderer>().sortingOrder + 3;
                 //set the color to invis for the ghost..
                 Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
                 //Confirmation_Objects[1].transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder
